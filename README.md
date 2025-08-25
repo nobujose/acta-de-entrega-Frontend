@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Proyecto Acta - Frontend
 
-## Getting Started
+Aplicación web para la gestión y creación de actas administrativas.
 
-First, run the development server:
+## Stack Tecnológico
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Lenguaje:** TypeScript
+- **Framework Principal:** Next.js (React)
+- **Estilos:** Tailwind CSS
+- **Componentes:** shadcn/ui
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Instalación y Configuración
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clonar el repositorio: `git clone ...`
+2. Instalar dependencias: `npm install`
+3. Configurar variables de entorno: `cp .env.example .env` y rellenar los valores.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cómo Ejecutar el Proyecto
 
-## Learn More
+Comando para iniciar el proyecto en modo de desarrollo.
+`npm run dev`
 
-To learn more about Next.js, take a look at the following resources:
+## Cómo Ejecutar las Pruebas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Comando para correr la suite de pruebas automatizadas.
+`npm run test`
