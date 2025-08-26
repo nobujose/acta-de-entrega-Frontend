@@ -50,7 +50,8 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "prettier --write",
-      "npx jest --findRelatedTests --bail"
+      "npm run lint",
+      "npx jest --findRelatedTests --bail --passWithNoTests"
     ],
     "*.{json,css,md}": "prettier --write"
   }
