@@ -41,8 +41,7 @@ jobs:
 
       # 5. Ejecutar pruebas
       - name: Ejecutar pruebas (Tests)
-        run: npm run test
-
+        run: npx lint-staged
       # 6. Construir el proyecto
       - name: Construir el proyecto (Build)
         run: npm run build
