@@ -1,0 +1,47 @@
+# Nombre del Workflow
+name: CI - Pruebas y Verificación
+
+# Disparadores (Triggers)
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+# Trabajos (Jobs) a ejecutar
+jobs:
+  build-and-test:
+    # Sistema operativo del ejecutor
+    runs-on: ubuntu-latest
+
+    # Pasos del trabajo
+    steps:
+      # 1. Clonar el repositorio
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # 2. Configurar Node.js
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usar la versión LTS de Node.js
+          cache: 'npm' # Habilitar caché para npm
+
+      # 3. Instalar dependencias
+      - name: Instalar dependencias
+        run: npm ci # 'ci' es más rápido y seguro para entornos de CI
+
+      # 4. Ejecutar Linting
+      - name: Analizar el código (Lint)
+        run: npm run lint
+
+      # 5. Ejecutar pruebas
+      - name: Ejecutar pruebas (Tests)
+        run: npx lint-staged
+      # 6. Construir el proyecto
+      - name: Construir el proyecto (Build)
+        run: npm run build
