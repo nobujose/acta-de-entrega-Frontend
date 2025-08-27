@@ -1,12 +1,12 @@
-import React from 'react';
+// src/app/(auth)/registro/page.tsx
+import { RegisterForm } from '@/components/RegisterForm';
 
-const RegisterPage = () => {
+export default function RegisterPage() {
   return (
-    <div>
-      <h1>Register Page</h1>
-      {/* Registration form component will go here */}
+    <div className='min-h-screen w-full bg-gray-50 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8'>
+      <div className='w-full max-w-lg bg-white p-6 sm:p-10 rounded-xl shadow-md'>
+        <RegisterForm />
+      </div>
     </div>
   );
-};
-
-export default RegisterPage;
+}

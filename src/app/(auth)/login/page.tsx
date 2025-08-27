@@ -8,10 +8,10 @@ export default function LoginPage() {
       <div className='hidden lg:flex w-1/2 bg-[#001A70] text-white flex-col items-center justify-center p-12 text-center'>
         <div className='space-y-4'>
           <Image
-            src='/logoBlanco.png'
+            src='/blan.svg'
             alt='Universitas Legal Logo'
-            width={150}
-            height={150}
+            width={250}
+            height={250}
             className='mx-auto'
             priority
           />
@@ -27,10 +27,10 @@ export default function LoginPage() {
       <div className='w-full lg:w-1/2 flex flex-col items-center justify-center p-6'>
         <div className='lg:hidden mb-8'>
           <Image
-            src='/logo.jpg'
+            src='/Azul.svg'
             alt='Universitas Legal Logo'
-            width={80}
-            height={80}
+            width={250}
+            height={250}
             priority
           />
         </div>
