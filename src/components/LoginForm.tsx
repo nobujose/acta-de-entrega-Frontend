@@ -94,7 +94,7 @@ export function LoginForm() {
           />
           <div className='text-right text-sm'>
             <Link
-              href='/recuperar-contraseña'
+              href='/recuperar-contrasena'
               className='font-semibold text-[#001A70] hover:underline'
             >
               ¿Olvidaste tu contraseña?
@@ -102,7 +102,7 @@ export function LoginForm() {
           </div>
           <Button
             type='submit'
-            className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+            className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
           >
             Iniciar Sesión
           </Button>
