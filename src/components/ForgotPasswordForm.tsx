@@ -16,16 +16,20 @@ import {
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import {
+  forgotPassword,
+  verifyOtp,
+  resetPassword,
+} from '@/services/authService';
 
-// Esquemas de validación para cada paso
+// --- ESQUEMAS DE VALIDACIÓN PARA CADA PASO ---
 const step1Schema = z.object({
   email: z.string().email({ message: 'Debe ser un correo válido.' }),
 });
-
 const step2Schema = z.object({
   otp: z.string().min(6, { message: 'El código debe tener 6 dígitos.' }),
 });
-
 const step3Schema = z
   .object({
     password: z.string().min(8, { message: 'Mínimo 8 caracteres.' }),
@@ -36,69 +40,87 @@ const step3Schema = z
     path: ['confirmPassword'],
   });
 
+// -> Se crea un esquema completo para inicializar el formulario
+const formSchema = step1Schema.merge(step2Schema).merge(step3Schema);
+
 export function ForgotPasswordForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState(''); // Guardar el email para usarlo en los siguientes pasos
+  const [email, setEmail] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // -> Usamos un esquema dinámico dependiendo del paso actual
-  const currentSchema =
-    step === 1 ? step1Schema : step === 2 ? step2Schema : step3Schema;
-
-  const form = useForm({
-    resolver: zodResolver(currentSchema),
-    defaultValues: {
-      email: '',
-      otp: '',
-      password: '',
-      confirmPassword: '',
-    },
+  const form = useForm<z.infer<typeof formSchema>>({
+    // -> Se usa el esquema completo para resolver el error de TypeScript
+    resolver: zodResolver(formSchema),
+    defaultValues: { email: '', otp: '', password: '', confirmPassword: '' },
   });
 
-  // Definimos un tipo que es una unión de los posibles datos del formulario
-  type FormData =
-    | z.infer<typeof step1Schema>
-    | z.infer<typeof step2Schema>
-    | z.infer<typeof step3Schema>;
-
-  const onSubmit = async (data: FormData) => {
-    if (step === 1 && 'email' in data) {
-      // --- LÓGICA PASO 1: ENVIAR CORREO ---
+  // -> Se crea una función para manejar el avance al paso 2
+  const handleStep1Submit = async () => {
+    setIsLoading(true);
+    setApiError(null);
+    // Valida solo el campo del paso 1
+    const isValid = await form.trigger('email');
+    if (isValid) {
       try {
-        // Aquí llamarías a tu endpoint de backend para "forgot-password"
-        // await apiClient.post('/auth/forgot-password', { email: data.email });
-        console.log('Enviando OTP a:', data.email);
-        setEmail(data.email); // Guardamos el email
-        setStep(2); // Avanzamos al siguiente paso
+        const emailValue = form.getValues('email');
+        await forgotPassword(emailValue);
+        setEmail(emailValue);
+        setStep(2);
       } catch (error) {
-        console.error('Error al enviar el correo:', error);
-        form.setError('email', { message: 'Este correo no está registrado.' });
+        if (error instanceof Error) {
+          setApiError(error.message);
+        } else {
+          setApiError('Ocurrió un error inesperado.');
+        }
       }
-    } else if (step === 2 && 'otp' in data) {
-      // --- LÓGICA PASO 2: VERIFICAR CÓDIGO ---
+    }
+    setIsLoading(false);
+  };
+
+  // -> Se crea una función para manejar el avance al paso 3
+  const handleStep2Submit = async () => {
+    setIsLoading(true);
+    setApiError(null);
+    // Valida solo el campo del paso 2
+    const isValid = await form.trigger('otp');
+    if (isValid) {
       try {
-        // Aquí llamarías a tu endpoint para "verify-otp"
-        // await apiClient.post('/auth/verify-otp', { email, otp: data.otp });
-        console.log('Verificando OTP:', data.otp);
+        const otpValue = form.getValues('otp');
+        const response = await verifyOtp(email, otpValue);
+        setResetToken(response.resetToken);
         setStep(3);
       } catch (error) {
-        console.error('Error al verificar el OTP:', error);
-        form.setError('otp', {
-          message: 'El código es incorrecto o ha expirado.',
-        });
+        if (error instanceof Error) {
+          setApiError(error.message);
+        } else {
+          setApiError('Ocurrió un error inesperado.');
+        }
       }
-    } else if (step === 3 && 'password' in data) {
-      // --- LÓGICA PASO 3: RESTABLECER CONTRASEÑA ---
-      try {
-        // Aquí llamarías a tu endpoint para "reset-password"
-        // await apiClient.post('/auth/reset-password', { email, newPassword: data.password });
-        console.log('Contraseña actualizada para:', email);
-        alert('¡Contraseña actualizada con éxito!');
-        router.push('/login');
-      } catch (error) {
-        console.error('Error al restablecer la contraseña:', error);
-        alert('Ocurrió un error al actualizar la contraseña.');
+    }
+    setIsLoading(false);
+  };
+
+  // -> La función onSubmit ahora solo se usa para el envío final (paso 3)
+  const onFinalSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsLoading(true);
+    setApiError(null);
+    try {
+      await resetPassword(data.password, resetToken);
+      alert('¡Contraseña actualizada con éxito!');
+      router.push('/login');
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError('Ocurrió un error inesperado.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -106,33 +128,51 @@ export function ForgotPasswordForm() {
     <div className='w-full max-w-md'>
       <div className='text-center mb-8'>
         <h1 className='text-3xl font-bold text-gray-800'>
-          Recuperar contraseña
+          {step === 1 && 'Recuperar contraseña'}
+          {step === 2 && 'Verificar código'}
+          {step === 3 && 'Establecer nueva contraseña'}
         </h1>
-        <p className='text-gray-500'>
+        <p className='text-gray-500 mt-2'>
           {step === 1 && 'Ingresa el correo electrónico asociado a tu cuenta.'}
-          {step === 2 && `Hemos enviado un código a ${email}`}
+          {step === 2 && (
+            <>
+              Hemos enviado un código a{' '}
+              <span className='font-bold'>{email}</span>
+            </>
+          )}
           {step === 3 && 'Tu nueva contraseña debe ser segura.'}
         </p>
       </div>
 
-      {/* Indicador de Pasos */}
       <div className='flex items-center justify-center space-x-8 mb-8'>
-        {[1, 2, 3].map((s) => (
+        {[
+          { num: 1, label: 'Enviar correo' },
+          { num: 2, label: 'Código' },
+          { num: 3, label: 'Nueva Contraseña' },
+        ].map(({ num, label }) => (
           <div
-            key={s}
-            className={`text-center transition-opacity duration-300 ${step >= s ? 'opacity-100' : 'opacity-50'}`}
+            key={num}
+            className={`text-center transition-opacity duration-300 ${step >= num ? 'opacity-100' : 'opacity-50'}`}
           >
             <div
-              className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${step >= s ? 'bg-[#001A70] text-white' : 'bg-gray-200 text-gray-500'}`}
+              className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${step >= num ? 'bg-[#001A70] text-white' : 'bg-gray-200 text-gray-500'}`}
             >
-              {s}
+              {num}
             </div>
+            <p className='mt-2 text-xs'>{label}</p>
           </div>
         ))}
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+        {/* -> El onSubmit del form solo se activará en el último paso */}
+        <form onSubmit={form.handleSubmit(onFinalSubmit)} className='space-y-6'>
+          {apiError && (
+            <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
+              {apiError}
+            </div>
+          )}
+
           {step === 1 && (
             <FormField
               control={form.control}
@@ -141,7 +181,11 @@ export function ForgotPasswordForm() {
                 <FormItem>
                   <FormLabel>Correo electrónico</FormLabel>
                   <FormControl>
-                    <Input placeholder='Ingresa tu correo' {...field} />
+                    <Input
+                      placeholder='Ingresa tu correo'
+                      {...field}
+                      disabled={isLoading}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -156,7 +200,11 @@ export function ForgotPasswordForm() {
                 <FormItem>
                   <FormLabel>Código de Verificación</FormLabel>
                   <FormControl>
-                    <Input placeholder='123456' {...field} />
+                    <Input
+                      placeholder='123456'
+                      {...field}
+                      disabled={isLoading}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -172,11 +220,25 @@ export function ForgotPasswordForm() {
                   <FormItem>
                     <FormLabel>Nueva Contraseña</FormLabel>
                     <FormControl>
-                      <Input
-                        type='password'
-                        placeholder='Mínimo 8 caracteres'
-                        {...field}
-                      />
+                      <div className='relative'>
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder='Mínimo 8 caracteres'
+                          {...field}
+                          disabled={isLoading}
+                        />
+                        <button
+                          type='button'
+                          onClick={() => setShowPassword(!showPassword)}
+                          className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400'
+                        >
+                          {showPassword ? (
+                            <EyeOff size={20} />
+                          ) : (
+                            <Eye size={20} />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -189,11 +251,27 @@ export function ForgotPasswordForm() {
                   <FormItem>
                     <FormLabel>Confirmar Nueva Contraseña</FormLabel>
                     <FormControl>
-                      <Input
-                        type='password'
-                        placeholder='Confirma tu nueva contraseña'
-                        {...field}
-                      />
+                      <div className='relative'>
+                        <Input
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          placeholder='Confirma tu nueva contraseña'
+                          {...field}
+                          disabled={isLoading}
+                        />
+                        <button
+                          type='button'
+                          onClick={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                          className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400'
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff size={20} />
+                          ) : (
+                            <Eye size={20} />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -201,14 +279,37 @@ export function ForgotPasswordForm() {
               />
             </>
           )}
-          <Button
-            type='submit'
-            className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
-          >
-            {step === 1 && 'Enviar'}
-            {step === 2 && 'Verificar'}
-            {step === 3 && 'Actualizar contraseña'}
-          </Button>
+
+          {/* -> Se usan botones condicionales para cada paso */}
+          {step === 1 && (
+            <Button
+              type='button'
+              onClick={handleStep1Submit}
+              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+              disabled={isLoading}
+            >
+              {isLoading ? 'Procesando...' : 'Enviar'}
+            </Button>
+          )}
+          {step === 2 && (
+            <Button
+              type='button'
+              onClick={handleStep2Submit}
+              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+              disabled={isLoading}
+            >
+              {isLoading ? 'Procesando...' : 'Verificar'}
+            </Button>
+          )}
+          {step === 3 && (
+            <Button
+              type='submit'
+              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+              disabled={isLoading}
+            >
+              {isLoading ? 'Procesando...' : 'Actualizar contraseña'}
+            </Button>
+          )}
         </form>
       </Form>
     </div>
