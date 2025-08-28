@@ -26,7 +26,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { registerUser } from '@/services/authService'; // -> 1. Importamos la nueva función
 
+// (El esquema de validación no cambia)
 const formSchema = z
   .object({
     email: z.string().email({ message: 'Debe ser un correo válido.' }),
@@ -51,6 +53,9 @@ export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  // -> 2. Nuevos estados para manejar la carga y los errores
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,29 +82,40 @@ export function RegisterForm() {
     }
   };
 
-  // -> CAMBIO: Esta función ahora se encargará de validar y luego llamar a onSubmit
-  const handleFinalSubmit = async () => {
-    const isStep2Valid = await form.trigger([
-      'nombre',
-      'apellido',
-      'telefono',
-      'institucion',
-      'cargo',
-    ]);
-    if (isStep2Valid) {
-      // Si el paso 2 es válido, obtenemos todos los valores y llamamos a la función de envío original
-      onSubmit(form.getValues());
-    }
-  };
+  // -> 3. Lógica de envío final actualizada para llamar al backend
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setApiError(null);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log('Datos finales a enviar:', values);
-    setShowSuccessDialog(true);
+    try {
+      // Mapeamos los nombres del formulario a los que espera el backend
+      const dataToSend = {
+        email: values.email,
+        password: values.password,
+        name: values.nombre, // 'nombre' se convierte en 'name'
+        apellido: values.apellido,
+        telefono: values.telefono,
+        institucion: values.institucion,
+        cargo: values.cargo,
+      };
+
+      await registerUser(dataToSend);
+      setShowSuccessDialog(true); // Mostramos el pop-up de éxito
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError('Ocurrió un error inesperado durante el registro.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <>
       <div className='w-full max-w-md'>
+        {/* ... (código del formulario sin cambios, solo se añaden los estados de carga y error) ... */}
         {step === 2 && (
           <button
             onClick={() => setStep(1)}
@@ -118,7 +134,6 @@ export function RegisterForm() {
           </p>
         </div>
 
-        {/* ... (Indicador de Pasos no cambia) ... */}
         <div className='flex items-center justify-center space-x-8 mb-8'>
           <div
             className={`text-center transition-opacity duration-300 ${step === 1 ? 'opacity-100' : 'opacity-50'}`}
@@ -150,10 +165,18 @@ export function RegisterForm() {
           </div>
         </div>
 
-        {/* -> CAMBIO: El <form> ya no tiene un onSubmit directo */}
         <Form {...form}>
-          <form className='space-y-4'>
-            {/* ... (Campos del Paso 1 y 2 no cambian) ... */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {/* -> 4. Mostramos el error de la API si existe */}
+            {apiError && (
+              <div
+                className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative'
+                role='alert'
+              >
+                <span className='block sm:inline'>{apiError}</span>
+              </div>
+            )}
+
             <div className={step === 1 ? 'block' : 'hidden'}>
               <div className='space-y-4'>
                 <FormField
@@ -163,7 +186,11 @@ export function RegisterForm() {
                     <FormItem>
                       <FormLabel>Correo electrónico</FormLabel>
                       <FormControl>
-                        <Input placeholder='Ingresa tu correo' {...field} />
+                        <Input
+                          placeholder='Ingresa tu correo'
+                          {...field}
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -181,6 +208,7 @@ export function RegisterForm() {
                             type={showPassword ? 'text' : 'password'}
                             placeholder='Mínimo 8 caracteres'
                             {...field}
+                            disabled={isLoading}
                           />
                           <button
                             type='button'
@@ -212,6 +240,7 @@ export function RegisterForm() {
                             type={showConfirmPassword ? 'text' : 'password'}
                             placeholder='Repite tu contraseña'
                             {...field}
+                            disabled={isLoading}
                           />
                           <button
                             type='button'
@@ -245,7 +274,11 @@ export function RegisterForm() {
                       <FormItem>
                         <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input placeholder='Ingresa tu nombre' {...field} />
+                          <Input
+                            placeholder='Ingresa tu nombre'
+                            {...field}
+                            disabled={isLoading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -258,7 +291,11 @@ export function RegisterForm() {
                       <FormItem>
                         <FormLabel>Apellido</FormLabel>
                         <FormControl>
-                          <Input placeholder='Ingresa tu apellido' {...field} />
+                          <Input
+                            placeholder='Ingresa tu apellido'
+                            {...field}
+                            disabled={isLoading}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -272,7 +309,11 @@ export function RegisterForm() {
                     <FormItem>
                       <FormLabel>Teléfono</FormLabel>
                       <FormControl>
-                        <Input placeholder='Ingresa tu número' {...field} />
+                        <Input
+                          placeholder='Ingresa tu número'
+                          {...field}
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -288,6 +329,7 @@ export function RegisterForm() {
                         <Input
                           placeholder='Ingresa tu institución'
                           {...field}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -301,7 +343,11 @@ export function RegisterForm() {
                     <FormItem>
                       <FormLabel>Cargo</FormLabel>
                       <FormControl>
-                        <Input placeholder='Ingresa tu cargo' {...field} />
+                        <Input
+                          placeholder='Ingresa tu cargo'
+                          {...field}
+                          disabled={isLoading}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -337,13 +383,12 @@ export function RegisterForm() {
                 Siguiente
               </Button>
             ) : (
-              // -> CAMBIO: El botón "Crear cuenta" ahora usa onClick para validar solo el paso 2
               <Button
-                type='button'
-                onClick={handleFinalSubmit}
+                type='submit'
                 className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
+                disabled={isLoading}
               >
-                Crear cuenta
+                {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
               </Button>
             )}
           </form>
