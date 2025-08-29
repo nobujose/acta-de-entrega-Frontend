@@ -7,7 +7,17 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Settings, HelpCircle, Menu, Home, FileText, User } from 'lucide-react';
+import {
+  Settings,
+  Menu,
+  Home,
+  FileText,
+  BotMessageSquare,
+  BookOpenCheck,
+  BookOpenText,
+  MessageCircleQuestionMark,
+  CircleAlert,
+} from 'lucide-react';
 import Image from 'next/image';
 
 export default function Sidebar() {
@@ -15,31 +25,56 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const navLinks = [
-    { href: '/dashboard', label: 'Home', icon: Home },
-    { href: '/dashboard/actas', label: 'Documentos', icon: FileText },
-    { href: '/dashboard/perfil', label: 'JulioIA', icon: User },
+    { href: '/dashboard', label: 'Inicio', icon: Home },
+    {
+      href: '/dashboard/repositorio',
+      label: 'Repositorio Legal',
+      icon: FileText,
+    },
+    {
+      href: '/dashboard/revision',
+      label: 'Revisión de acta',
+      icon: BookOpenCheck,
+    },
+    {
+      href: '/dashboard/panel-actas',
+      label: 'Panel de actas',
+      icon: BookOpenText,
+    },
+    {
+      href: '/dashboard/faq',
+      label: 'Preguntas frecuentes',
+      icon: MessageCircleQuestionMark,
+    },
+    {
+      href: '/dashboard/asistenteia',
+      label: 'Asistente virtual',
+      icon: BotMessageSquare,
+    },
   ];
 
   const bottomLinks = [
-    { label: 'Settings', icon: Settings },
-    { label: 'Get Help', icon: HelpCircle },
+    { href: '/dashboard/acerca-de', label: 'Acerca de', icon: CircleAlert },
+    {
+      href: '/dashboard/configuracion',
+      label: 'Configuración',
+      icon: Settings,
+    },
   ];
-
-  // Se eliminó la constante 'primaryBlue'
 
   return (
     <aside
       className={cn(
-        'relative z-50 flex h-full flex-col bg-primary-blue transition-all duration-300 ease-in-out', // <-- CAMBIO: Se usa la clase de Tailwind
+        'relative z-50 flex h-full flex-col bg-sidebar-bg text-black transition-all duration-300 ease-in-out',
         isCollapsed ? 'w-20' : 'w-64'
       )}
     >
       {/* Logo y Botón de Menú */}
-      <div className='flex h-16 items-center border-b border-gray-700 px-4'>
+      <div className='flex h-16 items-center px-4'>
         <Button
           variant='ghost'
           size='icon'
-          className='h-8 w-8 shrink-0 text-white hover:bg-primary-blue-dark' // <-- CAMBIO: Se usa la clase de hover
+          className='h-8 w-8 shrink-0 text-black hover:bg-sidebar-hover-bg'
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
           <Menu className='h-4 w-4' />
@@ -50,7 +85,7 @@ export default function Sidebar() {
             className='ml-2 flex items-center gap-2 font-semibold'
           >
             <Image
-              src='/horizontal - blanco.svg'
+              src='/horizontal - azul.svg'
               alt='Universitas Legal Logo'
               width={120}
               height={120}
@@ -72,8 +107,8 @@ export default function Sidebar() {
               'flex items-center gap-3 py-2 w-full transition-all duration-200',
               isCollapsed ? 'justify-center px-4' : 'px-4',
               pathname === link.href
-                ? 'bg-white text-gray-900 font-semibold'
-                : 'text-gray-200 hover:bg-primary-blue-dark hover:text-white rounded-md' // <-- CAMBIO: Se usa la clase de hover
+                ? 'bg-white text-black font-semibold'
+                : 'text-gray-700 hover:bg-sidebar-hover-bg hover:text-black rounded-md'
             )}
           >
             <link.icon className='h-4 w-4 shrink-0' />
@@ -82,44 +117,51 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Navegación Inferior y Perfil */}
-      <div className='mt-auto space-y-1 border-t border-gray-700 p-2'>
-        {bottomLinks.map((link) => (
-          <Button
-            key={link.label}
-            variant='ghost'
-            title={isCollapsed ? link.label : ''}
-            className={cn(
-              'w-full gap-3 transition-all duration-200',
-              isCollapsed ? 'justify-center' : 'justify-start',
-              'text-gray-200 hover:bg-primary-blue-dark hover:text-white' // <-- CAMBIO: Se usa la clase de hover
-            )}
-          >
-            <link.icon className='h-4 w-4 shrink-0' />
-            {!isCollapsed && <span className='truncate'>{link.label}</span>}
-          </Button>
-        ))}
+      <div className='mt-auto p-2'>
+        {/* Separador superior */}
+        <div className='border-t border-gray-400' />
 
-        {/* Perfil de Usuario */}
-        <div className='border-t border-gray-700 pt-2'>
+        {/* Enlaces inferiores */}
+        <div className='py-2'>
+          {bottomLinks.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              title={isCollapsed ? link.label : ''}
+              className={cn(
+                'flex items-center gap-3 py-2 w-full transition-all duration-200',
+                isCollapsed ? 'justify-center px-4' : 'px-4',
+                pathname === link.href
+                  ? 'bg-white text-gray-900 font-semibold'
+                  : 'text-gray-700 hover:bg-sidebar-hover-bg hover:text-black rounded-md'
+              )}
+            >
+              <link.icon className='h-4 w-4 shrink-0' />
+              {!isCollapsed && <span className='truncate'>{link.label}</span>}
+            </Link>
+          ))}
+        </div>
+
+        {/* Perfil de Usuario con su separador */}
+        <div className='border-t border-gray-400 pt-2'>
           <div
             className={cn(
               'flex items-center gap-3 rounded-md px-3 py-2',
-              !isCollapsed && 'hover:bg-primary-blue-dark', // <-- CAMBIO: Se usa la clase de hover
-              'text-gray-200'
+              !isCollapsed && 'hover:bg-sidebar-hover-bg cursor-pointer group'
             )}
           >
             <Avatar className='h-8 w-8 shrink-0'>
               <AvatarImage src='/placeholder-user.jpg' alt='Usuario' />
-              <AvatarFallback className='bg-white text-primary-blue text-sm'>
+              <AvatarFallback className='bg-primary-blue text-white text-sm'>
                 JL
-              </AvatarFallback>{' '}
-              {/* <-- CAMBIO: Se usa la clase de texto */}
+              </AvatarFallback>
             </Avatar>
             {!isCollapsed && (
               <div className='min-w-0 flex-1'>
-                <p className='truncate text-sm font-medium'>Julio Lopera</p>
-                <p className='truncate text-xs text-gray-300'>
+                <p className='truncate text-sm font-medium text-gray-800 group-hover:text-black'>
+                  Julio Lopera
+                </p>
+                <p className='truncate text-xs text-gray-600'>
                   julio.lopera@universitas.com
                 </p>
               </div>
