@@ -12,6 +12,9 @@ const config: Config = {
       colors: {
         'primary-blue': '#001A70', // Tu azul principal
         'primary-blue-dark': '#00114D', // Un tono más oscuro para el hover
+        'sidebar-bg': '#C1C1C1', // Nuevo color del Sidebar
+        'sidebar-hover-bg': '#A9A9A9', // Nuevo color para el hover
+        'badge-gold': '#FFC200', // Color dorado para la etiqueta "Express"
       },
       boxShadow: {
         'blue-soft':

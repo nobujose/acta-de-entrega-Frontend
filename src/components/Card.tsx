@@ -1,4 +1,3 @@
-// src/components/Card.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -20,10 +19,7 @@ interface CardProps {
   gratis?: boolean;
 }
 
-// ▼▼▼ CAMBIO PRINCIPAL AQUÍ ▼▼▼
-// Se quitó 'export' de aquí y se añadió al final como exportación por defecto
 function CardComponent({
-  // Renombramos temporalmente para evitar confusión
   icon,
   title,
   description,
@@ -55,8 +51,8 @@ function CardComponent({
               </div>
             )}
             {gratis && (
-              <div className='rounded-full bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-md'>
-                GRATIS
+              <div className='rounded-full bg-badge-gold px-3 py-1 text-xs font-bold text-black shadow-md'>
+                Express
               </div>
             )}
           </div>
