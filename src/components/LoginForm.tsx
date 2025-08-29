@@ -1,3 +1,4 @@
+// src/components/LoginForm.tsx
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,9 +17,10 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react'; // Necesitarás instalar lucide-react
+import { Eye, EyeOff } from 'lucide-react';
+import { loginUser } from '@/services/authService'; // -> 1. Importamos nuestra nueva función
 
-// 1. Define el esquema de validación
+// El esquema de validación no cambia
 const formSchema = z.object({
   email: z.string().email({
     message: 'Por favor, ingresa un correo electrónico válido.',
@@ -31,17 +33,38 @@ const formSchema = z.object({
 export function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
+  // -> 2. Nuevos estados para manejar la carga y los errores de la API
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', password: '' },
   });
 
-  // 2. Define la lógica de envío
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Aquí llamarías a tu API. Por ahora, simulamos un éxito.
-    router.push('/dashboard'); // Redirige al dashboard al iniciar sesión
+  // -> 3. Lógica de envío actualizada para llamar al backend
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsLoading(true);
+    setApiError(null);
+
+    try {
+      const response = await loginUser(values);
+      console.log('Login exitoso:', response);
+
+      // Guardamos el token en el almacenamiento local del navegador
+      localStorage.setItem('authToken', response.token);
+
+      // Redirigimos al dashboard
+      router.push('/dashboard');
+    } catch (error) {
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError('Ocurrió un error inesperado.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -53,6 +76,16 @@ export function LoginForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          {/* -> 4. Mostramos el error de la API si existe */}
+          {apiError && (
+            <div
+              className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative'
+              role='alert'
+            >
+              <span className='block sm:inline'>{apiError}</span>
+            </div>
+          )}
+
           <FormField
             control={form.control}
             name='email'
@@ -60,7 +93,11 @@ export function LoginForm() {
               <FormItem>
                 <FormLabel>Correo electrónico</FormLabel>
                 <FormControl>
-                  <Input placeholder='Ingresa tu correo' {...field} />
+                  <Input
+                    placeholder='Ingresa tu correo'
+                    {...field}
+                    disabled={isLoading}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -78,6 +115,7 @@ export function LoginForm() {
                       type={showPassword ? 'text' : 'password'}
                       placeholder='Ingresa tu contraseña'
                       {...field}
+                      disabled={isLoading}
                     />
                     <button
                       type='button'
@@ -103,8 +141,9 @@ export function LoginForm() {
           <Button
             type='submit'
             className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
+            disabled={isLoading}
           >
-            Iniciar Sesión
+            {isLoading ? 'Iniciando...' : 'Iniciar Sesión'}
           </Button>
         </form>
       </Form>
