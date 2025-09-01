@@ -1,4 +1,3 @@
-// src/components/ActaMaximaAutoridadForm.tsx
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,130 +33,17 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/HeaderContext';
 import { Textarea } from '@/components/ui/textarea';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-// --- Esquema de Validación Completo con Zod ---
-const formSchema = z
-  .object({
-    // --- Datos Generales ---
-    email: z
-      .string()
-      .min(1, 'Campo Requerido')
-      .email({ message: 'Debe ser un correo válido.' }),
-    rifOrgano: z.string().min(1, 'El RIF es requerido.'),
-    denominacionCargoEntrega: z
-      .string()
-      .min(1, 'La denominación del cargo es requerida.'),
-    nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
-    ciudadSuscripcion: z.string().min(1, 'La ciudad es requerida.'),
-    estadoSuscripcion: z.string().min(1, 'El estado es requerido.'),
-    horaSuscripcion: z.string().min(1, 'La hora es requerida.'),
-    fechaSuscripcion: z.string().min(1, 'La fecha es requerida.'),
-    direccionOrgano: z.string().min(1, 'La dirección es requerida.'),
-    motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
+// 1. IMPORTAMOS LA LÓGICA
+import { createActaMaximaAutoridad } from '@/services/actasService';
+import { actaMaximaAutoridadSchema } from '@/lib/schemas'; // Importamos el esquema central
 
-    // --- Servidores Públicos y Testigos ---
-    nombreServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    cedulaServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    profesionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    designacionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    nombreAuditor: z.string().min(1, 'Este campo es requerido.'),
-    cedulaAuditor: z.string().min(1, 'Este campo es requerido.'),
-    profesionAuditor: z.string().min(1, 'Este campo es requerido.'),
-    nombreTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    cedulaTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    profesionTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    nombreTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    cedulaTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    profesionTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-    cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-    designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+// 2. EL TIPO DEL FORMULARIO SE CREA A PARTIR DEL ESQUEMA IMPORTADO
+type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
 
-    // --- Anexos (SI/NO) ---
-    disponeEstadoSituacionPresupuestaria: z.string().optional(),
-    disponeRelacionGastosComprometidosNoCausados: z.string().optional(),
-    disponeRelacionGastosComprometidosCausadosNoPagados: z.string().optional(),
-    disponeEstadoPresupuestarioPorPartidas: z.string().optional(),
-    disponeEstadoPresupuestarioDetalleCuentas: z.string().optional(),
-    disponeEstadosFinancieros: z.string().optional(),
-    disponeBalanceComprobacion: z.string().optional(),
-    disponeEstadoSituacionFinanciera: z.string().optional(),
-    disponeEstadoRendimientoFinanciero: z.string().optional(),
-    disponeEstadoMovimientosPatrimonio: z.string().optional(),
-    disponeRelacionCuentasPorCobrar: z.string().optional(),
-    disponeRelacionCuentasPorPagar: z.string().optional(),
-    disponeRelacionCuentasFondosTerceros: z.string().optional(),
-    disponeSituacionFondosAnticipo: z.string().optional(),
-    disponeSituacionCajaChica: z.string().optional(),
-    disponeActaArqueoCajasChicas: z.string().optional(),
-    disponeListadoRegistroAuxiliarProveedores: z.string().optional(),
-    disponeReportesLibrosContables: z.string().optional(),
-    disponeReportesCuentasBancarias: z.string().optional(),
-    disponeReportesConciliacionesBancarias: z.string().optional(),
-    disponeReportesRetenciones: z.string().optional(),
-    disponeReporteProcesosContrataciones: z.string().optional(),
-    disponeReporteFideicomisoPrestaciones: z.string().optional(),
-    disponeReporteBonosVacacionales: z.string().optional(),
-    disponeCuadroResumenCargos: z.string().optional(),
-    disponeCuadroResumenValidadoRRHH: z.string().optional(),
-    disponeReporteNominas: z.string().optional(),
-    disponeInventarioBienes: z.string().optional(),
-    disponeEjecucionPlanOperativo: z.string().optional(),
-    incluyeCausasIncumplimientoMetas: z.string().optional(),
-    disponePlanOperativoAnual: z.string().optional(),
-    disponeClasificacionArchivo: z.string().optional(),
-    incluyeUbicacionFisicaArchivo: z.string().optional(),
-    disponeRelacionMontosFondosAsignados: z.string().optional(),
-    disponeSaldoEfectivoFondos: z.string().optional(),
-    disponeRelacionBienesAsignados: z.string().optional(),
-    disponeRelacionBienesAsignadosUnidadBienes: z.string().optional(),
-    disponeEstadosBancariosConciliados: z.string().optional(),
-    disponeListaComprobantesGastos: z.string().optional(),
-    disponeChequesEmitidosPendientesCobro: z.string().optional(),
-    disponeListadoTransferenciaBancaria: z.string().optional(),
-    disponeCaucionFuncionario: z.string().optional(),
-    disponeCuadroDemostrativoRecaudado: z.string().optional(),
-    disponeRelacionExpedientesAbiertos: z.string().optional(),
-    disponeSituacionTesoroNacional: z.string().optional(),
-    disponeInfoEjecucionPresupuestoNacional: z.string().optional(),
-    disponeMontoDeudaPublicaNacional: z.string().optional(),
-    disponeSituacionCuentasNacion: z.string().optional(),
-    disponeSituacionTesoroEstadal: z.string().optional(),
-    disponeInfoEjecucionPresupuestoEstadal: z.string().optional(),
-    disponeSituacionCuentasEstado: z.string().optional(),
-    disponeSituacionTesoroDistritalMunicipal: z.string().optional(),
-    disponeInfoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
-    disponeSituacionCuentasDistritalesMunicipales: z.string().optional(),
-    disponeInventarioTerrenosEjidos: z.string().optional(),
-    disponeRelacionIngresosVentaTerrenos: z.string().optional(),
-
-    anexo6: z.string().min(1, 'Este campo es requerido.'),
-    anexos: z.string().min(1, 'Este campo es requerido.'),
-    accionesAuditoria: z.string().optional(),
-    deficienciasActa: z.string().optional(),
-    autorizaEnvioCorreoAlternativo: z.string().optional(),
-    correoAlternativo: z.string().optional(),
-  })
-  .refine(
-    (data) => {
-      // Si el usuario autoriza el envío, el correo alternativo es obligatorio
-      if (data.autorizaEnvioCorreoAlternativo === 'SI') {
-        return (
-          !!data.correoAlternativo &&
-          z.string().email().safeParse(data.correoAlternativo).success
-        );
-      }
-      return true;
-    },
-    {
-      message: 'El correo alternativo es requerido y debe ser válido.',
-      path: ['correoAlternativo'], // Ruta del campo al que se aplica el error
-    }
-  );
-
-type FormData = z.infer<typeof formSchema>;
-
+// ... (toda la definición de 'steps' y 'dynamicStepContent' se mantiene exactamente igual que antes)
 const steps = [
   {
     id: 1,
@@ -608,15 +494,17 @@ export function ActaMaximaAutoridadForm() {
   const { setTitle } = useHeader();
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Actualiza el título del header al montar el componente
+  // 3. NUEVOS ESTADOS PARA GESTIONAR LA LLAMADA A LA API
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   useEffect(() => {
     setTitle('Acta de Máxima Autoridad');
   }, [setTitle]);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(actaMaximaAutoridadSchema),
     defaultValues: {
-      // Inicializa todos los campos para evitar errores de "uncontrolled component"
       email: '',
       rifOrgano: '',
       denominacionCargoEntrega: '',
@@ -646,23 +534,30 @@ export function ActaMaximaAutoridadForm() {
     },
   });
 
-  // Obtenemos funciones de react-hook-form para manipular errores
   const { setError, clearErrors, getFieldState, getValues, watch } = form;
 
   const selectedAnexo = watch('anexos') as DynamicStepKey;
-
   const autorizaEnvio = watch('autorizaEnvioCorreoAlternativo');
 
+  // 4. LÓGICA DE ENVÍO ACTUALIZADA PARA CONECTAR CON EL BACKEND
   const onSubmit = async (data: FormData) => {
+    setIsLoading(true);
+    setApiError(null);
+
     try {
-      console.log('Datos del formulario a enviar:', data);
-      // DESCOMENTA LA SIGUIENTE LÍNEA PARA ENVIAR A TU BACKEND
-      // const response = await apiClient.post('/actas/maxima-autoridad-paga', data);
-      alert('Acta creada exitosamente!');
-      router.push('/dashboard/actas');
+      const response = await createActaMaximaAutoridad(data);
+
+      console.log('Respuesta del servidor:', response);
+      alert(`Acta creada con éxito!\nNúmero de Acta: ${response.numeroActa}`);
+      router.push('/dashboard'); // Redirige al dashboard tras el éxito
     } catch (error) {
-      console.error('Error al crear el acta:', error);
-      alert('Hubo un error al crear el acta. Por favor, inténtalo de nuevo.');
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError('Ocurrió un error inesperado.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -670,9 +565,8 @@ export function ActaMaximaAutoridadForm() {
     const fieldsToValidate = steps[currentStep].fields;
     const isValid = await form.trigger(fieldsToValidate as (keyof FormData)[]);
     if (isValid) {
-      // Si estamos en el paso 9 y se seleccionó "NO APLICA", saltamos al paso 11
       if (currentStep === 8 && getValues('anexos') === 'NO APLICA') {
-        setCurrentStep(10); // El índice 10 corresponde al Paso 11
+        setCurrentStep(10);
       } else if (currentStep < steps.length - 1) {
         setCurrentStep((prev) => prev + 1);
       }
@@ -680,7 +574,9 @@ export function ActaMaximaAutoridadForm() {
   };
 
   const prevStep = () => {
-    setCurrentStep((prev) => prev - 1);
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
   };
 
   // Componente reutilizable para campos de texto con ayuda contextual
@@ -728,15 +624,14 @@ export function ActaMaximaAutoridadForm() {
                 {...field}
                 onFocus={handleFocus}
                 onBlur={handleBlur}
+                disabled={isLoading}
               />
             </FormControl>
-            {/* FormMessage siempre está renderizado, por lo que no hay "salto" de layout.
-                Su contenido es controlado por la lógica de handleFocus y handleBlur. */}
             <FormMessage
               className={
                 getFieldState(name).error?.message === helpText
-                  ? 'text-red-500'
-                  : ''
+                  ? 'text-blue-500' // Texto de ayuda en azul
+                  : 'text-red-600' // Errores de validación en rojo
               }
             />
           </FormItem>
@@ -764,6 +659,7 @@ export function ActaMaximaAutoridadForm() {
               onValueChange={field.onChange}
               defaultValue={field.value}
               className='flex items-center space-x-4'
+              disabled={isLoading}
             >
               <FormItem className='flex items-center space-x-2 space-y-0'>
                 <FormControl>
@@ -811,6 +707,19 @@ export function ActaMaximaAutoridadForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {/* 5. MENSAJE DE ERROR DE LA API */}
+            {apiError && (
+              <Alert variant='destructive'>
+                <AlertCircle className='h-4 w-4' />
+                <AlertTitle>Error al Crear el Acta</AlertTitle>
+                <AlertDescription>{apiError}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* A partir de aquí, el código de los pasos del formulario se mantiene igual,
+                solo se añade la propiedad `disabled={isLoading}` a los campos y botones.
+                Te muestro cómo aplicarlo en el primer paso como ejemplo. */}
+
             {currentStep === 0 && (
               <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
                 <FormFieldWithExtras
@@ -879,6 +788,7 @@ export function ActaMaximaAutoridadForm() {
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          disabled={isLoading}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -1068,7 +978,6 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 4: ANEXOS CONTRATACIONES, RRHH Y BIENES --- */}
             {currentStep === 3 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1150,7 +1059,6 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 5: --- */}
             {currentStep === 4 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1168,7 +1076,6 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 6: --- */}
             {currentStep === 5 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1178,7 +1085,6 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 7: --- */}
             {currentStep === 6 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1196,7 +1102,6 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 8: --- */}
             {currentStep === 7 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1210,7 +1115,6 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 9: --- */}
             {currentStep === 8 && (
               <div className='space-y-6'>
                 <FormField
@@ -1231,6 +1135,7 @@ export function ActaMaximaAutoridadForm() {
                         <Textarea
                           placeholder='Describa aquí la información adicional...'
                           {...field}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1247,6 +1152,7 @@ export function ActaMaximaAutoridadForm() {
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isLoading}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -1269,13 +1175,11 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            {/* --- PASO 10: --- */}
             {currentStep === 9 && (
               <div>
                 {selectedAnexo && dynamicStepContent[selectedAnexo] ? (
                   (() => {
                     const content = dynamicStepContent[selectedAnexo];
-                    // Gracias a los tipos definidos, TypeScript ahora entiende la lógica
                     switch (content.type) {
                       case 'questions':
                         return (
@@ -1301,6 +1205,7 @@ export function ActaMaximaAutoridadForm() {
                                     placeholder={`Describa aquí la información sobre "${content.title}"...`}
                                     {...field}
                                     rows={8}
+                                    disabled={isLoading}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1318,9 +1223,6 @@ export function ActaMaximaAutoridadForm() {
                       Por favor, seleccione un tipo de anexo en el paso anterior
                       para continuar.
                     </p>
-                    <p className='text-xs mt-2'>
-                      (Si no aplica, puede finalizar el formulario).
-                    </p>
                   </div>
                 )}
               </div>
@@ -1328,13 +1230,10 @@ export function ActaMaximaAutoridadForm() {
 
             {currentStep === 10 && (
               <div className='space-y-8'>
-                {/* Pregunta condicional */}
                 <SiNoQuestion
                   name='autorizaEnvioCorreoAlternativo'
                   label='¿Autoriza usted el envío de su acta de entrega a la dirección de correo electrónico alternativa proporcionada?'
                 />
-
-                {/* Input que aparece condicionalmente */}
                 {autorizaEnvio === 'SI' && (
                   <div className='pl-4 border-l-2 border-primary-blue animate-in fade-in duration-500'>
                     <FormFieldWithExtras
@@ -1345,8 +1244,6 @@ export function ActaMaximaAutoridadForm() {
                     />
                   </div>
                 )}
-
-                {/* Mensaje de finalización estilizado */}
                 <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed'>
                   <CheckCircle2 className='mx-auto h-12 w-12 text-green-500' />
                   <h3 className='mt-4 text-xl font-semibold text-gray-800'>
@@ -1357,9 +1254,8 @@ export function ActaMaximaAutoridadForm() {
                     revise los datos en los pasos anteriores usando el botón
                     Anterior.
                     <br />
-                    Una vez que esté seguro de que toda la información es
-                    correcta, presione Crear Acta para generar el documento
-                    final.
+                    Una vez que esté seguro, presione Crear Acta para generar el
+                    documento final.
                   </p>
                 </div>
               </div>
@@ -1367,23 +1263,29 @@ export function ActaMaximaAutoridadForm() {
 
             <div className='flex justify-between pt-8'>
               {currentStep > 0 && (
-                <Button type='button' variant='outline' onClick={prevStep}>
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={prevStep}
+                  disabled={isLoading}
+                >
                   Anterior
                 </Button>
               )}
-
-              {/* ▼▼▼ CAMBIO: Lógica de botones mejorada ▼▼▼ */}
+              <div className='flex-grow' />{' '}
+              {/* Empuja el siguiente botón a la derecha */}
               {currentStep < steps.length - 1 && (
-                <Button type='button' onClick={nextStep} className='ml-auto'>
+                <Button type='button' onClick={nextStep} disabled={isLoading}>
                   Siguiente
                 </Button>
               )}
               {currentStep === steps.length - 1 && (
                 <Button
                   type='submit'
-                  className='ml-auto bg-primary-blue hover:bg-white'
+                  className='bg-[#001A70] hover:bg-[#001A70]/90 text-white'
+                  disabled={isLoading}
                 >
-                  Crear Acta
+                  {isLoading ? 'Creando Acta...' : 'Crear Acta'}
                 </Button>
               )}
             </div>
