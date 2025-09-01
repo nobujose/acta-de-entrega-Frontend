@@ -19,7 +19,7 @@ export default function DashboardPage() {
         title='Acta de Entrega Saliente'
         description='Genera el acta de entrega con facilidad para el Servidor Público Saliente.'
         hashtag='#UniversitasLegal'
-        href='/dashboard/compliance'
+        href='/dashboard/actas/saliente'
         gratis={true}
       />
 
