@@ -58,83 +58,81 @@ const formSchema = z
     // --- Servidores Públicos y Testigos ---
     nombreServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
     cedulaServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    profesionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
     designacionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    nombreAuditor: z.string().min(1, 'Este campo es requerido.'),
-    cedulaAuditor: z.string().min(1, 'Este campo es requerido.'),
-    profesionAuditor: z.string().min(1, 'Este campo es requerido.'),
-    nombreTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    cedulaTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    profesionTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    nombreTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    cedulaTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    profesionTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-    cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-    designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+    nombreServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
+    cedulaServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
+    designacionServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
 
     // --- Anexos (SI/NO) ---
-    disponeEstadoSituacionPresupuestaria: z.string().optional(),
-    disponeRelacionGastosComprometidosNoCausados: z.string().optional(),
-    disponeRelacionGastosComprometidosCausadosNoPagados: z.string().optional(),
-    disponeEstadoPresupuestarioPorPartidas: z.string().optional(),
-    disponeEstadoPresupuestarioDetalleCuentas: z.string().optional(),
-    disponeEstadosFinancieros: z.string().optional(),
-    disponeBalanceComprobacion: z.string().optional(),
-    disponeEstadoSituacionFinanciera: z.string().optional(),
-    disponeEstadoRendimientoFinanciero: z.string().optional(),
-    disponeEstadoMovimientosPatrimonio: z.string().optional(),
-    disponeRelacionCuentasPorCobrar: z.string().optional(),
-    disponeRelacionCuentasPorPagar: z.string().optional(),
-    disponeRelacionCuentasFondosTerceros: z.string().optional(),
-    disponeSituacionFondosAnticipo: z.string().optional(),
-    disponeSituacionCajaChica: z.string().optional(),
-    disponeActaArqueoCajasChicas: z.string().optional(),
-    disponeListadoRegistroAuxiliarProveedores: z.string().optional(),
-    disponeReportesLibrosContables: z.string().optional(),
-    disponeReportesCuentasBancarias: z.string().optional(),
-    disponeReportesConciliacionesBancarias: z.string().optional(),
-    disponeReportesRetenciones: z.string().optional(),
-    disponeReporteProcesosContrataciones: z.string().optional(),
-    disponeReporteFideicomisoPrestaciones: z.string().optional(),
-    disponeReporteBonosVacacionales: z.string().optional(),
-    disponeCuadroResumenCargos: z.string().optional(),
-    disponeCuadroResumenValidadoRRHH: z.string().optional(),
-    disponeReporteNominas: z.string().optional(),
-    disponeInventarioBienes: z.string().optional(),
-    disponeEjecucionPlanOperativo: z.string().optional(),
-    incluyeCausasIncumplimientoMetas: z.string().optional(),
-    disponePlanOperativoAnual: z.string().optional(),
-    disponeClasificacionArchivo: z.string().optional(),
-    incluyeUbicacionFisicaArchivo: z.string().optional(),
-    disponeRelacionMontosFondosAsignados: z.string().optional(),
-    disponeSaldoEfectivoFondos: z.string().optional(),
-    disponeRelacionBienesAsignados: z.string().optional(),
-    disponeRelacionBienesAsignadosUnidadBienes: z.string().optional(),
-    disponeEstadosBancariosConciliados: z.string().optional(),
-    disponeListaComprobantesGastos: z.string().optional(),
-    disponeChequesEmitidosPendientesCobro: z.string().optional(),
-    disponeListadoTransferenciaBancaria: z.string().optional(),
-    disponeCaucionFuncionario: z.string().optional(),
-    disponeCuadroDemostrativoRecaudado: z.string().optional(),
-    disponeRelacionExpedientesAbiertos: z.string().optional(),
-    disponeSituacionTesoroNacional: z.string().optional(),
-    disponeInfoEjecucionPresupuestoNacional: z.string().optional(),
-    disponeMontoDeudaPublicaNacional: z.string().optional(),
-    disponeSituacionCuentasNacion: z.string().optional(),
-    disponeSituacionTesoroEstadal: z.string().optional(),
-    disponeInfoEjecucionPresupuestoEstadal: z.string().optional(),
-    disponeSituacionCuentasEstado: z.string().optional(),
-    disponeSituacionTesoroDistritalMunicipal: z.string().optional(),
-    disponeInfoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
-    disponeSituacionCuentasDistritalesMunicipales: z.string().optional(),
-    disponeInventarioTerrenosEjidos: z.string().optional(),
-    disponeRelacionIngresosVentaTerrenos: z.string().optional(),
-
+    // Paso 3
+    estadoSituacionPresupuestaria: z.string().optional(),
+    relacionGastosComprometidosNoCausados: z.string().optional(),
+    relacionGastosCausadosNoPagados: z.string().optional(),
+    estadoPresupuestarioPorPartidas: z.string().optional(),
+    estadoPresupuestarioDetalleCuentas: z.string().optional(),
+    //Paso 4
+    estadosFinancieros: z.string().optional(),
+    balanceComprobacion: z.string().optional(),
+    estadoSituacionFinanciera: z.string().optional(),
+    estadoRendimientoFinanciero: z.string().optional(),
+    estadoMovimientosPatrimonio: z.string().optional(),
+    relacionCuentasPorCobrar: z.string().optional(),
+    relacionCuentasPorPagar: z.string().optional(),
+    relacionCuentasFondosTerceros: z.string().optional(),
+    situacionFondosAnticipo: z.string().optional(),
+    situacionCajaChica: z.string().optional(),
+    actaArqueoCajasChicas: z.string().optional(),
+    listadoRegistroAuxiliarProveedores: z.string().optional(),
+    reportesLibrosContables: z.string().optional(),
+    reportesCuentasBancarias: z.string().optional(),
+    reportesConciliacionesBancarias: z.string().optional(),
+    reportesRetenciones: z.string().optional(),
+    reporteProcesosContrataciones: z.string().optional(),
+    reporteFideicomisoPrestaciones: z.string().optional(),
+    reporteBonosVacacionales: z.string().optional(),
+    // Paso 5
+    cuadroResumenCargos: z.string().optional(),
+    cuadroResumenValidadoRRHH: z.string().optional(),
+    reporteNominas: z.string().optional(),
+    // Paso 6
+    inventarioBienes: z.string().optional(),
+    // Paso 7
+    ejecucionPlanOperativo: z.string().optional(),
+    causasIncumplimientoMetas: z.string().optional(),
+    planOperativoAnual: z.string().optional(),
+    // Paso 8
+    clasificacionArchivo: z.string().optional(),
+    ubicacionFisicaArchivo: z.string().optional(),
+    // Paso 9
     anexo6: z.string().min(1, 'Este campo es requerido.'),
     anexos: z.string().min(1, 'Este campo es requerido.'),
+    // Paso 10
+    relacionMontosFondosAsignados: z.string().optional(),
+    saldoEfectivoFondos: z.string().optional(),
+    relacionBienesAsignados: z.string().optional(),
+    relacionBienesAsignadosUnidadBienes: z.string().optional(),
+    estadosBancariosConciliados: z.string().optional(),
+    listaComprobantesGastos: z.string().optional(),
+    chequesEmitidosPendientesCobro: z.string().optional(),
+    listadoTransferenciaBancaria: z.string().optional(),
+    caucionFuncionario: z.string().optional(),
+    cuadroDemostrativoRecaudado: z.string().optional(),
+    relacionExpedientesAbiertos: z.string().optional(),
+    situacionTesoroNacional: z.string().optional(),
+    infoEjecucionPresupuestoNacional: z.string().optional(),
+    montoDeudaPublicaNacional: z.string().optional(),
+    situacionCuentasNacion: z.string().optional(),
+    situacionTesoroEstadal: z.string().optional(),
+    infoEjecucionPresupuestoEstadal: z.string().optional(),
+    situacionCuentasEstado: z.string().optional(),
+    situacionTesoroDistritalMunicipal: z.string().optional(),
+    infoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
+    situacionCuentasDistritalesMunicipales: z.string().optional(),
+    inventarioTerrenosEjidos: z.string().optional(),
+    relacionIngresosVentaTerrenos: z.string().optional(),
     accionesAuditoria: z.string().optional(),
     deficienciasActa: z.string().optional(),
+    // Paso 11
     autorizaEnvioCorreoAlternativo: z.string().optional(),
     correoAlternativo: z.string().optional(),
   })
@@ -162,7 +160,7 @@ const steps = [
     id: 1,
     title: 'Datos Generales del Acta',
     subtitle:
-      '(Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009 \n y Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+      '(Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009, Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009, \n Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009, Artículo 10.4 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
       'email',
       'rifOrgano',
@@ -179,24 +177,15 @@ const steps = [
   {
     id: 2,
     title: 'Participantes en el Acta',
-    subtitle: '(Artículo 10.3, Resolución CGR N.º 01-00-000162)',
+    subtitle:
+      '(Artículo 10 .3 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
       'nombreServidorEntrante',
       'cedulaServidorEntrante',
-      'profesionServidorEntrante',
       'designacionServidorEntrante',
-      'nombreAuditor',
-      'cedulaAuditor',
-      'profesionAuditor',
-      'nombreTestigo1',
-      'cedulaTestigo1',
-      'profesionTestigo1',
-      'nombreTestigo2',
-      'cedulaTestigo2',
-      'profesionTestigo2',
-      'nombreServidorSaliente',
-      'cedulaServidorSaliente',
-      'designacionServidorSaliente',
+      'nombreServidorRecibe',
+      'cedulaServidorRecibe',
+      'designacionServidorRecibe',
     ],
   },
   {
@@ -206,27 +195,11 @@ const steps = [
     subtitle:
       '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeEstadoSituacionPresupuestaria',
-      'disponeRelacionGastosComprometidosNoCausados',
-      'disponeRelacionGastosComprometidosCausadosNoPagados',
-      'disponeEstadoPresupuestarioPorPartidas',
-      'disponeEstadoPresupuestarioDetalleCuentas',
-      'disponeEstadosFinancieros',
-      'disponeBalanceComprobacion',
-      'disponeEstadoSituacionFinanciera',
-      'disponeEstadoRendimientoFinanciero',
-      'disponeEstadoMovimientosPatrimonio',
-      'disponeRelacionCuentasPorCobrar',
-      'disponeRelacionCuentasPorPagar',
-      'disponeRelacionCuentasFondosTerceros',
-      'disponeSituacionFondosAnticipo',
-      'disponeSituacionCajaChica',
-      'disponeActaArqueoCajasChicas',
-      'disponeListadoRegistroAuxiliarProveedores',
-      'disponeReportesLibrosContables',
-      'disponeReportesCuentasBancarias',
-      'disponeReportesConciliacionesBancarias',
-      'disponeReportesRetenciones',
+      'estadoSituacionPresupuestaria',
+      'relacionGastosComprometidosNoCausados',
+      'relacionGastosCausadosNoPagados',
+      'estadoPresupuestarioPorPartidas',
+      'estadoPresupuestarioDetalleCuentas',
     ],
   },
   {
@@ -236,13 +209,25 @@ const steps = [
     subtitle:
       '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeReporteProcesosContrataciones',
-      'disponeReporteFideicomisoPrestaciones',
-      'disponeReporteBonosVacacionales',
-      'disponeCuadroResumenCargos',
-      'disponeCuadroResumenValidadoRRHH',
-      'disponeReporteNominas',
-      'disponeInventarioBienes',
+      'estadosFinancieros',
+      'balanceComprobacion',
+      'estadoSituacionFinanciera',
+      'estadoRendimientoFinanciero',
+      'estadoMovimientosPatrimonio',
+      'relacionCuentasPorCobrar',
+      'relacionCuentasPorPagar',
+      'relacionCuentasFondosTerceros',
+      'situacionFondosAnticipo',
+      'situacionCajaChica',
+      'actaArqueoCajasChicas',
+      'listadoRegistroAuxiliarProveedores',
+      'reportesLibrosContables',
+      'reportesCuentasBancarias',
+      'reportesConciliacionesBancarias',
+      'reportesRetenciones',
+      'reporteProcesosContrataciones',
+      'reporteFideicomisoPrestaciones',
+      'reporteBonosVacacionales',
     ],
   },
   {
@@ -252,11 +237,9 @@ const steps = [
     subtitle:
       '(Artículo 11.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeEjecucionPlanOperativo',
-      'incluyeCausasIncumplimientoMetas',
-      'disponePlanOperativoAnual',
-      'disponeClasificacionArchivo',
-      'incluyeUbicacionFisicaArchivo',
+      'cuadroResumenCargos',
+      'cuadroResumenValidadoRRHH',
+      'reporteNominas',
     ],
   },
   {
@@ -264,31 +247,7 @@ const steps = [
     title: 'Anexo III.  Inventario de bienes muebles e inmuebles.',
     subtitle:
       '(Artículo 11.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-    ],
+    fields: ['inventarioBienes'],
   },
   {
     id: 7,
@@ -297,29 +256,9 @@ const steps = [
     subtitle:
       '(Artículo 11.4 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
+      'ejecucionPlanOperativo',
+      'causasIncumplimientoMetas',
+      'planOperativoAnual',
     ],
   },
   {
@@ -327,63 +266,14 @@ const steps = [
     title: 'Anexo V. Índice general del archivo.',
     subtitle:
       '(Artículo 11.5 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-    ],
+    fields: ['clasificacionArchivo', 'incluyeUbicacionFisicaArchivo'],
   },
   {
     id: 9,
     title: 'Anexo VI.',
     subtitle:
       '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'anexo6',
-      'anexos',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-    ],
+    fields: ['anexo6', 'anexos'],
   },
   {
     id: 10,
@@ -430,46 +320,46 @@ const dynamicStepContent: DynamicContent = {
       '(Artículo 53 Reglamento Nº 1 de la Ley Orgánica de la Administración Financiera del Sector Público Sobre el Sistema Presupuestario.)',
     questions: [
       {
-        name: 'disponeRelacionMontosFondosAsignados',
+        name: 'relacionMontosFondosAsignados',
         label:
           '¿Dispone Usted, del documento Relación de los montos de los fondos asignados?',
       },
       {
-        name: 'disponeSaldoEfectivoFondos',
+        name: 'saldoEfectivoFondos',
         label:
           '¿Dispone Usted, del documento Saldo en efectivo de dichos fondos?',
       },
       {
-        name: 'disponeRelacionBienesAsignados',
+        name: 'relacionBienesAsignados',
         label:
           '¿Dispone Usted, del documento Relación de los bienes asignados?',
       },
       {
-        name: 'disponeRelacionBienesAsignadosUnidadBienes',
+        name: 'relacionBienesAsignadosUnidadBienes',
         label:
           '¿Dispone Usted, del documento Relación de los Bienes asignados emitida por la Unidad de Bienes?',
       },
       {
-        name: 'disponeEstadosBancariosConciliados',
+        name: 'estadosBancariosConciliados',
         label:
           '¿Dispone Usted, del documento Estados bancarios actualizados y conciliados a la fecha de entrega?',
       },
       {
-        name: 'disponeListaComprobantesGastos',
+        name: 'listaComprobantesGastos',
         label: '¿Dispone Usted, del documento lista de comprobantes de gastos?',
       },
       {
-        name: 'disponeChequesEmitidosPendientesCobro',
+        name: 'chequesEmitidosPendientesCobro',
         label:
           '¿Dispone Usted, del documento Cheques emitidos pendientes de cobro?',
       },
       {
-        name: 'disponeListadoTransferenciaBancaria',
+        name: 'listadoTransferenciaBancaria',
         label:
           '¿Dispone Usted, del documento listado o reporte de Transferencia Bancaria?',
       },
       {
-        name: 'disponeCaucionFuncionario',
+        name: 'caucionFuncionario',
         label:
           '¿Dispone Usted, del documento Caución del funcionario encargado de la Administración de los Recursos Financieros a la fecha del cese de funciones?',
       },
@@ -481,7 +371,7 @@ const dynamicStepContent: DynamicContent = {
     subtitle: '(Artículo 13 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     questions: [
       {
-        name: 'disponeCuadroDemostrativoRecaudado',
+        name: 'cuadroDemostrativoRecaudado',
         label:
           '¿Dispone Usted, del documento cuadro demostrativo del detalle de lo liquidado y recaudado por los rubros respectivos, y de los derechos pendientes de recaudación de años anteriores?',
       },
@@ -494,7 +384,7 @@ const dynamicStepContent: DynamicContent = {
       '(Artículo 14 Resolución CGR N.º 01-000162 de fecha 27-07-2009 y el Título III Artículos 53 y 54 de la Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control Fiscal, con indicación del estado en que se encuentran.)',
     questions: [
       {
-        name: 'disponeRelacionExpedientesAbiertos',
+        name: 'relacionExpedientesAbiertos',
         label:
           '¿Dispone Usted, del documento relación de los expedientes abiertos con ocasión del ejercicio de la potestad de investigación, así como de los procedimientos administrativos para la determinación de responsabilidades?',
       },
@@ -506,21 +396,21 @@ const dynamicStepContent: DynamicContent = {
     subtitle: 'Base: Artículo 14 Resolución CGR N.º 01-000162',
     questions: [
       {
-        name: 'disponeSituacionTesoroNacional',
+        name: 'situacionTesoroNacional',
         label: '¿Dispone Usted, del documento Situación del Tesoro Nacional?',
       },
       {
-        name: 'disponeInfoEjecucionPresupuestoNacional',
+        name: 'infoEjecucionPresupuestoNacional',
         label:
           '¿Dispone Usted, del documento información de la ejecución del presupuesto nacional de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
       },
       {
-        name: 'disponeMontoDeudaPublicaNacional',
+        name: 'montoDeudaPublicaNacional',
         label:
           '¿Dispone Usted, del documento Monto de la deuda pública nacional interna y externa?',
       },
       {
-        name: 'disponeSituacionCuentasNacion',
+        name: 'situacionCuentasNacion',
         label:
           '¿Dispone Usted, del documento Situación de las cuentas de la Nación?',
       },
@@ -534,16 +424,16 @@ const dynamicStepContent: DynamicContent = {
     subtitle: '(Artículo 16 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     questions: [
       {
-        name: 'disponeSituacionTesoroEstadal',
+        name: 'situacionTesoroEstadal',
         label: '¿Dispone Usted, del documento Situación del Tesoro Estadal?',
       },
       {
-        name: 'disponeInfoEjecucionPresupuestoEstadal',
+        name: 'infoEjecucionPresupuestoEstadal',
         label:
           '¿Dispone Usted, del documento Información de la ejecución del presupuesto estadal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
       },
       {
-        name: 'disponeSituacionCuentasEstado',
+        name: 'situacionCuentasEstado',
         label:
           '¿Dispone Usted, del documento Situación de las cuentas del respectivo estado?',
       },
@@ -555,27 +445,27 @@ const dynamicStepContent: DynamicContent = {
     subtitle: '(Artículo 17 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     questions: [
       {
-        name: 'disponeSituacionTesoroDistritalMunicipal',
+        name: 'situacionTesoroDistritalMunicipal',
         label:
           '¿Dispone Usted, del documento Situación del Tesoro Distrital o Municipal?',
       },
       {
-        name: 'disponeInfoEjecucionPresupuestoDistritalMunicipal',
+        name: 'infoEjecucionPresupuestoDistritalMunicipal',
         label:
           '¿Dispone Usted, del documento Información de la ejecución del presupuesto distrital o municipal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
       },
       {
-        name: 'disponeSituacionCuentasDistritalesMunicipales',
+        name: 'situacionCuentasDistritalesMunicipales',
         label:
           '¿Dispone Usted, del documento Situación de las cuentas distritales o municipales?',
       },
       {
-        name: 'disponeInventarioTerrenosEjidos',
+        name: 'inventarioTerrenosEjidos',
         label:
           '¿Dispone Usted, del documento Inventario detallado de los terrenos ejidos y de los terrenos propios distritales o municipales?',
       },
       {
-        name: 'disponeRelacionIngresosVentaTerrenos',
+        name: 'relacionIngresosVentaTerrenos',
         label:
           '¿Dispone Usted, del documento Relación de Ingresos producto de las ventas de terrenos ejidos o terrenos propios distritales o municipales?',
       },
@@ -602,14 +492,14 @@ const dynamicStepContent: DynamicContent = {
 
 type DynamicStepKey = keyof typeof dynamicStepContent;
 
-export function ActaEntranteForm() {
+export function ActaSalienteForm() {
   const router = useRouter();
   const { setTitle } = useHeader();
   const [currentStep, setCurrentStep] = useState(0);
 
   // Actualiza el título del header al montar el componente
   useEffect(() => {
-    setTitle('Acta Entrante');
+    setTitle('Acta Saliente');
   }, [setTitle]);
 
   const form = useForm<FormData>({
@@ -628,20 +518,10 @@ export function ActaEntranteForm() {
       motivoEntrega: '',
       nombreServidorEntrante: '',
       cedulaServidorEntrante: '',
-      profesionServidorEntrante: '',
       designacionServidorEntrante: '',
-      nombreAuditor: '',
-      cedulaAuditor: '',
-      profesionAuditor: '',
-      nombreTestigo1: '',
-      cedulaTestigo1: '',
-      profesionTestigo1: '',
-      nombreTestigo2: '',
-      cedulaTestigo2: '',
-      profesionTestigo2: '',
-      nombreServidorSaliente: '',
-      cedulaServidorSaliente: '',
-      designacionServidorSaliente: '',
+      nombreServidorRecibe: '',
+      cedulaServidorRecibe: '',
+      designacionServidorRecibe: '',
     },
   });
 
@@ -826,46 +706,46 @@ export function ActaEntranteForm() {
                 />
                 <FormFieldWithExtras
                   name='denominacionCargoEntrega'
-                  label='1. Denominación del cargo'
+                  label='Denominación del cargo que se entrega.'
                   placeholder='Presidencia, Dirección...'
                   helpText='Ej: Presidencia, Dirección, Coordinación'
                 />
                 <FormFieldWithExtras
                   name='nombreOrgano'
-                  label='2. Nombre del órgano'
+                  label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública.'
                   placeholder='Instituto Nacional de...'
                   helpText='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
                 />
                 <FormFieldWithExtras
                   name='ciudadSuscripcion'
-                  label='3. Ciudad donde se suscribe'
+                  label='Ciudad donde se suscribe'
                   placeholder='Barquisimeto'
                   helpText='Ej: Barquisimeto'
                 />
                 <FormFieldWithExtras
                   name='estadoSuscripcion'
-                  label='4. Estado donde se suscribe'
+                  label='Estado donde se suscribe'
                   placeholder='Lara'
                   helpText='Ej: Lara'
                 />
                 <FormFieldWithExtras
                   name='horaSuscripcion'
-                  label='5. Hora de suscripción'
+                  label='Hora de suscripción'
                   type='time'
                   helpText='Ej: 10:00 AM'
                 />
                 <FormFieldWithExtras
                   name='fechaSuscripcion'
-                  label='6. Fecha de suscripción'
+                  label='Fecha de suscripción'
                   type='date'
                   helpText='Ej: tres (03) de enero del 2025'
                 />
                 <div className='md:col-span-2'>
                   <FormFieldWithExtras
                     name='direccionOrgano'
-                    label='7. Dirección exacta y completa'
+                    label='Dirección exacta y completa'
                     placeholder='Avenida 00 entre calle 00 y 00...'
-                    helpText='Ej: Av. 00 entre calle 00 y 00, Edf. Central, Piso 2...'
+                    helpText='Ej: Avenida 00 entre calle 00 y 00, Edf. Central, Piso 2, despacho de la presidencia.'
                   />
                 </div>
                 <div className='md:col-span-2'>
@@ -874,7 +754,7 @@ export function ActaEntranteForm() {
                     name='motivoEntrega'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>21. Motivo de la entrega</FormLabel>
+                        <FormLabel>Motivo de la entrega</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -934,109 +814,43 @@ export function ActaEntranteForm() {
             {currentStep === 1 && (
               <div className='space-y-6'>
                 <h3 className='text-lg font-semibold border-b pb-2'>
-                  Servidor Público Entrante
-                </h3>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                  <FormFieldWithExtras
-                    name='nombreServidorEntrante'
-                    label='8. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
-                  />
-                  <FormFieldWithExtras
-                    name='cedulaServidorEntrante'
-                    label='9. Cédula'
-                    helpText='Ej: V-00.000.000'
-                  />
-                  <FormFieldWithExtras
-                    name='profesionServidorEntrante'
-                    label='10. Profesión'
-                    helpText='Ej: Contador, Ingeniero, Abogado'
-                  />
-                  <FormFieldWithExtras
-                    name='designacionServidorEntrante'
-                    label='11. Datos de designación'
-                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000...'
-                  />
-                </div>
-                <h3 className='text-lg font-semibold border-b pb-2'>
-                  Auditor(a)
-                </h3>
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-                  <FormFieldWithExtras
-                    name='nombreAuditor'
-                    label='12. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
-                  />
-                  <FormFieldWithExtras
-                    name='cedulaAuditor'
-                    label='13. Cédula'
-                    helpText='Ej: V-00.000.000'
-                  />
-                  <FormFieldWithExtras
-                    name='profesionAuditor'
-                    label='14. Profesión'
-                    helpText='Ej: Contador, Ingeniero, Abogado'
-                  />
-                </div>
-                <h3 className='text-lg font-semibold border-b pb-2'>
-                  Testigos
-                </h3>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4'>
-                  <div className='space-y-4 p-4 border rounded-md'>
-                    <p className='font-medium'>Testigo N° 1</p>
-                    <FormFieldWithExtras
-                      name='nombreTestigo1'
-                      label='15. Nombre'
-                      helpText='Ej: Pedro Jose Rodríguez Hernández'
-                    />
-                    <FormFieldWithExtras
-                      name='cedulaTestigo1'
-                      label='16. Cédula'
-                      helpText='Ej: V-00.000.000'
-                    />
-                    <FormFieldWithExtras
-                      name='profesionTestigo1'
-                      label='17. Profesión'
-                      helpText='Ej: Contador, Ingeniero, Abogado'
-                    />
-                  </div>
-                  <div className='space-y-4 p-4 border rounded-md'>
-                    <p className='font-medium'>Testigo N° 2</p>
-                    <FormFieldWithExtras
-                      name='nombreTestigo2'
-                      label='18. Nombre'
-                      helpText='Ej: Pedro Jose Rodríguez Hernández'
-                    />
-                    <FormFieldWithExtras
-                      name='cedulaTestigo2'
-                      label='19. Cédula'
-                      helpText='Ej: V-00.000.000'
-                    />
-                    <FormFieldWithExtras
-                      name='profesionTestigo2'
-                      label='20. Profesión'
-                      helpText='Ej: Contador, Ingeniero, Abogado'
-                    />
-                  </div>
-                </div>
-                <h3 className='text-lg font-semibold border-b pb-2'>
                   Servidor Público Saliente
                 </h3>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
-                    name='nombreServidorSaliente'
-                    label='22. Nombre'
+                    name='nombreServidorEntrante'
+                    label='Nombre'
                     helpText='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
-                    name='cedulaServidorSaliente'
-                    label='23. Cédula'
+                    name='cedulaServidorEntrante'
+                    label='Cédula'
                     helpText='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
-                    name='designacionServidorSaliente'
-                    label='24. Datos de designación'
-                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000...'
+                    name='designacionServidorEntrante'
+                    label='Datos de designación'
+                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                  />
+                </div>
+                <h3 className='text-lg font-semibold border-b pb-2'>
+                  Servidor Público Entrante
+                </h3>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                  <FormFieldWithExtras
+                    name='nombreServidorRecibe'
+                    label='Nombre'
+                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                  />
+                  <FormFieldWithExtras
+                    name='cedulaServidorRecibe'
+                    label='Cédula'
+                    helpText='Ej: V-00.000.000'
+                  />
+                  <FormFieldWithExtras
+                    name='designacionServidorRecibe'
+                    label='Datos de designación del Servidor público que Recibe.'
+                    helpText='Ej:  Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
               </div>
@@ -1045,23 +859,23 @@ export function ActaEntranteForm() {
             {currentStep === 2 && (
               <div className='space-y-4'>
                 <SiNoQuestion
-                  name='disponeEstadoSituacionPresupuestaria'
+                  name='estadoSituacionPresupuestaria'
                   label='¿Dispone Usted, del documento Estado de Situación Presupuestaria muestra todos los momentos presupuestarios y sus detalles. Incluye: Presupuesto Original, Modificaciones, Presupuesto Modificado, Compromisos, Causado, Pagado, Por Pagar y Presupuesto Disponible a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeRelacionGastosComprometidosNoCausados'
+                  name='relacionGastosComprometidosNoCausados'
                   label='¿Dispone Usted, del documento Relación de Gastos Comprometidos, no causados a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeRelacionGastosComprometidosCausadosNoPagados'
+                  name='relacionGastosCausadosNoPagados'
                   label='¿Dispone Usted, del documento Relación de Gastos Comprometidos, causados y no pagados a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeEstadoPresupuestarioPorPartidas'
+                  name='estadoPresupuestarioPorPartidas'
                   label='¿Dispone Usted, del documento Estado Presupuestario del Ejercicio vigente por partidas?'
                 />
                 <SiNoQuestion
-                  name='disponeEstadoPresupuestarioDetalleCuentas'
+                  name='estadoPresupuestarioDetalleCuentas'
                   label='¿Dispone Usted, del documento Estado Presupuestario del Ejercicio con los detalles de sus cuentas?'
                 />
               </div>
@@ -1071,79 +885,79 @@ export function ActaEntranteForm() {
             {currentStep === 3 && (
               <div className='space-y-4'>
                 <SiNoQuestion
-                  name='disponeEstadosFinancieros'
+                  name='estadosFinancieros'
                   label='¿Dispone Usted, del documento Estados Financieros a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeBalanceComprobacion'
+                  name='balanceComprobacion'
                   label='¿Dispone Usted, del documento Balance de Comprobación a la fecha de elaboración de los Estados Financieros y sus notas explicativas a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeEstadoSituacionFinanciera'
+                  name='estadoSituacionFinanciera'
                   label='¿Dispone Usted, del documento Estado de Situación Financiera / Balance General y sus notas explicativas a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeEstadoRendimientoFinanciero'
+                  name='estadoRendimientoFinanciero'
                   label='¿Dispone Usted, del documento Estado de Rendimiento Financiero / Estado de Ganancia y Pérdidas y sus notas explicativas a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeEstadoMovimientosPatrimonio'
+                  name='estadoMovimientosPatrimonio'
                   label='¿Dispone Usted, del documento Estado de Movimientos de las Cuentas de Patrimonio y sus notas explicativas a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeRelacionCuentasPorCobrar'
+                  name='relacionCuentasPorCobrar'
                   label='¿Dispone Usted, del documento Una Relación de Cuentas por Cobrar a la fecha del Acta de Entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeRelacionCuentasPorPagar'
+                  name='relacionCuentasPorPagar'
                   label='¿Dispone Usted, del documento Relación de Cuentas por Pagar a la fecha del Acta de Entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeRelacionCuentasFondosTerceros'
+                  name='relacionCuentasFondosTerceros'
                   label='¿Dispone Usted, del documento Relación de las Cuentas de los Fondos de Terceros?'
                 />
                 <SiNoQuestion
-                  name='disponeSituacionFondosAnticipo'
+                  name='situacionFondosAnticipo'
                   label='¿Dispone Usted, del documento Situación de los Fondos en Anticipo?'
                 />
                 <SiNoQuestion
-                  name='disponeSituacionCajaChica'
+                  name='situacionCajaChica'
                   label='¿Dispone Usted, del documento Situación de la Caja Chica?'
                 />
                 <SiNoQuestion
-                  name='disponeActaArqueoCajasChicas'
+                  name='actaArqueoCajasChicas'
                   label='¿Dispone Usted, del documento Acta de arqueo de las Cajas Chicas a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='disponeListadoRegistroAuxiliarProveedores'
+                  name='listadoRegistroAuxiliarProveedores'
                   label='¿Dispone Usted, del documento Listado del Registro Auxiliar de Proveedores?'
                 />
                 <SiNoQuestion
-                  name='disponeReportesLibrosContables'
+                  name='reportesLibrosContables'
                   label='¿Dispone Usted, del documento Reportes de Libros Contables (Diario y mayores analíticos) a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
-                  name='disponeReportesCuentasBancarias'
+                  name='reportesCuentasBancarias'
                   label='¿Dispone Usted, del documento Reportes de las Cuentas Bancarias (Movimientos a la fecha del cese de funciones)?'
                 />
                 <SiNoQuestion
-                  name='disponeReportesConciliacionesBancarias'
+                  name='reportesConciliacionesBancarias'
                   label='¿Dispone Usted, del documento Reportes de las Conciliaciones Bancarias a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
-                  name='disponeReportesRetenciones'
+                  name='reportesRetenciones'
                   label='¿Dispone Usted, del documento Reportes de Retenciones de pagos pendientes por enterar correspondientes a ISLR, IVA y Retenciones por Contratos (obras, bienes y servicios) a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
-                  name='disponeReporteProcesosContrataciones'
+                  name='reporteProcesosContrataciones'
                   label='¿Dispone Usted, del documento Reporte de los Procesos de Contrataciones Públicas a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
-                  name='disponeReporteFideicomisoPrestaciones'
+                  name='reporteFideicomisoPrestaciones'
                   label='¿Dispone Usted, del documento Reporte del Fideicomiso de Prestaciones Sociales a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
-                  name='disponeReporteBonosVacacionales'
+                  name='reporteBonosVacacionales'
                   label='¿Dispone Usted, del documento Reporte de Bonos Vacacionales a la fecha del cese de funciones?'
                 />
               </div>
@@ -1153,15 +967,15 @@ export function ActaEntranteForm() {
             {currentStep === 4 && (
               <div className='space-y-4'>
                 <SiNoQuestion
-                  name='disponeCuadroResumenCargos'
+                  name='cuadroResumenCargos'
                   label='¿Dispone Usted, del documento cuadro resumen indicando el número de cargos existentes, clasificados en empleados, obreros, fijos o contratados?'
                 />
                 <SiNoQuestion
-                  name='disponeCuadroResumenValidadoRRHH'
+                  name='cuadroResumenValidadoRRHH'
                   label='¿Dispone Usted, del documento cuadro resumen validado por la Oficina de Recursos Humanos?'
                 />
                 <SiNoQuestion
-                  name='disponeReporteNominas'
+                  name='reporteNominas'
                   label='¿Dispone Usted, del documento Reporte de Nóminas a la fecha del cese de funciones?'
                 />
               </div>
@@ -1171,8 +985,8 @@ export function ActaEntranteForm() {
             {currentStep === 5 && (
               <div className='space-y-4'>
                 <SiNoQuestion
-                  name='disponeInventarioBienes'
-                  label='¿Dispone Usted, del documento Inventario de Bienes e Inmuebles esta elaborado a la fecha de entrega. Debe contener: comprobación física, condición de los bienes, responsable patrimonial, responsable por uso, fecha de verificación, número del acta de verificación, código, descripción, marca, modelo, número del serial, estado de conservación, ubicación y valor de mercado de los bienes?'
+                  name='inventarioBienes'
+                  label='¿Dispone Usted, del documento Inventario de Bienes Muebles e Inmuebles elaborado a la fecha de entrega. El cual debe contener: comprobación física, condición de los bienes, responsable patrimonial, responsable por uso, fecha de verificación, número del acta de verificación, código, descripción, marca, modelo, número del serial, estado de conservación, ubicación y valor de mercado de los bienes?'
                 />
               </div>
             )}
@@ -1181,15 +995,15 @@ export function ActaEntranteForm() {
             {currentStep === 6 && (
               <div className='space-y-4'>
                 <SiNoQuestion
-                  name='disponeEjecucionPlanOperativo'
+                  name='ejecucionPlanOperativo'
                   label='¿Dispone Usted, del documento Ejecución del Plan Operativo a la fecha de entrega?'
                 />
                 <SiNoQuestion
-                  name='incluyeCausasIncumplimientoMetas'
+                  name='causasIncumplimientoMetas'
                   label='¿Usted incluye las causas que originaron el incumplimiento de algunas metas en la ejecución del Plan Operativo?'
                 />
                 <SiNoQuestion
-                  name='disponePlanOperativoAnual'
+                  name='planOperativoAnual'
                   label='¿Dispone Usted, del documento Plan Operativo Anual?'
                 />
               </div>
@@ -1199,11 +1013,11 @@ export function ActaEntranteForm() {
             {currentStep === 7 && (
               <div className='space-y-4'>
                 <SiNoQuestion
-                  name='disponeClasificacionArchivo'
-                  label='¿Dispone Usted, del documento clasificación del archivo?'
+                  name='clasificacionArchivo'
+                  label='¿Usted incluye la clasificación del archivo?'
                 />
                 <SiNoQuestion
-                  name='incluyeUbicacionFisicaArchivo'
+                  name='ubicacionFisicaArchivo'
                   label='¿Usted incluye la ubicación física del archivo?'
                 />
               </div>
