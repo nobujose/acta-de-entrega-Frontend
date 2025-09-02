@@ -8,6 +8,7 @@ import {
   Form,
   FormControl,
   FormField,
+  FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
@@ -28,141 +29,24 @@ import {
   CardTitle,
   CardDescription as ShadcnCardDescription,
 } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/HeaderContext';
 import { Textarea } from '@/components/ui/textarea';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+// EDITADO: Se cambió el nombre de la función del servicio
+import { createActaEntrante } from '@/services/actasService';
+// EDITADO: Se cambió el nombre del esquema de validación
+import { actaEntranteSchema } from '@/lib/schemas';
 
-// --- Esquema de Validación Completo con Zod ---
-const formSchema = z
-  .object({
-    // --- Datos Generales ---
-    email: z
-      .string()
-      .min(1, 'Campo Requerido')
-      .email({ message: 'Debe ser un correo válido.' }),
-    rifOrgano: z.string().min(1, 'El RIF es requerido.'),
-    denominacionCargoEntrega: z
-      .string()
-      .min(1, 'La denominación del cargo es requerida.'),
-    nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
-    ciudadSuscripcion: z.string().min(1, 'La ciudad es requerida.'),
-    estadoSuscripcion: z.string().min(1, 'El estado es requerido.'),
-    horaSuscripcion: z.string().min(1, 'La hora es requerida.'),
-    fechaSuscripcion: z.string().min(1, 'La fecha es requerida.'),
-    direccionOrgano: z.string().min(1, 'La dirección es requerida.'),
-    motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
-
-    // --- Servidores Públicos y Testigos ---
-    nombreServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    cedulaServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    profesionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    designacionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-    nombreAuditor: z.string().min(1, 'Este campo es requerido.'),
-    cedulaAuditor: z.string().min(1, 'Este campo es requerido.'),
-    profesionAuditor: z.string().min(1, 'Este campo es requerido.'),
-    nombreTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    cedulaTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    profesionTestigo1: z.string().min(1, 'Este campo es requerido.'),
-    nombreTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    cedulaTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    profesionTestigo2: z.string().min(1, 'Este campo es requerido.'),
-    nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-    cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-    designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-
-    // --- Anexos (SI/NO) ---
-    disponeEstadoSituacionPresupuestaria: z.string().optional(),
-    disponeRelacionGastosComprometidosNoCausados: z.string().optional(),
-    disponeRelacionGastosComprometidosCausadosNoPagados: z.string().optional(),
-    disponeEstadoPresupuestarioPorPartidas: z.string().optional(),
-    disponeEstadoPresupuestarioDetalleCuentas: z.string().optional(),
-    disponeEstadosFinancieros: z.string().optional(),
-    disponeBalanceComprobacion: z.string().optional(),
-    disponeEstadoSituacionFinanciera: z.string().optional(),
-    disponeEstadoRendimientoFinanciero: z.string().optional(),
-    disponeEstadoMovimientosPatrimonio: z.string().optional(),
-    disponeRelacionCuentasPorCobrar: z.string().optional(),
-    disponeRelacionCuentasPorPagar: z.string().optional(),
-    disponeRelacionCuentasFondosTerceros: z.string().optional(),
-    disponeSituacionFondosAnticipo: z.string().optional(),
-    disponeSituacionCajaChica: z.string().optional(),
-    disponeActaArqueoCajasChicas: z.string().optional(),
-    disponeListadoRegistroAuxiliarProveedores: z.string().optional(),
-    disponeReportesLibrosContables: z.string().optional(),
-    disponeReportesCuentasBancarias: z.string().optional(),
-    disponeReportesConciliacionesBancarias: z.string().optional(),
-    disponeReportesRetenciones: z.string().optional(),
-    disponeReporteProcesosContrataciones: z.string().optional(),
-    disponeReporteFideicomisoPrestaciones: z.string().optional(),
-    disponeReporteBonosVacacionales: z.string().optional(),
-    disponeCuadroResumenCargos: z.string().optional(),
-    disponeCuadroResumenValidadoRRHH: z.string().optional(),
-    disponeReporteNominas: z.string().optional(),
-    disponeInventarioBienes: z.string().optional(),
-    disponeEjecucionPlanOperativo: z.string().optional(),
-    incluyeCausasIncumplimientoMetas: z.string().optional(),
-    disponePlanOperativoAnual: z.string().optional(),
-    disponeClasificacionArchivo: z.string().optional(),
-    incluyeUbicacionFisicaArchivo: z.string().optional(),
-    disponeRelacionMontosFondosAsignados: z.string().optional(),
-    disponeSaldoEfectivoFondos: z.string().optional(),
-    disponeRelacionBienesAsignados: z.string().optional(),
-    disponeRelacionBienesAsignadosUnidadBienes: z.string().optional(),
-    disponeEstadosBancariosConciliados: z.string().optional(),
-    disponeListaComprobantesGastos: z.string().optional(),
-    disponeChequesEmitidosPendientesCobro: z.string().optional(),
-    disponeListadoTransferenciaBancaria: z.string().optional(),
-    disponeCaucionFuncionario: z.string().optional(),
-    disponeCuadroDemostrativoRecaudado: z.string().optional(),
-    disponeRelacionExpedientesAbiertos: z.string().optional(),
-    disponeSituacionTesoroNacional: z.string().optional(),
-    disponeInfoEjecucionPresupuestoNacional: z.string().optional(),
-    disponeMontoDeudaPublicaNacional: z.string().optional(),
-    disponeSituacionCuentasNacion: z.string().optional(),
-    disponeSituacionTesoroEstadal: z.string().optional(),
-    disponeInfoEjecucionPresupuestoEstadal: z.string().optional(),
-    disponeSituacionCuentasEstado: z.string().optional(),
-    disponeSituacionTesoroDistritalMunicipal: z.string().optional(),
-    disponeInfoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
-    disponeSituacionCuentasDistritalesMunicipales: z.string().optional(),
-    disponeInventarioTerrenosEjidos: z.string().optional(),
-    disponeRelacionIngresosVentaTerrenos: z.string().optional(),
-
-    anexo6: z.string().min(1, 'Este campo es requerido.'),
-    anexos: z.string().min(1, 'Este campo es requerido.'),
-    accionesAuditoria: z.string().optional(),
-    deficienciasActa: z.string().optional(),
-    autorizaEnvioCorreoAlternativo: z.string().optional(),
-    correoAlternativo: z.string().optional(),
-  })
-  .refine(
-    (data) => {
-      // Si el usuario autoriza el envío, el correo alternativo es obligatorio
-      if (data.autorizaEnvioCorreoAlternativo === 'SI') {
-        return (
-          !!data.correoAlternativo &&
-          z.string().email().safeParse(data.correoAlternativo).success
-        );
-      }
-      return true;
-    },
-    {
-      message: 'El correo alternativo es requerido y debe ser válido.',
-      path: ['correoAlternativo'], // Ruta del campo al que se aplica el error
-    }
-  );
-
-type FormData = z.infer<typeof formSchema>;
+// EDITADO: El tipo FormData ahora se infiere del nuevo esquema
+type FormData = z.infer<typeof actaEntranteSchema>;
 
 const steps = [
   {
     id: 1,
     title: 'Datos Generales del Acta',
-    subtitle:
-      '(Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009 \n y Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
       'email',
       'rifOrgano',
@@ -178,8 +62,7 @@ const steps = [
   },
   {
     id: 2,
-    title: 'Participantes en el Acta',
-    subtitle: '(Artículo 10.3, Resolución CGR N.º 01-00-000162)',
+    title: 'Intervinientes en el Acta',
     fields: [
       'nombreServidorEntrante',
       'cedulaServidorEntrante',
@@ -399,7 +282,6 @@ const steps = [
   },
 ];
 
-// Definir los tipos para la Unión Discriminada
 type QuestionsStep = {
   type: 'questions';
   title: string;
@@ -411,17 +293,15 @@ type TextareaStep = {
   type: 'textarea';
   title: string;
   subtitle: string;
-  fieldName: keyof FormData; // Usamos keyof FormData para asegurar que el nombre sea válido
+  fieldName: keyof FormData;
 };
 
 type DynamicStep = QuestionsStep | TextareaStep;
 
-// Definimos el tipo para el objeto principal
 type DynamicContent = {
   [key: string]: DynamicStep;
 };
 
-// Aquí mapeamos cada opción del Select a su contenido correspondiente.
 const dynamicStepContent: DynamicContent = {
   'UNIDADES ADMINISTRADORAS': {
     type: 'questions',
@@ -527,7 +407,7 @@ const dynamicStepContent: DynamicContent = {
     ],
   },
 
-  'GOBERNACIONES, OFICINAS O DEPENDENCIAS DE HACIENDA ESTADAL': {
+  'GOBERNACIONES, OFICinas O DEPENDENCIAS DE HACIENDA ESTADAL': {
     type: 'questions',
     title:
       'Anexo XI. GOBERNACIONES, OFICINAS O DEPENDENCIAS DE HACIENDA ESTADAL',
@@ -602,20 +482,25 @@ const dynamicStepContent: DynamicContent = {
 
 type DynamicStepKey = keyof typeof dynamicStepContent;
 
+// EDITADO: Se cambió el nombre del componente
 export function ActaEntranteForm() {
   const router = useRouter();
   const { setTitle } = useHeader();
   const [currentStep, setCurrentStep] = useState(0);
 
-  // Actualiza el título del header al montar el componente
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
   useEffect(() => {
-    setTitle('Acta Entrante');
+    // EDITADO: Se cambió el título de la página
+    setTitle('Acta de Entrega de Servidor Público Saliente');
   }, [setTitle]);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    mode: 'onChange',
+    // EDITADO: Se usa el nuevo esquema de Zod
+    resolver: zodResolver(actaEntranteSchema),
     defaultValues: {
-      // Inicializa todos los campos para evitar errores de "uncontrolled component"
       email: '',
       rifOrgano: '',
       denominacionCargoEntrega: '',
@@ -645,23 +530,29 @@ export function ActaEntranteForm() {
     },
   });
 
-  // Obtenemos funciones de react-hook-form para manipular errores
-  const { setError, clearErrors, getFieldState, getValues, watch } = form;
+  const { getValues, watch } = form;
 
   const selectedAnexo = watch('anexos') as DynamicStepKey;
 
-  const autorizaEnvio = watch('autorizaEnvioCorreoAlternativo');
-
   const onSubmit = async (data: FormData) => {
+    setIsLoading(true);
+    setApiError(null);
+
     try {
-      console.log('Datos del formulario a enviar:', data);
-      // DESCOMENTA LA SIGUIENTE LÍNEA PARA ENVIAR A TU BACKEND
-      // const response = await apiClient.post('/actas/maxima-autoridad-paga', data);
-      alert('Acta creada exitosamente!');
-      router.push('/dashboard/actas');
+      // EDITADO: Se llama a la nueva función del servicio
+      const response = await createActaEntrante(data);
+
+      console.log('Respuesta del servidor:', response);
+      alert(`Acta creada con éxito!\nNúmero de Acta: ${response.numeroActa}`);
+      router.push('/dashboard');
     } catch (error) {
-      console.error('Error al crear el acta:', error);
-      alert('Hubo un error al crear el acta. Por favor, inténtalo de nuevo.');
+      if (error instanceof Error) {
+        setApiError(error.message);
+      } else {
+        setApiError('Ocurrió un error inesperado.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -669,9 +560,8 @@ export function ActaEntranteForm() {
     const fieldsToValidate = steps[currentStep].fields;
     const isValid = await form.trigger(fieldsToValidate as (keyof FormData)[]);
     if (isValid) {
-      // Si estamos en el paso 9 y se seleccionó "NO APLICA", saltamos al paso 11
       if (currentStep === 8 && getValues('anexos') === 'NO APLICA') {
-        setCurrentStep(10); // El índice 10 corresponde al Paso 11
+        setCurrentStep(10);
       } else if (currentStep < steps.length - 1) {
         setCurrentStep((prev) => prev + 1);
       }
@@ -679,72 +569,46 @@ export function ActaEntranteForm() {
   };
 
   const prevStep = () => {
-    setCurrentStep((prev) => prev - 1);
+    if (currentStep > 0) {
+      setCurrentStep((prev) => prev - 1);
+    }
   };
 
-  // Componente reutilizable para campos de texto con ayuda contextual
   const FormFieldWithExtras = ({
     name,
     label,
+    subtitle,
     placeholder,
-    helpText,
     type = 'text',
   }: {
     name: keyof FormData;
     label: string;
+    subtitle?: string;
     placeholder?: string;
-    helpText?: string;
     type?: string;
-  }) => {
-    // Función que se activa cuando el usuario entra al input
-    const handleFocus = () => {
-      // Solo mostramos la ayuda si NO hay un error de validación real y el campo está vacío
-      if (!getFieldState(name).error && !getValues(name)) {
-        // Usamos setError para mostrar nuestro texto de ayuda en el componente FormMessage
-        setError(name, { type: 'custom', message: helpText });
-      }
-    };
-
-    // Función que se activa cuando el usuario sale del input
-    const handleBlur = () => {
-      // Si el mensaje que se muestra es nuestro texto de ayuda, lo limpiamos
-      if (getFieldState(name).error?.message === helpText) {
-        clearErrors(name);
-      }
-    };
-
-    return (
-      <FormField
-        control={form.control}
-        name={name}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <Input
-                type={type}
-                placeholder={placeholder}
-                {...field}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-              />
-            </FormControl>
-            {/* FormMessage siempre está renderizado, por lo que no hay "salto" de layout.
-                Su contenido es controlado por la lógica de handleFocus y handleBlur. */}
-            <FormMessage
-              className={
-                getFieldState(name).error?.message === helpText
-                  ? 'text-red-500'
-                  : ''
-              }
+  }) => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          {subtitle && (
+            <FormDescription className='italic'>{subtitle}</FormDescription>
+          )}
+          <FormControl>
+            <Input
+              type={type}
+              placeholder={placeholder}
+              {...field}
+              disabled={isLoading}
             />
-          </FormItem>
-        )}
-      />
-    );
-  };
-
-  // Componente reutilizable para las preguntas SI/NO
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
   const SiNoQuestion = ({
     name,
     label,
@@ -763,6 +627,7 @@ export function ActaEntranteForm() {
               onValueChange={field.onChange}
               defaultValue={field.value}
               className='flex items-center space-x-4'
+              disabled={isLoading}
             >
               <FormItem className='flex items-center space-x-2 space-y-0'>
                 <FormControl>
@@ -776,6 +641,12 @@ export function ActaEntranteForm() {
                 </FormControl>
                 <FormLabel className='font-normal'>No</FormLabel>
               </FormItem>
+              <FormItem className='flex items-center space-x-2 space-y-0'>
+                <FormControl>
+                  <RadioGroupItem value='NO APLICA' />
+                </FormControl>
+                <FormLabel className='font-normal'>No Aplica</FormLabel>
+              </FormItem>
             </RadioGroup>
           </FormControl>
           <FormMessage />
@@ -787,85 +658,82 @@ export function ActaEntranteForm() {
   return (
     <Card className='w-full'>
       <CardHeader>
-        <CardTitle>
+        <CardTitle className='text-[24px]'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].title
             : steps[currentStep].title}
         </CardTitle>
-        <ShadcnCardDescription className='whitespace-pre-line'>
+        <ShadcnCardDescription className='whitespace-pre-line italic'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].subtitle
             : steps[currentStep].subtitle}
         </ShadcnCardDescription>
-        <div className='pt-4'>
-          <p className='text-sm font-medium'>
-            Paso {currentStep + 1} de {steps.length}:
-          </p>
-          <Progress
-            value={((currentStep + 1) / steps.length) * 100}
-            className='mt-2'
-          />
-        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {apiError && (
+              <Alert variant='destructive'>
+                <AlertCircle className='h-4 w-4' />
+                <AlertTitle>Error al Crear el Acta</AlertTitle>
+                <AlertDescription>{apiError}</AlertDescription>
+              </Alert>
+            )}
+
             {currentStep === 0 && (
               <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
                 <FormFieldWithExtras
                   name='email'
                   label='Dirección de correo electrónico'
-                  placeholder='ejemplo@correo.com'
-                  helpText='Ej: ejemplo@correo.com'
+                  placeholder='Ej: ejemplo@correo.com'
                 />
                 <FormFieldWithExtras
                   name='rifOrgano'
-                  label='RIF del órgano'
-                  placeholder='G-00000000-0'
-                  helpText='Ej: G-00000000-0'
+                  label='RIF del órgano, entidad, oficina o dependencia de la Administración Pública.'
+                  placeholder='Ej: G-00000000-0'
                 />
                 <FormFieldWithExtras
                   name='denominacionCargoEntrega'
-                  label='1. Denominación del cargo'
-                  placeholder='Presidencia, Dirección...'
-                  helpText='Ej: Presidencia, Dirección, Coordinación'
+                  label='Denominación del cargo'
+                  subtitle='Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Presidencia, Dirección, Coordinación'
                 />
                 <FormFieldWithExtras
                   name='nombreOrgano'
-                  label='2. Nombre del órgano'
-                  placeholder='Instituto Nacional de...'
-                  helpText='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
+                  label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública.'
+                  subtitle='Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
                 />
                 <FormFieldWithExtras
                   name='ciudadSuscripcion'
-                  label='3. Ciudad donde se suscribe'
-                  placeholder='Barquisimeto'
-                  helpText='Ej: Barquisimeto'
+                  label='Ciudad donde se suscribe el acta.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Barquisimeto'
                 />
                 <FormFieldWithExtras
                   name='estadoSuscripcion'
-                  label='4. Estado donde se suscribe'
-                  placeholder='Lara'
-                  helpText='Ej: Lara'
+                  label='Estado donde se suscribe el acta.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Lara'
                 />
                 <FormFieldWithExtras
                   name='horaSuscripcion'
-                  label='5. Hora de suscripción'
+                  label='Hora de suscripción del acta.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
                   type='time'
-                  helpText='Ej: 10:00 AM'
                 />
                 <FormFieldWithExtras
                   name='fechaSuscripcion'
-                  label='6. Fecha de suscripción'
+                  label='Fecha de la suscripción.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
                   type='date'
-                  helpText='Ej: tres (03) de enero del 2025'
                 />
                 <div className='md:col-span-2'>
                   <FormFieldWithExtras
                     name='direccionOrgano'
-                    label='7. Dirección exacta y completa'
-                    placeholder='Avenida 00 entre calle 00 y 00...'
-                    helpText='Ej: Av. 00 entre calle 00 y 00, Edf. Central, Piso 2...'
+                    label='Dirección exacta y completa de la ubicación de órgano, entidad, oficina o dependencia que se entrega'
+                    subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Avenida 00 entre calle 00 y 00, Edf. Central, Piso 2, despacho de la presidencia.'
                   />
                 </div>
                 <div className='md:col-span-2'>
@@ -874,17 +742,24 @@ export function ActaEntranteForm() {
                     name='motivoEntrega'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>21. Motivo de la entrega</FormLabel>
+                        <FormLabel>
+                          Motivo de la entrega del órgano, entidad, oficina o
+                          dependencia de la Administración Pública
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
+                          disabled={isLoading}
                         >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder='Seleccione un motivo' />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent
+                            position='popper'
+                            className='bg-white z-50 max-h-60 overflow-y-auto'
+                          >
                             <SelectItem value='Renuncia'>Renuncia</SelectItem>
                             <SelectItem value='Jubilacion'>
                               Jubilación
@@ -939,23 +814,27 @@ export function ActaEntranteForm() {
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                   <FormFieldWithExtras
                     name='nombreServidorEntrante'
-                    label='8. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                    label='Nombre'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaServidorEntrante'
-                    label='9. Cédula'
-                    helpText='Ej: V-00.000.000'
+                    label='Cédula'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='profesionServidorEntrante'
-                    label='10. Profesión'
-                    helpText='Ej: Contador, Ingeniero, Abogado'
+                    label='Profesión'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Contador, Ingeniero, Abogado'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorEntrante'
-                    label='11. Datos de designación'
-                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000...'
+                    label='Datos de designación'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -964,18 +843,21 @@ export function ActaEntranteForm() {
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
                     name='nombreAuditor'
-                    label='12. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                    label='Nombre'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaAuditor'
-                    label='13. Cédula'
-                    helpText='Ej: V-00.000.000'
+                    label='Cédula'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='profesionAuditor'
-                    label='14. Profesión'
-                    helpText='Ej: Contador, Ingeniero, Abogado'
+                    label='Profesión'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Contador, Ingeniero, Abogado'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -986,36 +868,42 @@ export function ActaEntranteForm() {
                     <p className='font-medium'>Testigo N° 1</p>
                     <FormFieldWithExtras
                       name='nombreTestigo1'
-                      label='15. Nombre'
-                      helpText='Ej: Pedro Jose Rodríguez Hernández'
+                      label='Nombre'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Pedro Jose Rodríguez Hernández'
                     />
                     <FormFieldWithExtras
                       name='cedulaTestigo1'
-                      label='16. Cédula'
-                      helpText='Ej: V-00.000.000'
+                      label='Cédula'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: V-00.000.000'
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo1'
-                      label='17. Profesión'
-                      helpText='Ej: Contador, Ingeniero, Abogado'
+                      label='Profesión'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Contador, Ingeniero, Abogado'
                     />
                   </div>
                   <div className='space-y-4 p-4 border rounded-md'>
                     <p className='font-medium'>Testigo N° 2</p>
                     <FormFieldWithExtras
                       name='nombreTestigo2'
-                      label='18. Nombre'
-                      helpText='Ej: Pedro Jose Rodríguez Hernández'
+                      label='Nombre'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Pedro Jose Rodríguez Hernández'
                     />
                     <FormFieldWithExtras
                       name='cedulaTestigo2'
-                      label='19. Cédula'
-                      helpText='Ej: V-00.000.000'
+                      label='Cédula'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: V-00.000.000'
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo2'
-                      label='20. Profesión'
-                      helpText='Ej: Contador, Ingeniero, Abogado'
+                      label='Profesión'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Contador, Ingeniero, Abogado'
                     />
                   </div>
                 </div>
@@ -1025,18 +913,21 @@ export function ActaEntranteForm() {
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
                     name='nombreServidorSaliente'
-                    label='22. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                    label='Nombre'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaServidorSaliente'
-                    label='23. Cédula'
-                    helpText='Ej: V-00.000.000'
+                    label='Cédula'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorSaliente'
-                    label='24. Datos de designación'
-                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000...'
+                    label='Datos de designación'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
               </div>
@@ -1067,7 +958,6 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 4: ANEXOS CONTRATACIONES, RRHH Y BIENES --- */}
             {currentStep === 3 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1149,7 +1039,6 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 5: --- */}
             {currentStep === 4 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1167,7 +1056,6 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 6: --- */}
             {currentStep === 5 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1177,7 +1065,6 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 7: --- */}
             {currentStep === 6 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1195,7 +1082,6 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 8: --- */}
             {currentStep === 7 && (
               <div className='space-y-4'>
                 <SiNoQuestion
@@ -1209,7 +1095,6 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 9: --- */}
             {currentStep === 8 && (
               <div className='space-y-6'>
                 <FormField
@@ -1218,8 +1103,8 @@ export function ActaEntranteForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Anexo VI: Cualquier otra información o documentación que
-                        se considere necesaria
+                        Cualquier otra información o documentación que se
+                        considere necesaria
                       </FormLabel>
                       <ShadcnCardDescription className='text-xs'>
                         Puede aportar datos adicionales que puedan influir en la
@@ -1230,6 +1115,7 @@ export function ActaEntranteForm() {
                         <Textarea
                           placeholder='Describa aquí la información adicional...'
                           {...field}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1241,20 +1127,25 @@ export function ActaEntranteForm() {
                   control={form.control}
                   name='anexos'
                   render={({ field }) => (
-                    <FormItem className='pt-4'>
+                    <FormItem className='pt-2'>
                       <FormLabel>ANEXOS ADICIONALES</FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
+                        disabled={isLoading}
                       >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder='Seleccione un anexo para detallar o indique si no aplica...' />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className='bg-white z-50 max-h-60 overflow-y-auto'>
                           {Object.keys(dynamicStepContent).map((key) => (
-                            <SelectItem key={key} value={key}>
+                            <SelectItem
+                              key={key}
+                              value={key}
+                              className='whitespace-normal h-auto'
+                            >
                               {key}
                             </SelectItem>
                           ))}
@@ -1268,13 +1159,11 @@ export function ActaEntranteForm() {
               </div>
             )}
 
-            {/* --- PASO 10: --- */}
             {currentStep === 9 && (
               <div>
                 {selectedAnexo && dynamicStepContent[selectedAnexo] ? (
                   (() => {
                     const content = dynamicStepContent[selectedAnexo];
-                    // Gracias a los tipos definidos, TypeScript ahora entiende la lógica
                     switch (content.type) {
                       case 'questions':
                         return (
@@ -1300,6 +1189,7 @@ export function ActaEntranteForm() {
                                     placeholder={`Describa aquí la información sobre "${content.title}"...`}
                                     {...field}
                                     rows={8}
+                                    disabled={isLoading}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1317,9 +1207,6 @@ export function ActaEntranteForm() {
                       Por favor, seleccione un tipo de anexo en el paso anterior
                       para continuar.
                     </p>
-                    <p className='text-xs mt-2'>
-                      (Si no aplica, puede finalizar el formulario).
-                    </p>
                   </div>
                 )}
               </div>
@@ -1327,25 +1214,6 @@ export function ActaEntranteForm() {
 
             {currentStep === 10 && (
               <div className='space-y-8'>
-                {/* Pregunta condicional */}
-                <SiNoQuestion
-                  name='autorizaEnvioCorreoAlternativo'
-                  label='¿Autoriza usted el envío de su acta de entrega a la dirección de correo electrónico alternativa proporcionada?'
-                />
-
-                {/* Input que aparece condicionalmente */}
-                {autorizaEnvio === 'SI' && (
-                  <div className='pl-4 border-l-2 border-primary-blue animate-in fade-in duration-500'>
-                    <FormFieldWithExtras
-                      name='correoAlternativo'
-                      label='Correo electrónico alternativo'
-                      placeholder='ejemplo.alternativo@correo.com'
-                      helpText='Ingrese una dirección de correo válida'
-                    />
-                  </div>
-                )}
-
-                {/* Mensaje de finalización estilizado */}
                 <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed'>
                   <CheckCircle2 className='mx-auto h-12 w-12 text-green-500' />
                   <h3 className='mt-4 text-xl font-semibold text-gray-800'>
@@ -1356,35 +1224,56 @@ export function ActaEntranteForm() {
                     revise los datos en los pasos anteriores usando el botón
                     Anterior.
                     <br />
-                    Una vez que esté seguro de que toda la información es
-                    correcta, presione Crear Acta para generar el documento
-                    final.
+                    Una vez que esté seguro, presione Crear Acta para generar el
+                    documento final.
                   </p>
                 </div>
               </div>
             )}
 
-            <div className='flex justify-between pt-8'>
-              {currentStep > 0 && (
-                <Button type='button' variant='outline' onClick={prevStep}>
-                  Anterior
-                </Button>
-              )}
+            <div className='flex items-center justify-between pt-8'>
+              <div className='w-1/3'>
+                {currentStep > 0 && (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={prevStep}
+                    disabled={isLoading}
+                  >
+                    Anterior
+                  </Button>
+                )}
+              </div>
 
-              {/* ▼▼▼ CAMBIO: Lógica de botones mejorada ▼▼▼ */}
-              {currentStep < steps.length - 1 && (
-                <Button type='button' onClick={nextStep} className='ml-auto'>
-                  Siguiente
-                </Button>
-              )}
-              {currentStep === steps.length - 1 && (
-                <Button
-                  type='submit'
-                  className='ml-auto bg-primary-blue hover:bg-white'
-                >
-                  Crear Acta
-                </Button>
-              )}
+              <div className='flex w-1/3 justify-center'>
+                <div className='bg-icon-gray-bg px-4 py-2 rounded-lg shadow-sm'>
+                  <p className='text-sm font-bold text-gray-700'>
+                    Paso {currentStep + 1} de {steps.length}
+                  </p>
+                </div>
+              </div>
+
+              <div className='flex w-1/3 justify-end'>
+                {currentStep < steps.length - 1 && (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={nextStep}
+                    disabled={isLoading}
+                  >
+                    Siguiente
+                  </Button>
+                )}
+                {currentStep === steps.length - 1 && (
+                  <Button
+                    type='submit'
+                    className='bg-primary-blue hover:bg-primary-blue-dark text-white'
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Creando Acta...' : 'Crear Acta'}
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </Form>
