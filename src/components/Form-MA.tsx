@@ -658,7 +658,7 @@ export function ActaMaximaAutoridadForm() {
   return (
     <Card className='w-full'>
       <CardHeader>
-        <CardTitle className='text-xl'>
+        <CardTitle className='text-[24px]'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].title
             : steps[currentStep].title}
