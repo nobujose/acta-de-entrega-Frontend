@@ -8,6 +8,7 @@ import {
   Form,
   FormControl,
   FormField,
+  FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
@@ -28,28 +29,21 @@ import {
   CardTitle,
   CardDescription as ShadcnCardDescription,
 } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/HeaderContext';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
-// 1. IMPORTAMOS LA LÓGICA
 import { createActaMaximaAutoridad } from '@/services/actasService';
-import { actaMaximaAutoridadSchema } from '@/lib/schemas'; // Importamos el esquema central
+import { actaMaximaAutoridadSchema } from '@/lib/schemas';
 
-// 2. EL TIPO DEL FORMULARIO SE CREA A PARTIR DEL ESQUEMA IMPORTADO
 type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
 
-// ... (toda la definición de 'steps' y 'dynamicStepContent' se mantiene exactamente igual que antes)
 const steps = [
   {
     id: 1,
     title: 'Datos Generales del Acta',
-    subtitle:
-      '(Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009 \n y Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
       'email',
       'rifOrgano',
@@ -65,8 +59,7 @@ const steps = [
   },
   {
     id: 2,
-    title: 'Participantes en el Acta',
-    subtitle: '(Artículo 10.3, Resolución CGR N.º 01-00-000162)',
+    title: 'Intervinientes en el Acta',
     fields: [
       'nombreServidorEntrante',
       'cedulaServidorEntrante',
@@ -503,6 +496,7 @@ export function ActaMaximaAutoridadForm() {
   }, [setTitle]);
 
   const form = useForm<FormData>({
+    mode: 'onChange',
     resolver: zodResolver(actaMaximaAutoridadSchema),
     defaultValues: {
       email: '',
@@ -534,10 +528,9 @@ export function ActaMaximaAutoridadForm() {
     },
   });
 
-  const { setError, clearErrors, getFieldState, getValues, watch } = form;
+  const { getValues, watch } = form;
 
   const selectedAnexo = watch('anexos') as DynamicStepKey;
-  const autorizaEnvio = watch('autorizaEnvioCorreoAlternativo');
 
   // 4. LÓGICA DE ENVÍO ACTUALIZADA PARA CONECTAR CON EL BACKEND
   const onSubmit = async (data: FormData) => {
@@ -583,64 +576,39 @@ export function ActaMaximaAutoridadForm() {
   const FormFieldWithExtras = ({
     name,
     label,
+    subtitle,
     placeholder,
-    helpText,
     type = 'text',
   }: {
     name: keyof FormData;
     label: string;
+    subtitle?: string;
     placeholder?: string;
-    helpText?: string;
     type?: string;
-  }) => {
-    // Función que se activa cuando el usuario entra al input
-    const handleFocus = () => {
-      // Solo mostramos la ayuda si NO hay un error de validación real y el campo está vacío
-      if (!getFieldState(name).error && !getValues(name)) {
-        // Usamos setError para mostrar nuestro texto de ayuda en el componente FormMessage
-        setError(name, { type: 'custom', message: helpText });
-      }
-    };
-
-    // Función que se activa cuando el usuario sale del input
-    const handleBlur = () => {
-      // Si el mensaje que se muestra es nuestro texto de ayuda, lo limpiamos
-      if (getFieldState(name).error?.message === helpText) {
-        clearErrors(name);
-      }
-    };
-
-    return (
-      <FormField
-        control={form.control}
-        name={name}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <Input
-                type={type}
-                placeholder={placeholder}
-                {...field}
-                onFocus={handleFocus}
-                onBlur={handleBlur}
-                disabled={isLoading}
-              />
-            </FormControl>
-            <FormMessage
-              className={
-                getFieldState(name).error?.message === helpText
-                  ? 'text-blue-500' // Texto de ayuda en azul
-                  : 'text-red-600' // Errores de validación en rojo
-              }
+  }) => (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          {subtitle && (
+            <FormDescription className='italic'>{subtitle}</FormDescription>
+          )}
+          <FormControl>
+            <Input
+              type={type}
+              placeholder={placeholder}
+              {...field}
+              disabled={isLoading}
             />
-          </FormItem>
-        )}
-      />
-    );
-  };
-
-  // Componente reutilizable para las preguntas SI/NO
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+  // Componente específico para las preguntas de Sí, No, No Aplica
   const SiNoQuestion = ({
     name,
     label,
@@ -673,6 +641,12 @@ export function ActaMaximaAutoridadForm() {
                 </FormControl>
                 <FormLabel className='font-normal'>No</FormLabel>
               </FormItem>
+              <FormItem className='flex items-center space-x-2 space-y-0'>
+                <FormControl>
+                  <RadioGroupItem value='NO APLICA' />
+                </FormControl>
+                <FormLabel className='font-normal'>No Aplica</FormLabel>
+              </FormItem>
             </RadioGroup>
           </FormControl>
           <FormMessage />
@@ -684,30 +658,21 @@ export function ActaMaximaAutoridadForm() {
   return (
     <Card className='w-full'>
       <CardHeader>
-        <CardTitle>
+        <CardTitle className='text-xl'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].title
             : steps[currentStep].title}
         </CardTitle>
-        <ShadcnCardDescription className='whitespace-pre-line'>
+        <ShadcnCardDescription className='whitespace-pre-line italic'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].subtitle
             : steps[currentStep].subtitle}
         </ShadcnCardDescription>
-        <div className='pt-4'>
-          <p className='text-sm font-medium'>
-            Paso {currentStep + 1} de {steps.length}:
-          </p>
-          <Progress
-            value={((currentStep + 1) / steps.length) * 100}
-            className='mt-2'
-          />
-        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            {/* 5. MENSAJE DE ERROR DE LA API */}
+            {/* MENSAJE DE ERROR DE LA API */}
             {apiError && (
               <Alert variant='destructive'>
                 <AlertCircle className='h-4 w-4' />
@@ -716,66 +681,60 @@ export function ActaMaximaAutoridadForm() {
               </Alert>
             )}
 
-            {/* A partir de aquí, el código de los pasos del formulario se mantiene igual,
-                solo se añade la propiedad `disabled={isLoading}` a los campos y botones.
-                Te muestro cómo aplicarlo en el primer paso como ejemplo. */}
-
             {currentStep === 0 && (
               <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
                 <FormFieldWithExtras
                   name='email'
                   label='Dirección de correo electrónico'
-                  placeholder='ejemplo@correo.com'
-                  helpText='Ej: ejemplo@correo.com'
+                  placeholder='Ej: ejemplo@correo.com'
                 />
                 <FormFieldWithExtras
                   name='rifOrgano'
-                  label='RIF del órgano'
-                  placeholder='G-00000000-0'
-                  helpText='Ej: G-00000000-0'
+                  label='RIF del órgano, entidad, oficina o dependencia de la Administración Pública.'
+                  placeholder='Ej: G-00000000-0'
                 />
                 <FormFieldWithExtras
                   name='denominacionCargoEntrega'
-                  label='1. Denominación del cargo'
-                  placeholder='Presidencia, Dirección...'
-                  helpText='Ej: Presidencia, Dirección, Coordinación'
+                  label='Denominación del cargo'
+                  subtitle='Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Presidencia, Dirección, Coordinación'
                 />
                 <FormFieldWithExtras
                   name='nombreOrgano'
-                  label='2. Nombre del órgano'
-                  placeholder='Instituto Nacional de...'
-                  helpText='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
+                  label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública.'
+                  subtitle='Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
                 />
                 <FormFieldWithExtras
                   name='ciudadSuscripcion'
-                  label='3. Ciudad donde se suscribe'
-                  placeholder='Barquisimeto'
-                  helpText='Ej: Barquisimeto'
+                  label='Ciudad donde se suscribe el acta.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Barquisimeto'
                 />
                 <FormFieldWithExtras
                   name='estadoSuscripcion'
-                  label='4. Estado donde se suscribe'
-                  placeholder='Lara'
-                  helpText='Ej: Lara'
+                  label='Estado donde se suscribe el acta.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                  placeholder='Ej: Lara'
                 />
                 <FormFieldWithExtras
                   name='horaSuscripcion'
-                  label='5. Hora de suscripción'
+                  label='Hora de suscripción del acta.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
                   type='time'
-                  helpText='Ej: 10:00 AM'
                 />
                 <FormFieldWithExtras
                   name='fechaSuscripcion'
-                  label='6. Fecha de suscripción'
+                  label='Fecha de la suscripción.'
+                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
                   type='date'
-                  helpText='Ej: tres (03) de enero del 2025'
                 />
                 <div className='md:col-span-2'>
                   <FormFieldWithExtras
                     name='direccionOrgano'
-                    label='7. Dirección exacta y completa'
-                    placeholder='Avenida 00 entre calle 00 y 00...'
-                    helpText='Ej: Av. 00 entre calle 00 y 00, Edf. Central, Piso 2...'
+                    label='Dirección exacta y completa de la ubicación de órgano, entidad, oficina o dependencia que se entrega'
+                    subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Avenida 00 entre calle 00 y 00, Edf. Central, Piso 2, despacho de la presidencia.'
                   />
                 </div>
                 <div className='md:col-span-2'>
@@ -784,7 +743,10 @@ export function ActaMaximaAutoridadForm() {
                     name='motivoEntrega'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>21. Motivo de la entrega</FormLabel>
+                        <FormLabel>
+                          Motivo de la entrega del órgano, entidad, oficina o
+                          dependencia de la Administración Pública
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -795,7 +757,10 @@ export function ActaMaximaAutoridadForm() {
                               <SelectValue placeholder='Seleccione un motivo' />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent
+                            position='popper'
+                            className='bg-white z-50 max-h-60 overflow-y-auto'
+                          >
                             <SelectItem value='Renuncia'>Renuncia</SelectItem>
                             <SelectItem value='Jubilacion'>
                               Jubilación
@@ -850,23 +815,27 @@ export function ActaMaximaAutoridadForm() {
                 <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
                   <FormFieldWithExtras
                     name='nombreServidorEntrante'
-                    label='8. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                    label='Nombre'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaServidorEntrante'
-                    label='9. Cédula'
-                    helpText='Ej: V-00.000.000'
+                    label='Cédula'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='profesionServidorEntrante'
-                    label='10. Profesión'
-                    helpText='Ej: Contador, Ingeniero, Abogado'
+                    label='Profesión'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Contador, Ingeniero, Abogado'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorEntrante'
-                    label='11. Datos de designación'
-                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000...'
+                    label='Datos de designación'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -875,18 +844,21 @@ export function ActaMaximaAutoridadForm() {
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
                     name='nombreAuditor'
-                    label='12. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                    label='Nombre'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaAuditor'
-                    label='13. Cédula'
-                    helpText='Ej: V-00.000.000'
+                    label='Cédula'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='profesionAuditor'
-                    label='14. Profesión'
-                    helpText='Ej: Contador, Ingeniero, Abogado'
+                    label='Profesión'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Contador, Ingeniero, Abogado'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -897,36 +869,42 @@ export function ActaMaximaAutoridadForm() {
                     <p className='font-medium'>Testigo N° 1</p>
                     <FormFieldWithExtras
                       name='nombreTestigo1'
-                      label='15. Nombre'
-                      helpText='Ej: Pedro Jose Rodríguez Hernández'
+                      label='Nombre'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Pedro Jose Rodríguez Hernández'
                     />
                     <FormFieldWithExtras
                       name='cedulaTestigo1'
-                      label='16. Cédula'
-                      helpText='Ej: V-00.000.000'
+                      label='Cédula'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: V-00.000.000'
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo1'
-                      label='17. Profesión'
-                      helpText='Ej: Contador, Ingeniero, Abogado'
+                      label='Profesión'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Contador, Ingeniero, Abogado'
                     />
                   </div>
                   <div className='space-y-4 p-4 border rounded-md'>
                     <p className='font-medium'>Testigo N° 2</p>
                     <FormFieldWithExtras
                       name='nombreTestigo2'
-                      label='18. Nombre'
-                      helpText='Ej: Pedro Jose Rodríguez Hernández'
+                      label='Nombre'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Pedro Jose Rodríguez Hernández'
                     />
                     <FormFieldWithExtras
                       name='cedulaTestigo2'
-                      label='19. Cédula'
-                      helpText='Ej: V-00.000.000'
+                      label='Cédula'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: V-00.000.000'
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo2'
-                      label='20. Profesión'
-                      helpText='Ej: Contador, Ingeniero, Abogado'
+                      label='Profesión'
+                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                      placeholder='Ej: Contador, Ingeniero, Abogado'
                     />
                   </div>
                 </div>
@@ -936,18 +914,21 @@ export function ActaMaximaAutoridadForm() {
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
                     name='nombreServidorSaliente'
-                    label='22. Nombre'
-                    helpText='Ej: Pedro Jose Rodríguez Hernández'
+                    label='Nombre'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaServidorSaliente'
-                    label='23. Cédula'
-                    helpText='Ej: V-00.000.000'
+                    label='Cédula'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorSaliente'
-                    label='24. Datos de designación'
-                    helpText='Ej: Resolución N° 000/00 de fecha 00-00-0000...'
+                    label='Datos de designación'
+                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
+                    placeholder='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
               </div>
@@ -1123,8 +1104,8 @@ export function ActaMaximaAutoridadForm() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Anexo VI: Cualquier otra información o documentación que
-                        se considere necesaria
+                        Cualquier otra información o documentación que se
+                        considere necesaria
                       </FormLabel>
                       <ShadcnCardDescription className='text-xs'>
                         Puede aportar datos adicionales que puedan influir en la
@@ -1147,7 +1128,7 @@ export function ActaMaximaAutoridadForm() {
                   control={form.control}
                   name='anexos'
                   render={({ field }) => (
-                    <FormItem className='pt-4'>
+                    <FormItem className='pt-2'>
                       <FormLabel>ANEXOS ADICIONALES</FormLabel>
                       <Select
                         onValueChange={field.onChange}
@@ -1159,9 +1140,13 @@ export function ActaMaximaAutoridadForm() {
                             <SelectValue placeholder='Seleccione un anexo para detallar o indique si no aplica...' />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent>
+                        <SelectContent className='bg-white z-50 max-h-60 overflow-y-auto'>
                           {Object.keys(dynamicStepContent).map((key) => (
-                            <SelectItem key={key} value={key}>
+                            <SelectItem
+                              key={key}
+                              value={key}
+                              className='whitespace-normal h-auto'
+                            >
                               {key}
                             </SelectItem>
                           ))}
@@ -1230,20 +1215,6 @@ export function ActaMaximaAutoridadForm() {
 
             {currentStep === 10 && (
               <div className='space-y-8'>
-                <SiNoQuestion
-                  name='autorizaEnvioCorreoAlternativo'
-                  label='¿Autoriza usted el envío de su acta de entrega a la dirección de correo electrónico alternativa proporcionada?'
-                />
-                {autorizaEnvio === 'SI' && (
-                  <div className='pl-4 border-l-2 border-primary-blue animate-in fade-in duration-500'>
-                    <FormFieldWithExtras
-                      name='correoAlternativo'
-                      label='Correo electrónico alternativo'
-                      placeholder='ejemplo.alternativo@correo.com'
-                      helpText='Ingrese una dirección de correo válida'
-                    />
-                  </div>
-                )}
                 <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed'>
                   <CheckCircle2 className='mx-auto h-12 w-12 text-green-500' />
                   <h3 className='mt-4 text-xl font-semibold text-gray-800'>
@@ -1261,33 +1232,53 @@ export function ActaMaximaAutoridadForm() {
               </div>
             )}
 
-            <div className='flex justify-between pt-8'>
-              {currentStep > 0 && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={prevStep}
-                  disabled={isLoading}
-                >
-                  Anterior
-                </Button>
-              )}
-              <div className='flex-grow' />{' '}
-              {/* Empuja el siguiente botón a la derecha */}
-              {currentStep < steps.length - 1 && (
-                <Button type='button' onClick={nextStep} disabled={isLoading}>
-                  Siguiente
-                </Button>
-              )}
-              {currentStep === steps.length - 1 && (
-                <Button
-                  type='submit'
-                  className='bg-[#001A70] hover:bg-[#001A70]/90 text-white'
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creando Acta...' : 'Crear Acta'}
-                </Button>
-              )}
+            {/* Navegación entre pasos */}
+            <div className='flex items-center justify-between pt-8'>
+              {/* Columna Izquierda (para el botón Anterior) */}
+              <div className='w-1/3'>
+                {currentStep > 0 && (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={prevStep}
+                    disabled={isLoading}
+                  >
+                    Anterior
+                  </Button>
+                )}
+              </div>
+
+              {/* Columna Central (para el indicador de Pasos) */}
+              <div className='flex w-1/3 justify-center'>
+                <div className='bg-icon-gray-bg px-4 py-2 rounded-lg shadow-sm'>
+                  <p className='text-sm font-bold text-gray-700'>
+                    Paso {currentStep + 1} de {steps.length}
+                  </p>
+                </div>
+              </div>
+
+              {/* Columna Derecha (para el botón Siguiente/Finalizar) */}
+              <div className='flex w-1/3 justify-end'>
+                {currentStep < steps.length - 1 && (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={nextStep}
+                    disabled={isLoading}
+                  >
+                    Siguiente
+                  </Button>
+                )}
+                {currentStep === steps.length - 1 && (
+                  <Button
+                    type='submit'
+                    className='bg-primary-blue hover:bg-primary-blue-dark text-white'
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Creando Acta...' : 'Crear Acta'}
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </Form>

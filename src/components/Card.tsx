@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface CardProps {
   icon: React.ReactNode;
@@ -41,7 +42,13 @@ function CardComponent({
     <ShadcnCard className={cardClasses} onClick={handleNavigation}>
       <CardHeader>
         <div className='flex items-start justify-between'>
-          <div className='flex h-12 w-12 items-center justify-center rounded-lg bg-[#001A70] shadow-lg'>
+          <div
+            className={cn(
+              'flex h-12 w-12 items-center justify-center rounded-lg shadow-lg',
+              // Lógica condicional: si es 'gratis', usa el fondo gris, si no, el azul.
+              gratis ? 'bg-icon-gray-bg' : 'bg-primary-blue'
+            )}
+          >
             {icon}
           </div>
           <div className='flex items-center gap-2'>

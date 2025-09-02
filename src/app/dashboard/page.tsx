@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Card from '@/components/Card';
-import { FileOutput, FileInput, Stamp } from 'lucide-react';
+import { FileDown, ShieldCheck, FileUp } from 'lucide-react';
 import { useHeader } from '@/context/HeaderContext';
 
 export default function DashboardPage() {
@@ -15,7 +15,7 @@ export default function DashboardPage() {
   return (
     <div className='grid grid-cols-1 gap-8 row-gap-5 md:grid-cols-2 lg:grid-cols-3'>
       <Card
-        icon={<FileOutput className='h-6 w-6 text-white' />}
+        icon={<FileUp className='h-6 w-6 text-black' />}
         title='Acta de Entrega Saliente'
         description='Genera el acta de entrega con facilidad para el Servidor Público Saliente.'
         hashtag='#UniversitasLegal'
@@ -24,7 +24,7 @@ export default function DashboardPage() {
       />
 
       <Card
-        icon={<FileInput className='h-6 w-6 text-white' />}
+        icon={<FileDown className='h-6 w-6 text-black' />}
         title='Actas de Entrega Entrante'
         description='Genera el acta de entrega con facilidad para el Servidor Público Entrante.'
         hashtag='#UniversitasLegal'
@@ -33,7 +33,7 @@ export default function DashboardPage() {
       />
 
       <Card
-        icon={<Stamp className='h-6 w-6 text-white' />}
+        icon={<ShieldCheck className='h-6 w-6 text-black' />}
         title='Maxima Autoridad'
         description='General el acta de entrega con facilidad para el Servidor Público asignado por la Máxima Autoridad.'
         hashtag='#UniversitasLegal'

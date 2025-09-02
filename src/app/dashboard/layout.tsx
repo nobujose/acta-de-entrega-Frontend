@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import { HeaderProvider } from '@/context/HeaderContext';
+import { ModalProvider } from '@/components/ModalProvider';
 
 export default function DashboardLayout({
   children,
@@ -19,6 +20,7 @@ export default function DashboardLayout({
           </main>
         </div>
       </div>
+      <ModalProvider />
     </HeaderProvider>
   );
 }

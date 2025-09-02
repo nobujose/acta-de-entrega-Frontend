@@ -538,7 +538,7 @@ export function ActaSalienteForm() {
       // DESCOMENTA LA SIGUIENTE LÍNEA PARA ENVIAR A TU BACKEND
       // const response = await apiClient.post('/actas/maxima-autoridad-paga', data);
       alert('Acta creada exitosamente!');
-      router.push('/dashboard/actas');
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error al crear el acta:', error);
       alert('Hubo un error al crear el acta. Por favor, inténtalo de nuevo.');
