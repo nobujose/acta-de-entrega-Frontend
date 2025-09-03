@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  Settings,
   Menu,
   Home,
   Bot,
@@ -21,11 +20,13 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useModalStore } from '@/stores/useModalStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
+  const { logout } = useAuthStore();
   const { open: openModal } = useModalStore();
 
   const navLinks = [
@@ -67,8 +68,8 @@ export default function Sidebar() {
     openModal('logoutConfirmation', {
       title: '¿Estás seguro que quieres cerrar sesión?',
       onConfirm: () => {
-        console.log('Cerrando sesión...'); // Aquí irá tu lógica de logout
-        router.push('/login'); // Redirige al login
+        logout(); // Llama a la función de logout del store
+        router.push('/login');
       },
     });
   };

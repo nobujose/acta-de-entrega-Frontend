@@ -1,4 +1,3 @@
-// src/components/LoginForm.tsx
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +17,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { loginUser } from '@/services/authService'; // -> 1. Importamos nuestra nueva función
+import { loginUser } from '@/services/authService';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 // El esquema de validación no cambia
 const formSchema = z.object({
@@ -33,16 +33,17 @@ const formSchema = z.object({
 export function LoginForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  // -> 2. Nuevos estados para manejar la carga y los errores de la API
+  // Nuevos estados para manejar la carga y los errores de la API
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const { setAuth } = useAuthStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', password: '' },
   });
 
-  // -> 3. Lógica de envío actualizada para llamar al backend
+  // Lógica de envío actualizada para llamar al backend
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setApiError(null);
@@ -51,11 +52,11 @@ export function LoginForm() {
       const response = await loginUser(values);
       console.log('Login exitoso:', response);
 
-      // Guardamos el token en el almacenamiento local del navegador
-      localStorage.setItem('authToken', response.token);
+      // Usamos setAuth para guardar el token y los datos del usuario globalmente
+      setAuth(response.token, response.user);
 
       // Redirigimos al dashboard
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } catch (error) {
       if (error instanceof Error) {
         setApiError(error.message);
@@ -76,7 +77,7 @@ export function LoginForm() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-          {/* -> 4. Mostramos el error de la API si existe */}
+          {/* Mostramos el error de la API si existe */}
           {apiError && (
             <div
               className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative'
