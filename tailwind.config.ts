@@ -17,6 +17,7 @@ const config: Config = {
         'badge-gold': '#FFC200', // Color dorado para la etiqueta "Express"
         'button-gold': '#E6AF01', // Color dorado para botones
         'icon-gray-bg': '#F3F4F6', // Color de fondo de icono gris "Express"
+        'text-answer': '#4F7396', // Color del texto de la respuesta
       },
       boxShadow: {
         'blue-soft':
