@@ -1,9 +1,9 @@
 // src/components/Sidebar.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,30 +11,34 @@ import {
   Settings,
   Menu,
   Home,
-  FileText,
-  BotMessageSquare,
-  BookOpenCheck,
+  Bot,
   BookOpenText,
-  MessageCircleQuestionMark,
   CircleAlert,
+  Folder,
+  StickyNote,
+  CircleQuestionMark,
+  LogOut,
 } from 'lucide-react';
 import Image from 'next/image';
+import { useModalStore } from '@/stores/useModalStore';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { open: openModal } = useModalStore();
 
   const navLinks = [
     { href: '/dashboard', label: 'Inicio', icon: Home },
     {
       href: '/dashboard/repositorio',
       label: 'Repositorio Legal',
-      icon: FileText,
+      icon: Folder,
     },
     {
       href: '/dashboard/revision',
       label: 'Revisión de acta',
-      icon: BookOpenCheck,
+      icon: StickyNote,
     },
     {
       href: '/dashboard/panel-actas',
@@ -44,23 +48,30 @@ export default function Sidebar() {
     {
       href: '/dashboard/faq',
       label: 'Preguntas frecuentes',
-      icon: MessageCircleQuestionMark,
+      icon: CircleQuestionMark,
     },
     {
       href: '/dashboard/asistenteia',
       label: 'Asistente virtual',
-      icon: BotMessageSquare,
+      icon: Bot,
     },
   ];
 
-  const bottomLinks = [
-    { href: '/dashboard/acerca-de', label: 'Acerca de', icon: CircleAlert },
-    {
-      href: '/dashboard/configuracion',
-      label: 'Configuración',
-      icon: Settings,
-    },
-  ];
+  const aboutLink = {
+    href: '/dashboard/acerca-de',
+    label: 'Acerca de',
+    icon: CircleAlert,
+  };
+
+  const handleLogoutClick = () => {
+    openModal('logoutConfirmation', {
+      title: '¿Estás seguro que quieres cerrar sesión?',
+      onConfirm: () => {
+        console.log('Cerrando sesión...'); // Aquí irá tu lógica de logout
+        router.push('/login'); // Redirige al login
+      },
+    });
+  };
 
   return (
     <aside
@@ -70,7 +81,7 @@ export default function Sidebar() {
       )}
     >
       {/* Logo y Botón de Menú */}
-      <div className='flex h-16 items-center px-4'>
+      <div className='flex h-16 items-center gap-x-4 px-4'>
         <Button
           variant='ghost'
           size='icon'
@@ -85,10 +96,10 @@ export default function Sidebar() {
             className='ml-2 flex items-center gap-2 font-semibold'
           >
             <Image
-              src='/horizontal - azul.svg'
+              src='/logo de universitas legal.svg'
               alt='Universitas Legal Logo'
               width={120}
-              height={120}
+              height={75}
               className='rounded-sm'
             />
             <span className='truncate text-white'></span>
@@ -123,23 +134,36 @@ export default function Sidebar() {
 
         {/* Enlaces inferiores */}
         <div className='py-2'>
-          {bottomLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              title={isCollapsed ? link.label : ''}
-              className={cn(
-                'flex items-center gap-3 py-2 w-full transition-all duration-200',
-                isCollapsed ? 'justify-center px-4' : 'px-4',
-                pathname === link.href
-                  ? 'bg-white text-gray-900 font-semibold'
-                  : 'text-gray-700 hover:bg-sidebar-hover-bg hover:text-black rounded-md'
-              )}
-            >
-              <link.icon className='h-4 w-4 shrink-0' />
-              {!isCollapsed && <span className='truncate'>{link.label}</span>}
-            </Link>
-          ))}
+          <Link
+            href={aboutLink.href}
+            title={isCollapsed ? aboutLink.label : ''}
+            className={cn(
+              'flex items-center gap-3 py-2 w-full transition-all duration-200',
+              isCollapsed ? 'justify-center px-4' : 'px-4',
+              pathname === aboutLink.href
+                ? 'bg-white text-gray-900 font-semibold'
+                : 'text-gray-700 hover:bg-sidebar-hover-bg hover:text-black rounded-md'
+            )}
+          >
+            <aboutLink.icon className='h-4 w-4 shrink-0' />
+            {!isCollapsed && (
+              <span className='truncate'>{aboutLink.label}</span>
+            )}
+          </Link>
+
+          {/* ▼▼▼ CAMBIO: Botón de Cerrar Sesión ▼▼▼ */}
+          <Button
+            variant='ghost'
+            title={isCollapsed ? 'Cerrar Sesión' : ''}
+            onClick={handleLogoutClick}
+            className={cn(
+              'flex items-center gap-3 py-2 w-full transition-all duration-200 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md',
+              isCollapsed ? 'justify-center px-4' : 'px-4 justify-start'
+            )}
+          >
+            <LogOut className='h-4 w-4 shrink-0' />
+            {!isCollapsed && <span className='truncate'>Cerrar sesión</span>}
+          </Button>
         </div>
 
         {/* Perfil de Usuario con su separador */}
