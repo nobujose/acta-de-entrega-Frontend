@@ -1,6 +1,5 @@
 'use client';
 
-// Se añade 'useRef' a las importaciones de React
 import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
@@ -40,24 +39,20 @@ const StatusDisplay = ({
   </div>
 );
 
-export default function VerifyEmailPage() {
+// Este es el componente que contiene toda la lógica del cliente
+export default function VerificationClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
     'loading'
   );
   const [errorMessage, setErrorMessage] = useState('');
-
-  // --- NUEVO: Se crea una referencia para controlar la ejecución ---
   const verificationAttempted = useRef(false);
 
   useEffect(() => {
-    // --- CORRECCIÓN: Se evita que el efecto se ejecute dos veces en desarrollo ---
-    // Si la verificación ya se intentó, no hacemos nada más.
     if (verificationAttempted.current) {
       return;
     }
-    // Marcamos que vamos a intentar la verificación.
     verificationAttempted.current = true;
 
     const token = searchParams.get('token');
@@ -94,17 +89,6 @@ export default function VerifyEmailPage() {
     verifyToken();
   }, [searchParams, router]);
 
-  // El resto del componente para renderizar el estado no cambia
-  if (status === 'loading') {
-    return (
-      <StatusDisplay
-        icon={<Loader2 className='h-12 w-12 text-[#001A70] animate-spin' />}
-        title='Verificando tu correo...'
-        message='Por favor, espera un momento.'
-      />
-    );
-  }
-
   if (status === 'success') {
     return (
       <StatusDisplay
@@ -118,13 +102,24 @@ export default function VerifyEmailPage() {
     );
   }
 
+  if (status === 'error') {
+    return (
+      <StatusDisplay
+        icon={<XCircle className='h-12 w-12 text-red-500' />}
+        title='Error de Verificación'
+        message={errorMessage}
+        buttonText='Volver al Inicio'
+        onButtonClick={() => router.push('/login')}
+      />
+    );
+  }
+
+  // Por defecto (mientras status === 'loading'), se muestra esto
   return (
     <StatusDisplay
-      icon={<XCircle className='h-12 w-12 text-red-500' />}
-      title='Error de Verificación'
-      message={errorMessage}
-      buttonText='Volver al Inicio'
-      onButtonClick={() => router.push('/login')}
+      icon={<Loader2 className='h-12 w-12 text-[#001A70] animate-spin' />}
+      title='Verificando tu correo...'
+      message='Por favor, espera un momento.'
     />
   );
 }
