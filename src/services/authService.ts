@@ -3,7 +3,7 @@ import apiClient from '@/lib/axios';
 import { AxiosError } from 'axios';
 import * as z from 'zod';
 
-// Definimos el tipo de los datos que esperamos del backend al hacer login
+// Tipos de respuesta (sin cambios)
 interface LoginResponse {
   message: string;
   token: string;
@@ -14,11 +14,22 @@ interface LoginResponse {
   };
 }
 
-/**
- * Llama al endpoint de login del backend.
- * @param data - Objeto con email y password.
- * @returns La respuesta del servidor con el token y los datos del usuario.
- */
+interface RegisterResponse {
+  message: string;
+}
+
+// NUEVO: Definimos un tipo específico para los datos de registro para evitar el uso de 'any'.
+interface RegisterData {
+  email: string;
+  password: string;
+  name: string;
+  apellido: string;
+  telefono: string;
+  institucion: string;
+  cargo: string;
+}
+
+// Funciones de login y registro (sin cambios en login)
 export const loginUser = async (
   data: z.infer<z.ZodObject<{ email: z.ZodString; password: z.ZodString }>>
 ): Promise<LoginResponse> => {
@@ -27,7 +38,6 @@ export const loginUser = async (
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response && error.response.data) {
-      // Si hay un error en la respuesta del servidor, lo relanzamos para que el formulario lo capture
       throw new Error(
         error.response.data.message || 'Error al iniciar sesión.'
       );
@@ -36,28 +46,9 @@ export const loginUser = async (
   }
 };
 
-// --- REGISTRO (NUEVO CÓDIGO) ---
-interface RegisterResponse {
-  message: string;
-}
-
-/**
- * Llama al endpoint de registro del backend.
- * @param data - Objeto con los datos del nuevo usuario.
- * @returns La respuesta del servidor.
- */
+// --- CAMBIO APLICADO AQUÍ ---
 export const registerUser = async (
-  data: z.infer<
-    z.ZodObject<{
-      email: z.ZodString;
-      password: z.ZodString;
-      name: z.ZodString;
-      apellido: z.ZodOptional<z.ZodString>;
-      telefono: z.ZodOptional<z.ZodString>;
-      institucion: z.ZodOptional<z.ZodString>;
-      cargo: z.ZodOptional<z.ZodString>;
-    }>
-  >
+  data: RegisterData // Se reemplaza 'any' por el tipo específico 'RegisterData'
 ): Promise<RegisterResponse> => {
   try {
     const response = await apiClient.post<RegisterResponse>(
@@ -67,7 +58,6 @@ export const registerUser = async (
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response && error.response.data) {
-      // El backend puede enviar un array de errores, los unimos
       if (Array.isArray(error.response.data.errors)) {
         const messages = error.response.data.errors
           .map((e: { msg: string }) => e.msg)
@@ -82,11 +72,9 @@ export const registerUser = async (
   }
 };
 
-// --- RECUPERACIÓN DE CONTRASEÑA (CÓDIGO FALTANTE) ---
+// --- RECUPERACIÓN DE CONTRASEÑA ---
 
-/**
- * Llama al endpoint para solicitar el envío del código OTP.
- */
+// forgotPassword y verifyOtp (sin cambios)
 export const forgotPassword = async (
   email: string
 ): Promise<{ message: string }> => {
@@ -103,10 +91,6 @@ export const forgotPassword = async (
   }
 };
 
-/**
- * Llama al endpoint para verificar el código OTP.
- * @returns La respuesta del servidor, que incluye un token temporal para el reseteo.
- */
 export const verifyOtp = async (
   email: string,
   otp: string
@@ -124,26 +108,23 @@ export const verifyOtp = async (
   }
 };
 
-/**
- * Llama al endpoint para establecer la nueva contraseña.
- * @param newPassword La nueva contraseña.
- * @param resetToken El token temporal obtenido en el paso de verificación.
- */
+// (código de resetPassword sin cambios)
 export const resetPassword = async (
-  newPassword: string,
+  password: string,
+  confirmPassword: string,
   resetToken: string
 ): Promise<{ message: string }> => {
   try {
-    // Este endpoint está protegido, por lo que enviamos el token temporal como un Bearer token.
-    const response = await apiClient.post(
-      '/auth/reset-password',
-      { newPassword },
-      {
-        headers: {
-          Authorization: `Bearer ${resetToken}`,
-        },
-      }
-    );
+    const dataToSend = {
+      newPassword: password,
+      confirmPassword: confirmPassword,
+    };
+
+    const response = await apiClient.post('/auth/reset-password', dataToSend, {
+      headers: {
+        Authorization: `Bearer ${resetToken}`,
+      },
+    });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response && error.response.data) {

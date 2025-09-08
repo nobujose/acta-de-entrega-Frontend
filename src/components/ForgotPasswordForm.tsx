@@ -23,7 +23,7 @@ import {
   resetPassword,
 } from '@/services/authService';
 
-// --- ESQUEMAS DE VALIDACIÓN PARA CADA PASO ---
+// --- ESQUEMAS DE VALIDACIÓN (sin cambios) ---
 const step1Schema = z.object({
   email: z.string().email({ message: 'Debe ser un correo válido.' }),
 });
@@ -40,7 +40,6 @@ const step3Schema = z
     path: ['confirmPassword'],
   });
 
-// -> Se crea un esquema completo para inicializar el formulario
 const formSchema = step1Schema.merge(step2Schema).merge(step3Schema);
 
 export function ForgotPasswordForm() {
@@ -54,16 +53,13 @@ export function ForgotPasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // -> Se usa el esquema completo para resolver el error de TypeScript
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', otp: '', password: '', confirmPassword: '' },
   });
 
-  // -> Se crea una función para manejar el avance al paso 2
   const handleStep1Submit = async () => {
     setIsLoading(true);
     setApiError(null);
-    // Valida solo el campo del paso 1
     const isValid = await form.trigger('email');
     if (isValid) {
       try {
@@ -82,11 +78,9 @@ export function ForgotPasswordForm() {
     setIsLoading(false);
   };
 
-  // -> Se crea una función para manejar el avance al paso 3
   const handleStep2Submit = async () => {
     setIsLoading(true);
     setApiError(null);
-    // Valida solo el campo del paso 2
     const isValid = await form.trigger('otp');
     if (isValid) {
       try {
@@ -105,21 +99,28 @@ export function ForgotPasswordForm() {
     setIsLoading(false);
   };
 
-  // -> La función onSubmit ahora solo se usa para el envío final (paso 3)
+  // --- ¡CORRECCIÓN APLICADA AQUÍ! ---
   const onFinalSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setApiError(null);
-    try {
-      await resetPassword(data.password, resetToken);
-      alert('¡Contraseña actualizada con éxito!');
-      router.push('/login');
-    } catch (error) {
-      if (error instanceof Error) {
-        setApiError(error.message);
-      } else {
-        setApiError('Ocurrió un error inesperado.');
+    // Se valida solo los campos del paso 3 antes de enviar
+    const isValid = await form.trigger(['password', 'confirmPassword']);
+    if (isValid) {
+      try {
+        // Se pasan todos los argumentos requeridos a la función resetPassword
+        await resetPassword(data.password, data.confirmPassword, resetToken);
+        alert('¡Contraseña actualizada con éxito!');
+        router.push('/login');
+      } catch (error) {
+        if (error instanceof Error) {
+          setApiError(error.message);
+        } else {
+          setApiError('Ocurrió un error inesperado.');
+        }
+      } finally {
+        setIsLoading(false);
       }
-    } finally {
+    } else {
       setIsLoading(false);
     }
   };
@@ -165,7 +166,6 @@ export function ForgotPasswordForm() {
       </div>
 
       <Form {...form}>
-        {/* -> El onSubmit del form solo se activará en el último paso */}
         <form onSubmit={form.handleSubmit(onFinalSubmit)} className='space-y-6'>
           {apiError && (
             <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
@@ -280,7 +280,6 @@ export function ForgotPasswordForm() {
             </>
           )}
 
-          {/* -> Se usan botones condicionales para cada paso */}
           {step === 1 && (
             <Button
               type='button'
