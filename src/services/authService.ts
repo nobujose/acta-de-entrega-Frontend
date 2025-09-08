@@ -82,7 +82,7 @@ export const registerUser = async (
   }
 };
 
-// --- RECUPERACIÓN DE CONTRASEÑA (CÓDIGO FALTANTE) ---
+// --- RECUPERACIÓN DE CONTRASEÑA ---
 
 /**
  * Llama al endpoint para solicitar el envío del código OTP.
@@ -126,24 +126,22 @@ export const verifyOtp = async (
 
 /**
  * Llama al endpoint para establecer la nueva contraseña.
- * @param newPassword La nueva contraseña.
+ * @param data Objeto con la nueva contraseña y su confirmación.
  * @param resetToken El token temporal obtenido en el paso de verificación.
  */
+// ▼▼▼ CORRECCIÓN ▼▼▼
+// La función ahora acepta un objeto 'data' para enviar el cuerpo completo de la petición.
 export const resetPassword = async (
-  newPassword: string,
+  data: { newPassword: string; confirmPassword: string },
   resetToken: string
 ): Promise<{ message: string }> => {
   try {
     // Este endpoint está protegido, por lo que enviamos el token temporal como un Bearer token.
-    const response = await apiClient.post(
-      '/auth/reset-password',
-      { newPassword },
-      {
-        headers: {
-          Authorization: `Bearer ${resetToken}`,
-        },
-      }
-    );
+    const response = await apiClient.post('/auth/reset-password', data, {
+      headers: {
+        Authorization: `Bearer ${resetToken}`,
+      },
+    });
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response && error.response.data) {
