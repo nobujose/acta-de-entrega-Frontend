@@ -1,4 +1,3 @@
-// src/components/ForgotPasswordForm.tsx
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,16 +53,13 @@ export function ForgotPasswordForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
-    // -> Se usa el esquema completo para resolver el error de TypeScript
     resolver: zodResolver(formSchema),
     defaultValues: { email: '', otp: '', password: '', confirmPassword: '' },
   });
 
-  // -> Se crea una función para manejar el avance al paso 2
   const handleStep1Submit = async () => {
     setIsLoading(true);
     setApiError(null);
-    // Valida solo el campo del paso 1
     const isValid = await form.trigger('email');
     if (isValid) {
       try {
@@ -82,11 +78,9 @@ export function ForgotPasswordForm() {
     setIsLoading(false);
   };
 
-  // -> Se crea una función para manejar el avance al paso 3
   const handleStep2Submit = async () => {
     setIsLoading(true);
     setApiError(null);
-    // Valida solo el campo del paso 2
     const isValid = await form.trigger('otp');
     if (isValid) {
       try {
@@ -105,12 +99,19 @@ export function ForgotPasswordForm() {
     setIsLoading(false);
   };
 
-  // -> La función onSubmit ahora solo se usa para el envío final (paso 3)
+  // ▼▼▼ CORRECCIÓN ▼▼▼
+  // La función ahora pasa un objeto con ambas contraseñas al servicio.
   const onFinalSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     setApiError(null);
     try {
-      await resetPassword(data.password, resetToken);
+      await resetPassword(
+        {
+          newPassword: data.password,
+          confirmPassword: data.confirmPassword,
+        },
+        resetToken
+      );
       alert('¡Contraseña actualizada con éxito!');
       router.push('/login');
     } catch (error) {
@@ -152,10 +153,16 @@ export function ForgotPasswordForm() {
         ].map(({ num, label }) => (
           <div
             key={num}
-            className={`text-center transition-opacity duration-300 ${step >= num ? 'opacity-100' : 'opacity-50'}`}
+            className={`text-center transition-opacity duration-300 ${
+              step >= num ? 'opacity-100' : 'opacity-50'
+            }`}
           >
             <div
-              className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${step >= num ? 'bg-[#001A70] text-white' : 'bg-gray-200 text-gray-500'}`}
+              className={`mx-auto w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                step >= num
+                  ? 'bg-[#001A70] text-white'
+                  : 'bg-gray-200 text-gray-500'
+              }`}
             >
               {num}
             </div>
@@ -165,7 +172,6 @@ export function ForgotPasswordForm() {
       </div>
 
       <Form {...form}>
-        {/* -> El onSubmit del form solo se activará en el último paso */}
         <form onSubmit={form.handleSubmit(onFinalSubmit)} className='space-y-6'>
           {apiError && (
             <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded'>
@@ -280,7 +286,6 @@ export function ForgotPasswordForm() {
             </>
           )}
 
-          {/* -> Se usan botones condicionales para cada paso */}
           {step === 1 && (
             <Button
               type='button'
