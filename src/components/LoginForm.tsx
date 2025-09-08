@@ -16,11 +16,11 @@ import {
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react'; // <-- Se añade useEffect
+import { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { loginUser } from '@/services/authService';
 
-// --- NUEVO: Se importa el AlertDialog para el pop-up ---
+// Se importa el AlertDialog para el pop-up
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +30,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-// El esquema de validación no cambia
 const formSchema = z.object({
   email: z.string().email({
     message: 'Por favor, ingresa un correo electrónico válido.',
@@ -46,23 +45,22 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  // --- NUEVO: Estado para controlar el pop-up de confirmación de correo ---
   const [showEmailVerifiedPopup, setShowEmailVerifiedPopup] = useState(false);
 
-  // --- NUEVO: useEffect para revisar la URL cuando la página carga ---
   useEffect(() => {
-    // Usamos la API del navegador para leer los parámetros de la URL
     const params = new URLSearchParams(window.location.search);
-
-    // Verificamos si el parámetro 'email_verified' existe y es 'true'
     if (params.get('email_verified') === 'true') {
-      // Si es así, cambiamos el estado para mostrar el pop-up
+      // Solo nos encargamos de mostrar el pop-up aquí
       setShowEmailVerifiedPopup(true);
-
-      // (Opcional) Limpiamos la URL para que el pop-up no reaparezca si el usuario recarga la página
-      router.replace('/login', { scroll: false });
     }
-  }, [router]); // Se añade router como dependencia
+  }, []); // El array vacío [] asegura que esto se ejecute solo una vez al cargar
+
+  // --- NUEVO: Función para manejar el cierre del pop-up y limpiar la URL ---
+  const handlePopupClose = () => {
+    setShowEmailVerifiedPopup(false);
+    // Limpiamos la URL después de que el usuario interactúa con el pop-up
+    router.replace('/login', { scroll: false });
+  };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,10 +70,8 @@ export function LoginForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     setApiError(null);
-
     try {
       const response = await loginUser(values);
-      console.log('Login exitoso:', response);
       localStorage.setItem('authToken', response.token);
       router.push('/dashboard');
     } catch (error) {
@@ -91,8 +87,6 @@ export function LoginForm() {
 
   return (
     <>
-      {' '}
-      {/* Se envuelve todo en un Fragment para poder añadir el AlertDialog */}
       <div className='w-full max-w-sm'>
         <div className='text-center mb-8'>
           <h1 className='text-3xl font-bold text-[#001A70]'>
@@ -111,7 +105,7 @@ export function LoginForm() {
                 <span className='block sm:inline'>{apiError}</span>
               </div>
             )}
-
+            {/* Resto del formulario no cambia... */}
             <FormField
               control={form.control}
               name='email'
@@ -187,7 +181,8 @@ export function LoginForm() {
           </Link>
         </div>
       </div>
-      {/* --- NUEVO: AlertDialog para mostrar el mensaje de confirmación --- */}
+
+      {/* --- CÓDIGO DEL POP-UP ACTUALIZADO --- */}
       <AlertDialog
         open={showEmailVerifiedPopup}
         onOpenChange={setShowEmailVerifiedPopup}
@@ -200,8 +195,9 @@ export function LoginForm() {
               iniciar sesión.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {/* Se llama a la nueva función al hacer clic en el botón */}
           <AlertDialogAction
-            onClick={() => setShowEmailVerifiedPopup(false)}
+            onClick={handlePopupClose}
             className='bg-[#001A70] hover:bg-[#001A70]/90'
           >
             Continuar

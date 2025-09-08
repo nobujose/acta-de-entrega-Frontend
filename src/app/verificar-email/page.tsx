@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+// Se añade 'useRef' a las importaciones de React
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import axios from 'axios';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-// Componente para mostrar el estado
+// El componente StatusDisplay no necesita cambios
 const StatusDisplay = ({
   icon,
   title,
@@ -47,7 +48,18 @@ export default function VerifyEmailPage() {
   );
   const [errorMessage, setErrorMessage] = useState('');
 
+  // --- NUEVO: Se crea una referencia para controlar la ejecución ---
+  const verificationAttempted = useRef(false);
+
   useEffect(() => {
+    // --- CORRECCIÓN: Se evita que el efecto se ejecute dos veces en desarrollo ---
+    // Si la verificación ya se intentó, no hacemos nada más.
+    if (verificationAttempted.current) {
+      return;
+    }
+    // Marcamos que vamos a intentar la verificación.
+    verificationAttempted.current = true;
+
     const token = searchParams.get('token');
 
     if (!token) {
@@ -58,16 +70,11 @@ export default function VerifyEmailPage() {
 
     const verifyToken = async () => {
       try {
-        // La URL de tu endpoint de backend para confirmar el correo
         const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/auth/confirm-email/${token}`;
-
-        // Hacemos la llamada a la API desde el cliente
         await axios.get(apiUrl);
 
-        // Si la llamada es exitosa, cambiamos el estado
         setStatus('success');
 
-        // Redirigimos al usuario al login después de 3 segundos
         setTimeout(() => {
           router.push('/login?email_verified=true');
         }, 3000);
@@ -87,6 +94,7 @@ export default function VerifyEmailPage() {
     verifyToken();
   }, [searchParams, router]);
 
+  // El resto del componente para renderizar el estado no cambia
   if (status === 'loading') {
     return (
       <StatusDisplay
@@ -115,7 +123,7 @@ export default function VerifyEmailPage() {
       icon={<XCircle className='h-12 w-12 text-red-500' />}
       title='Error de Verificación'
       message={errorMessage}
-      buttonText='Volver a Intentar'
+      buttonText='Volver al Inicio'
       onButtonClick={() => router.push('/login')}
     />
   );
