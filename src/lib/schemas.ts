@@ -7,7 +7,7 @@ export const actaMaximaAutoridadSchema = z.object({
     .min(1, 'Campo Requerido')
     .email({ message: 'Debe ser un correo válido.' }),
   rifOrgano: z.string().min(1, 'El RIF es requerido.'),
-  denominacionCargoEntrega: z
+  denominacionCargo: z
     .string()
     .min(1, 'La denominación del cargo es requerida.'),
   nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
@@ -94,8 +94,12 @@ export const actaMaximaAutoridadSchema = z.object({
   disponeInventarioTerrenosEjidos: z.string().optional(),
   disponeRelacionIngresosVentaTerrenos: z.string().optional(),
 
-  anexo6: z.string().min(1, 'Este campo es requerido.'),
-  anexos: z.string().min(1, 'Este campo es requerido.'),
+  Anexo_VI: z.string().min(1, 'Debe llenar la información del Anexo VI.'),
+  Anexo_VII: z
+    .string()
+    .min(1, 'Debe seleccionar una opción para los anexos adicionales.'),
+
+  // --- Anexos dinámicos ---
   accionesAuditoria: z.string().optional(),
   deficienciasActa: z.string().optional(),
 });

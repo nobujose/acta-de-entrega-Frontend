@@ -47,7 +47,7 @@ const steps = [
     fields: [
       'email',
       'rifOrgano',
-      'denominacionCargoEntrega',
+      'denominacionCargo',
       'nombreOrgano',
       'ciudadSuscripcion',
       'estadoSuscripcion',
@@ -240,8 +240,8 @@ const steps = [
     subtitle:
       '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'anexo6',
-      'anexos',
+      'Anexo_VI',
+      'Anexos_VII',
       'disponeSaldoEfectivoFondos',
       'disponeRelacionBienesAsignados',
       'disponeRelacionBienesAsignadosUnidadBienes',
@@ -499,10 +499,11 @@ export function ActaMaximaAutoridadForm() {
   const form = useForm<FormData>({
     mode: 'onChange',
     resolver: zodResolver(actaMaximaAutoridadSchema),
+    shouldUnregister: false, // ✨ AÑADE ESTA LÍNEA
     defaultValues: {
       email: '',
       rifOrgano: '',
-      denominacionCargoEntrega: '',
+      denominacionCargo: '',
       nombreOrgano: '',
       ciudadSuscripcion: '',
       estadoSuscripcion: '',
@@ -526,15 +527,22 @@ export function ActaMaximaAutoridadForm() {
       nombreServidorSaliente: '',
       cedulaServidorSaliente: '',
       designacionServidorSaliente: '',
+      Anexo_VI: '',
+      Anexo_VII: '',
     },
   });
 
+  // ...
   const { getValues, watch } = form;
 
-  const selectedAnexo = watch('anexos') as DynamicStepKey;
+  // CAMBIA ESTA LÍNEA
+  const selectedAnexo = watch('Anexo_VII') as DynamicStepKey; // antes era 'anexos'
+  // ...
 
   // 4. LÓGICA DE ENVÍO ACTUALIZADA PARA CONECTAR CON EL BACKEND
   const onSubmit = async (data: FormData) => {
+    console.log('DATOS FINALES A ENVIAR:', data); // <-- Añade esto
+
     setIsLoading(true);
     setApiError(null);
 
@@ -559,7 +567,8 @@ export function ActaMaximaAutoridadForm() {
     const fieldsToValidate = steps[currentStep].fields;
     const isValid = await form.trigger(fieldsToValidate as (keyof FormData)[]);
     if (isValid) {
-      if (currentStep === 8 && getValues('anexos') === 'NO APLICA') {
+      if (currentStep === 8 && getValues('Anexo_VII') === 'NO APLICA') {
+        // antes era 'anexos'
         setCurrentStep(10);
       } else if (currentStep < steps.length - 1) {
         setCurrentStep((prev) => prev + 1);
@@ -709,7 +718,7 @@ export function ActaMaximaAutoridadForm() {
                       subtitle='Ej: G-0000000-0'
                     />
                     <FormFieldWithExtras
-                      name='denominacionCargoEntrega'
+                      name='denominacionCargo'
                       label='Denominación del cargo'
                       subtitle='Ej: Presidencia, Dirección, Coordinación'
                     />
@@ -787,45 +796,48 @@ export function ActaMaximaAutoridadForm() {
                                 <SelectItem value='Renuncia'>
                                   Renuncia
                                 </SelectItem>
-                                <SelectItem value='Jubilacion'>
+                                <SelectItem value='Jubilación'>
                                   Jubilación
                                 </SelectItem>
                                 <SelectItem value='Muerte'>Muerte</SelectItem>
                                 <SelectItem value='Incapacidad absoluta'>
                                   Incapacidad absoluta
                                 </SelectItem>
-                                <SelectItem value='Destitucion'>
+                                <SelectItem value='Destitución'>
                                   Destitución
                                 </SelectItem>
-                                <SelectItem value='Supresion del cargo'>
+                                <SelectItem value='Supresión del cargo'>
+                                  {' '}
                                   Supresión del cargo
                                 </SelectItem>
-                                <SelectItem value='Expiracion del periodo'>
+                                <SelectItem value='Expiración del período'>
+                                  {' '}
                                   Expiración del período
                                 </SelectItem>
                                 <SelectItem value='Ascenso'>Ascenso</SelectItem>
                                 <SelectItem value='Traslado'>
                                   Traslado
                                 </SelectItem>
-                                <SelectItem value='Rotacion'>
+                                <SelectItem value='Rotación'>
                                   Rotación
                                 </SelectItem>
-                                <SelectItem value='Comision de servicio'>
+                                <SelectItem value='Comisión de servicio'>
                                   Comisión de servicio
                                 </SelectItem>
                                 <SelectItem value='Licencia'>
                                   Licencia
                                 </SelectItem>
-                                <SelectItem value='Suspension'>
+                                <SelectItem value='Suspensión'>
                                   Suspensión
                                 </SelectItem>
-                                <SelectItem value='Inhabilitacion'>
+                                <SelectItem value='Inhabilitación'>
                                   Inhabilitación
                                 </SelectItem>
                                 <SelectItem value='Revocatoria del mandato'>
                                   Revocatoria del mandato
                                 </SelectItem>
-                                <SelectItem value='Declaracion de abandono del cargo'>
+                                <SelectItem value='Declaración de abandono del cargo'>
+                                  {' '}
                                   Declaración de abandono del cargo
                                 </SelectItem>
                               </SelectContent>
@@ -1117,7 +1129,7 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-6'>
                 <FormField
                   control={form.control}
-                  name='anexo6'
+                  name='Anexo_VI'
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
@@ -1143,7 +1155,7 @@ export function ActaMaximaAutoridadForm() {
 
                 <FormField
                   control={form.control}
-                  name='anexos'
+                  name='Anexo_VII'
                   render={({ field }) => (
                     <FormItem className='pt-2'>
                       <FormLabel>ANEXOS ADICIONALES</FormLabel>
