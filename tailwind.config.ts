@@ -12,12 +12,13 @@ const config: Config = {
       colors: {
         'primary-blue': '#001A70', // Tu azul principal
         'primary-blue-dark': '#00114D', // Un tono más oscuro para el hover
-        'sidebar-bg': '#C1C1C1', // Color del Sidebar
+        'gris-bg': '#C1C1C1', // Color gris para el fondo
         'sidebar-hover-bg': '#A9A9A9', // Color para el hover
         'badge-gold': '#FFC200', // Color dorado para la etiqueta "Express"
         'button-gold': '#E6AF01', // Color dorado para botones
         'icon-gray-bg': '#F3F4F6', // Color de fondo de icono gris "Express"
         'text-answer': '#4F7396', // Color del texto de la respuesta
+        'body-dashboard': '#E8EDF2', // Color de fondo para el dashboard layout
       },
       boxShadow: {
         'blue-soft':

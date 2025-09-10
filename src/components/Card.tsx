@@ -46,7 +46,7 @@ function CardComponent({
             className={cn(
               'flex h-12 w-12 items-center justify-center rounded-lg shadow-lg',
               // Lógica condicional: si es 'gratis', usa el fondo gris, si no, el azul.
-              gratis ? 'bg-icon-gray-bg' : 'bg-primary-blue'
+              gratis ? 'bg-gris-bg' : 'bg-primary-blue'
             )}
           >
             {icon}

@@ -32,10 +32,8 @@ export default function RevisionDeActaPage() {
               y sanciones.
               <br />
               Nuestra herramienta Revisión de Acta Pro te guía en una
-              autoevaluación rápida para
-              <br />
-              identificar incumplimientos y asegurar la correcta gestión de tu
-              organismo.
+              autoevaluación rápida para identificar incumplimientos y asegurar
+              la correcta gestión de tu organismo.
             </p>
           </div>
 

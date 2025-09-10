@@ -500,6 +500,7 @@ export function ActaEntranteForm() {
     mode: 'onChange',
     // EDITADO: Se usa el nuevo esquema de Zod
     resolver: zodResolver(actaEntranteSchema),
+
     defaultValues: {
       email: '',
       rifOrgano: '',

@@ -3,15 +3,15 @@
 import { useEffect } from 'react';
 import Card from '@/components/Card';
 import { Button } from '@/components/ui/button';
+import { FileDown, ShieldCheck, FileUp, ArrowRight } from 'lucide-react';
 import {
-  FileDown,
-  ShieldCheck,
-  FileUp,
-  ArrowRight,
-  Facebook,
-  Instagram,
-  Linkedin,
-} from 'lucide-react';
+  FaFacebookSquare,
+  FaInstagramSquare,
+  FaLinkedin,
+} from 'react-icons/fa';
+import { FaSquareXTwitter, FaSquareTwitter } from 'react-icons/fa6';
+import { HiDocumentArrowUp, HiDocumentArrowDown } from 'react-icons/hi2';
+import { SiSpringsecurity } from 'react-icons/si';
 import { useHeader } from '@/context/HeaderContext';
 
 export default function DashboardPage() {
@@ -39,25 +39,25 @@ export default function DashboardPage() {
       */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
         <Card
-          icon={<FileUp className='h-6 w-6 text-black' />}
+          icon={<HiDocumentArrowUp className='h-6 w-6 text-white' />}
           title='Acta de Entrega Saliente'
-          description='Genera el acta de entrega con facilidad para el Servidor Público Saliente.'
+          description='Generar el acta de entrega con facilidad para el Servidor Público Saliente.'
           hashtag='#UniversitasLegal'
           href='/dashboard/actas/saliente'
           gratis={true}
         />
         <Card
-          icon={<FileDown className='h-6 w-6 text-black' />}
+          icon={<HiDocumentArrowDown className='h-6 w-6 text-white' />}
           title='Actas de Entrega Entrante'
-          description='Genera el acta de entrega con facilidad para el Servidor Público Entrante.'
+          description='Generar el acta de entrega con facilidad para el Servidor Público Entrante.'
           hashtag='#UniversitasLegal'
           href='/dashboard/actas/entrante'
           gratis={true}
         />
         <Card
-          icon={<ShieldCheck className='h-6 w-6 text-black' />}
+          icon={<SiSpringsecurity className='h-6 w-6 text-white' />}
           title='Maxima Autoridad'
-          description='General el acta de entrega con facilidad para el Servidor Público asignado por la Máxima Autoridad.'
+          description='Generar el acta de entrega con facilidad para el Servidor Público asignado por la Máxima Autoridad.'
           hashtag='#UniversitasLegal'
           href='/dashboard/actas/maxima-autoridad'
           gratis={true}
@@ -78,9 +78,9 @@ export default function DashboardPage() {
               Conócenos y síguenos en nuestras redes
             </h2>
             <p className='text-base text-gray-300'>
-              Forma parte de nuestra comunidad de expertos. Accede a cursos de
-              Actas de Entrega, jornadas de Contrataciones Públicas e infórmate
-              con nuestro medio digital, El Ágora.
+              Forma parte de nuestra comunidad. Accede a todos nuestros cursos
+              sobre diversos temas de la Administración Pública. Infórmate de
+              temas de interés en nuestro medio digital, Ágora.
             </p>
           </div>
           <Button
@@ -89,7 +89,12 @@ export default function DashboardPage() {
             // y vuelve a su tamaño natural en escritorio.
             className='bg-button-gold hover:bg-button-gold/90 text-primary-blue font-semibold whitespace-nowrap w-full md:w-auto'
           >
-            <a href='#' target='_blank' rel='noopener noreferrer'>
+            <a
+              href='#'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='flex items-center gap-2'
+            >
               Más información
               <ArrowRight className='ml-2 h-5 w-5' />
             </a>
@@ -105,28 +110,44 @@ export default function DashboardPage() {
           <h3 className='text-xl md:text-2xl font-bold'>Síguenos en:</h3>
           <div className='flex items-center gap-4'>
             <a
-              href='#'
+              href='https://www.facebook.com/contratacionespublicas'
               target='_blank'
               rel='noopener noreferrer'
-              className='p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors'
+              className='p-1 rounded-full hover:bg-white/20 transition-colors'
             >
-              <Facebook className='h-6 w-6' />
+              <FaFacebookSquare className='h-7 w-7' />
             </a>
             <a
-              href='#'
+              href='https://www.instagram.com/universitas.legal/'
               target='_blank'
               rel='noopener noreferrer'
-              className='p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors'
+              className='p-1 rounded-full hover:bg-white/20 transition-colors'
             >
-              <Instagram className='h-6 w-6' />
+              <FaInstagramSquare className='h-7 w-7' />
             </a>
             <a
-              href='#'
+              href='https://www.linkedin.com/company/universitas-legal/'
               target='_blank'
               rel='noopener noreferrer'
-              className='p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors'
+              className='p-1 rounded-full hover:bg-white/20 transition-colors'
             >
-              <Linkedin className='h-6 w-6' />
+              <FaLinkedin className='h-7 w-7' />
+            </a>
+            <a
+              href='https://twitter.com/contratosve'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='p-1 rounded-full hover:bg-white/20 transition-colors'
+            >
+              <FaSquareXTwitter className='h-7 w-7' />
+            </a>
+            <a
+              href='https://twitter.com/contratarve'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='p-1 rounded-full hover:bg-white/20 transition-colors'
+            >
+              <FaSquareTwitter className='h-7 w-7' />
             </a>
           </div>
         </div>

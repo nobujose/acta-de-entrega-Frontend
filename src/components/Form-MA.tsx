@@ -60,6 +60,7 @@ const steps = [
   {
     id: 2,
     title: 'Intervinientes en el Acta',
+    subtitle: 'Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009',
     fields: [
       'nombreServidorEntrante',
       'cedulaServidorEntrante',
@@ -592,6 +593,7 @@ export function ActaMaximaAutoridadForm() {
       render={({ field }) => (
         <FormItem>
           <FormLabel>{label}</FormLabel>
+          {/* Se renderiza el subtítulo/ejemplo si existe, en cursiva */}
           {subtitle && (
             <FormDescription className='italic'>{subtitle}</FormDescription>
           )}
@@ -608,6 +610,7 @@ export function ActaMaximaAutoridadForm() {
       )}
     />
   );
+
   // Componente específico para las preguntas de Sí, No, No Aplica
   const SiNoQuestion = ({
     name,
@@ -656,14 +659,14 @@ export function ActaMaximaAutoridadForm() {
   );
 
   return (
-    <Card className='w-full'>
+    <Card className='w-full bg-white'>
       <CardHeader>
         <CardTitle className='text-[24px]'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].title
             : steps[currentStep].title}
         </CardTitle>
-        <ShadcnCardDescription className='whitespace-pre-line italic'>
+        <ShadcnCardDescription className='whitespace-pre-line italic font-bold'>
           {currentStep === 9 && dynamicStepContent[selectedAnexo]
             ? dynamicStepContent[selectedAnexo].subtitle
             : steps[currentStep].subtitle}
@@ -682,127 +685,157 @@ export function ActaMaximaAutoridadForm() {
             )}
 
             {currentStep === 0 && (
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-                <FormFieldWithExtras
-                  name='email'
-                  label='Dirección de correo electrónico'
-                  placeholder='Ej: ejemplo@correo.com'
-                />
-                <FormFieldWithExtras
-                  name='rifOrgano'
-                  label='RIF del órgano, entidad, oficina o dependencia de la Administración Pública.'
-                  placeholder='Ej: G-00000000-0'
-                />
-                <FormFieldWithExtras
-                  name='denominacionCargoEntrega'
-                  label='Denominación del cargo'
-                  subtitle='Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                  placeholder='Ej: Presidencia, Dirección, Coordinación'
-                />
-                <FormFieldWithExtras
-                  name='nombreOrgano'
-                  label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública.'
-                  subtitle='Artículo 10.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                  placeholder='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
-                />
-                <FormFieldWithExtras
-                  name='ciudadSuscripcion'
-                  label='Ciudad donde se suscribe el acta.'
-                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                  placeholder='Ej: Barquisimeto'
-                />
-                <FormFieldWithExtras
-                  name='estadoSuscripcion'
-                  label='Estado donde se suscribe el acta.'
-                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                  placeholder='Ej: Lara'
-                />
-                <FormFieldWithExtras
-                  name='horaSuscripcion'
-                  label='Hora de suscripción del acta.'
-                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                  type='time'
-                />
-                <FormFieldWithExtras
-                  name='fechaSuscripcion'
-                  label='Fecha de la suscripción.'
-                  subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                  type='date'
-                />
-                <div className='md:col-span-2'>
-                  <FormFieldWithExtras
-                    name='direccionOrgano'
-                    label='Dirección exacta y completa de la ubicación de órgano, entidad, oficina o dependencia que se entrega'
-                    subtitle='Artículo 10.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Avenida 00 entre calle 00 y 00, Edf. Central, Piso 2, despacho de la presidencia.'
-                  />
+              <div className='space-y-8'>
+                {/* --- Primera Sección: Identificación --- */}
+                <div className='space-y-4 p-6 border rounded-lg'>
+                  <div className='mb-4'>
+                    <h3 className='font-bold text-lg'>
+                      Identificación del cargo y organismo
+                    </h3>
+                    <p className='text-sm text-gray-500 italic font-bold'>
+                      Artículo 10.2 Resolución CGR N.º 01-000162 de fecha
+                      27-07-2009
+                    </p>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+                    <FormFieldWithExtras
+                      name='email'
+                      label='Dirección de correo electrónico'
+                      subtitle='Ej: ejemplo@dominio.com'
+                    />
+                    <FormFieldWithExtras
+                      name='rifOrgano'
+                      label='RIF  del órgano, entidad, oficina o dependencia de la Administración Pública'
+                      subtitle='Ej: G-0000000-0'
+                    />
+                    <FormFieldWithExtras
+                      name='denominacionCargoEntrega'
+                      label='Denominación del cargo'
+                      subtitle='Ej: Presidencia, Dirección, Coordinación'
+                    />
+                    <FormFieldWithExtras
+                      name='nombreOrgano'
+                      label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública'
+                      subtitle='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
+                    />
+                  </div>
                 </div>
-                <div className='md:col-span-2'>
-                  <FormField
-                    control={form.control}
-                    name='motivoEntrega'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>
-                          Motivo de la entrega del órgano, entidad, oficina o
-                          dependencia de la Administración Pública
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder='Seleccione un motivo' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent
-                            position='popper'
-                            className='bg-white z-50 max-h-60 overflow-y-auto'
-                          >
-                            <SelectItem value='Renuncia'>Renuncia</SelectItem>
-                            <SelectItem value='Jubilacion'>
-                              Jubilación
-                            </SelectItem>
-                            <SelectItem value='Muerte'>Muerte</SelectItem>
-                            <SelectItem value='Incapacidad absoluta'>
-                              Incapacidad absoluta
-                            </SelectItem>
-                            <SelectItem value='Destitucion'>
-                              Destitución
-                            </SelectItem>
-                            <SelectItem value='Supresion del cargo'>
-                              Supresión del cargo
-                            </SelectItem>
-                            <SelectItem value='Expiracion del periodo'>
-                              Expiración del período
-                            </SelectItem>
-                            <SelectItem value='Ascenso'>Ascenso</SelectItem>
-                            <SelectItem value='Traslado'>Traslado</SelectItem>
-                            <SelectItem value='Rotacion'>Rotación</SelectItem>
-                            <SelectItem value='Comision de servicio'>
-                              Comisión de servicio
-                            </SelectItem>
-                            <SelectItem value='Licencia'>Licencia</SelectItem>
-                            <SelectItem value='Suspension'>
-                              Suspensión
-                            </SelectItem>
-                            <SelectItem value='Inhabilitacion'>
-                              Inhabilitación
-                            </SelectItem>
-                            <SelectItem value='Revocatoria del mandato'>
-                              Revocatoria del mandato
-                            </SelectItem>
-                            <SelectItem value='Declaracion de abandono del cargo'>
-                              Declaración de abandono del cargo
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
+                {/* --- Segunda Sección: Detalles de Suscripción --- */}
+                <div className='space-y-4 p-6 border rounded-lg'>
+                  <div className='mb-4'>
+                    <h3 className='font-bold text-lg'>
+                      Detalles de la suscripción del acta
+                    </h3>
+                    <p className='text-sm text-gray-500 italic font-bold'>
+                      Artículo 10.1 Resolución CGR N.º 01-000162 de fecha
+                      27-07-2009
+                    </p>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+                    <FormFieldWithExtras
+                      name='estadoSuscripcion'
+                      label='Estado donde se suscribe el acta'
+                      subtitle='Ej: Lara'
+                    />
+                    <FormFieldWithExtras
+                      name='ciudadSuscripcion'
+                      label='Ciudad donde se suscribe el acta'
+                      subtitle='Ej: Barquisimeto'
+                    />
+                    <FormFieldWithExtras
+                      name='horaSuscripcion'
+                      label='Hora de suscripción del acta'
+                      type='time'
+                    />
+                    <FormFieldWithExtras
+                      name='fechaSuscripcion'
+                      label='Fecha de la suscripción'
+                      type='date'
+                    />
+                    <div className='md:col-span-2'>
+                      <FormFieldWithExtras
+                        name='direccionOrgano'
+                        label='Dirección exacta y completa de la ubicación del órgano, entidad, oficina o dependencia que se entrega'
+                        subtitle='Ej: Avenida 00, entre calles 00 y 00, Edif. Central, Piso 2, Despacho de la presidencia'
+                      />
+                    </div>
+                    <div className='md:col-span-2'>
+                      <FormField
+                        control={form.control}
+                        name='motivoEntrega'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Motivo de la entrega del órgano, entidad, oficina
+                              o dependencia de la Administración Pública
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={isLoading}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder='Seleccione un motivo' />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent
+                                position='popper'
+                                className='bg-white z-50 max-h-60 overflow-y-auto'
+                              >
+                                <SelectItem value='Renuncia'>
+                                  Renuncia
+                                </SelectItem>
+                                <SelectItem value='Jubilacion'>
+                                  Jubilación
+                                </SelectItem>
+                                <SelectItem value='Muerte'>Muerte</SelectItem>
+                                <SelectItem value='Incapacidad absoluta'>
+                                  Incapacidad absoluta
+                                </SelectItem>
+                                <SelectItem value='Destitucion'>
+                                  Destitución
+                                </SelectItem>
+                                <SelectItem value='Supresion del cargo'>
+                                  Supresión del cargo
+                                </SelectItem>
+                                <SelectItem value='Expiracion del periodo'>
+                                  Expiración del período
+                                </SelectItem>
+                                <SelectItem value='Ascenso'>Ascenso</SelectItem>
+                                <SelectItem value='Traslado'>
+                                  Traslado
+                                </SelectItem>
+                                <SelectItem value='Rotacion'>
+                                  Rotación
+                                </SelectItem>
+                                <SelectItem value='Comision de servicio'>
+                                  Comisión de servicio
+                                </SelectItem>
+                                <SelectItem value='Licencia'>
+                                  Licencia
+                                </SelectItem>
+                                <SelectItem value='Suspension'>
+                                  Suspensión
+                                </SelectItem>
+                                <SelectItem value='Inhabilitacion'>
+                                  Inhabilitación
+                                </SelectItem>
+                                <SelectItem value='Revocatoria del mandato'>
+                                  Revocatoria del mandato
+                                </SelectItem>
+                                <SelectItem value='Declaracion de abandono del cargo'>
+                                  Declaración de abandono del cargo
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -816,26 +849,22 @@ export function ActaMaximaAutoridadForm() {
                   <FormFieldWithExtras
                     name='nombreServidorEntrante'
                     label='Nombre'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
+                    subtitle='Ej: Pedro Jose Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaServidorEntrante'
                     label='Cédula'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: V-00.000.000'
+                    subtitle='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='profesionServidorEntrante'
                     label='Profesión'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Contador, Ingeniero, Abogado'
+                    subtitle='Ej: Contador, Ingeniero, Abogado'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorEntrante'
                     label='Datos de designación'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                    subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -845,20 +874,17 @@ export function ActaMaximaAutoridadForm() {
                   <FormFieldWithExtras
                     name='nombreAuditor'
                     label='Nombre'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
+                    subtitle='Ej: Pedro José Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaAuditor'
                     label='Cédula'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: V-00.000.000'
+                    subtitle='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='profesionAuditor'
                     label='Profesión'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Contador, Ingeniero, Abogado'
+                    subtitle='Ej: Contador, Ingeniero, Abogado'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -870,20 +896,17 @@ export function ActaMaximaAutoridadForm() {
                     <FormFieldWithExtras
                       name='nombreTestigo1'
                       label='Nombre'
-                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                      placeholder='Ej: Pedro Jose Rodríguez Hernández'
+                      subtitle='Ej: Pedro José Rodríguez Hernández'
                     />
                     <FormFieldWithExtras
                       name='cedulaTestigo1'
                       label='Cédula'
-                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                      placeholder='Ej: V-00.000.000'
+                      subtitle='Ej: V-00.000.000'
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo1'
                       label='Profesión'
-                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                      placeholder='Ej: Contador, Ingeniero, Abogado'
+                      subtitle='Ej: Contador, Ingeniero, Abogado'
                     />
                   </div>
                   <div className='space-y-4 p-4 border rounded-md'>
@@ -891,20 +914,17 @@ export function ActaMaximaAutoridadForm() {
                     <FormFieldWithExtras
                       name='nombreTestigo2'
                       label='Nombre'
-                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                      placeholder='Ej: Pedro Jose Rodríguez Hernández'
+                      subtitle='Ej: Pedro José Rodríguez Hernández'
                     />
                     <FormFieldWithExtras
                       name='cedulaTestigo2'
                       label='Cédula'
-                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                      placeholder='Ej: V-00.000.000'
+                      subtitle='Ej: V-00.000.000'
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo2'
                       label='Profesión'
-                      subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                      placeholder='Ej: Contador, Ingeniero, Abogado'
+                      subtitle='Ej: Contador, Ingeniero, Abogado'
                     />
                   </div>
                 </div>
@@ -915,20 +935,17 @@ export function ActaMaximaAutoridadForm() {
                   <FormFieldWithExtras
                     name='nombreServidorSaliente'
                     label='Nombre'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Pedro Jose Rodríguez Hernández'
+                    subtitle='Ej: Pedro José Rodríguez Hernández'
                   />
                   <FormFieldWithExtras
                     name='cedulaServidorSaliente'
                     label='Cédula'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: V-00.000.000'
+                    subtitle='Ej: V-00.000.000'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorSaliente'
                     label='Datos de designación'
-                    subtitle='Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009'
-                    placeholder='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                    subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
               </div>
