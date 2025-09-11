@@ -1,33 +1,77 @@
 // src/app/verificar-email/VerificationContent.tsx
+'use client';
 
-'use client'; // 👈 ¡Muy importante! Marca este como un componente de cliente.
-
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+// ¡CORREGIDO! Solo importamos axios
+import axios from 'axios';
+import Link from 'next/link';
 
 export default function VerificationContent() {
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState('Verificando...');
+  const router = useRouter();
+  const [status, setStatus] = useState('Verificando tu cuenta...');
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const token = searchParams.get('token');
-    const email = searchParams.get('email');
 
-    if (token && email) {
-      // Aquí iría tu lógica para verificar el token con el backend
-      console.log('Verificando token:', token, 'para el email:', email);
-      setStatus(`Token encontrado. Verificando...`);
+    if (token) {
+      const verifyToken = async () => {
+        try {
+          const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/auth/confirm-email/${token}`;
+
+          await axios.get(apiUrl);
+
+          setStatus(
+            '¡Tu cuenta ha sido verificada con éxito! Ya puedes iniciar sesión.'
+          );
+          setError(false);
+
+          setTimeout(() => {
+            router.push('/login');
+          }, 5000);
+        } catch (err) {
+          setError(true);
+          // Usamos el type guard de axios que no requiere la importación de AxiosError
+          if (axios.isAxiosError(err) && err.response?.data?.message) {
+            setStatus(`Error: ${err.response.data.message}`);
+          } else {
+            setStatus(
+              'Error: No se pudo verificar la cuenta. El enlace puede haber expirado o ser inválido.'
+            );
+          }
+        }
+      };
+
+      verifyToken();
     } else {
-      setStatus(
-        'Error: Faltan los parámetros necesarios para la verificación.'
-      );
+      setStatus('Error: No se encontró un token de verificación en el enlace.');
+      setError(true);
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   return (
-    <div>
-      <h1 className='text-2xl font-bold'>Verificación de Correo Electrónico</h1>
-      <p className='mt-4'>{status}</p>
+    <div className='flex items-center justify-center min-h-screen bg-gray-50'>
+      <div className='w-full max-w-md p-8 space-y-6 bg-white shadow-md rounded-lg text-center'>
+        <h1 className='text-2xl font-bold text-gray-800'>
+          Verificación de Correo Electrónico
+        </h1>
+        <p
+          className={`mt-4 text-lg ${error ? 'text-red-600' : 'text-green-600'}`}
+        >
+          {status}
+        </p>
+        {!error && (
+          <p className='text-gray-500'>Serás redirigido en 5 segundos...</p>
+        )}
+        <Link
+          href='/login'
+          className='inline-block px-6 py-2 text-sm font-medium text-white bg-[#001A70] rounded-lg hover:bg-[#001A70]/90 focus:outline-none focus:ring'
+        >
+          Ir a Iniciar Sesión
+        </Link>
+      </div>
     </div>
   );
 }
