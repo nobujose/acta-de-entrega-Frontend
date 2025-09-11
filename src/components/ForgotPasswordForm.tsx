@@ -27,11 +27,28 @@ const step1Schema = z.object({
   email: z.string().email({ message: 'Debe ser un correo válido.' }),
 });
 const step2Schema = z.object({
-  otp: z.string().min(6, { message: 'El código debe tener 6 dígitos.' }),
+  otp: z
+    .string()
+    .min(6, {
+      message:
+        'intrude el codigo que se a enviado al correo del paso anterior.',
+    }),
 });
 const step3Schema = z
   .object({
-    password: z.string().min(8, { message: 'Mínimo 8 caracteres.' }),
+    password: z
+      .string()
+      .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
+      .regex(/[a-z]/, {
+        message: 'Debe contener al menos una letra minúscula.',
+      })
+      .regex(/[A-Z]/, {
+        message: 'Debe contener al menos una letra mayúscula.',
+      })
+      .regex(/[0-9]/, { message: 'Debe contener al menos un número.' })
+      .regex(/[^a-zA-Z0-9]/, {
+        message: 'Debe contener al menos un símbolo especial.',
+      }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -290,7 +307,7 @@ export function ForgotPasswordForm() {
             <Button
               type='button'
               onClick={handleStep1Submit}
-              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
               disabled={isLoading}
             >
               {isLoading ? 'Procesando...' : 'Enviar'}
@@ -300,7 +317,7 @@ export function ForgotPasswordForm() {
             <Button
               type='button'
               onClick={handleStep2Submit}
-              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
               disabled={isLoading}
             >
               {isLoading ? 'Procesando...' : 'Verificar'}
@@ -309,7 +326,7 @@ export function ForgotPasswordForm() {
           {step === 3 && (
             <Button
               type='submit'
-              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-lg py-6'
+              className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
               disabled={isLoading}
             >
               {isLoading ? 'Procesando...' : 'Actualizar contraseña'}
