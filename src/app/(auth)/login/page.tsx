@@ -8,7 +8,7 @@ export default function LoginPage() {
       <div className='hidden lg:flex w-1/2 bg-[#001A70] text-white flex-col items-center justify-center p-12 text-center'>
         <div className='space-y-4'>
           <Image
-            src='/blan.svg'
+            src='/blanco 250px.svg'
             alt='Universitas Legal Logo'
             width={250}
             height={250}
@@ -27,7 +27,7 @@ export default function LoginPage() {
       <div className='w-full lg:w-1/2 flex flex-col items-center justify-center p-6'>
         <div className='lg:hidden mb-8'>
           <Image
-            src='/Azul.svg'
+            src='/AZUL 250PX.svg'
             alt='Universitas Legal Logo'
             width={250}
             height={250}

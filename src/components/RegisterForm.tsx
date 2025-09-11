@@ -1,6 +1,12 @@
 // src/components/RegisterForm.tsx
 'use client';
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -28,19 +34,59 @@ import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { registerUser } from '@/services/authService'; // -> 1. Importamos la nueva función
 
-// (El esquema de validación no cambia)
+// Importa Zod como siempre
+
+// Lista de prefijos válidos para Venezuela
+const prefijosValidos = [
+  '0412',
+  '0422',
+  '0414',
+  '0424',
+  '0426',
+  '0416',
+] as const;
+
 const formSchema = z
   .object({
     email: z.string().email({ message: 'Debe ser un correo válido.' }),
     password: z
       .string()
-      .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' }),
+      .min(8, { message: 'La contraseña debe tener al menos 8 caracteres.' })
+      .regex(/[a-z]/, {
+        message: 'Debe contener al menos una letra minúscula.',
+      })
+      .regex(/[A-Z]/, {
+        message: 'Debe contener al menos una letra mayúscula.',
+      })
+      .regex(/[0-9]/, { message: 'Debe contener al menos un número.' })
+      .regex(/[^a-zA-Z0-9]/, {
+        message: 'Debe contener al menos un símbolo especial.',
+      }),
     confirmPassword: z.string(),
-    nombre: z.string().min(1, { message: 'El nombre es requerido.' }),
-    apellido: z.string().min(1, { message: 'El apellido es requerido.' }),
-    telefono: z.string().min(1, { message: 'El teléfono es requerido.' }),
-    institucion: z.string().min(1, { message: 'La institución es requerida.' }),
-    cargo: z.string().min(1, { message: 'El cargo es requerido.' }),
+
+    // 👇 VALIDACIONES ACTUALIZADAS
+    nombre: z
+      .string()
+      .min(2, { message: 'El nombre debe tener al menos 2 caracteres.' })
+      .max(50, { message: 'El nombre no puede exceder los 50 caracteres.' })
+      .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+$/, {
+        message: 'El nombre debe ser una sola palabra y solo contener letras.',
+      }),
+    apellido: z
+      .string()
+      .min(2, { message: 'El apellido debe tener al menos 2 caracteres.' })
+      .max(50, { message: 'El apellido no puede exceder los 50 caracteres.' })
+      .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]+$/, {
+        message:
+          'El apellido debe ser una sola palabra y solo contener letras.',
+      }),
+
+    prefijo: z.enum(prefijosValidos).optional().refine(Boolean, {
+      message: 'Debes seleccionar un prefijo.',
+    }),
+    numeroLocal: z.string().regex(/^\d{7}$/, {
+      message: 'Debe ser un numero de 7 dígitos.',
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Las contraseñas no coinciden.',
@@ -59,17 +105,18 @@ export function RegisterForm() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    mode: 'onTouched',
     defaultValues: {
       email: '',
       password: '',
       confirmPassword: '',
       nombre: '',
       apellido: '',
-      telefono: '',
-      institucion: '',
-      cargo: '',
+      prefijo: undefined, // 👈 Cambiado
+      numeroLocal: '', // 👈 Nuevo
     },
   });
+  const { formState } = form;
 
   const handleNextStep = async () => {
     const isStep1Valid = await form.trigger([
@@ -88,15 +135,13 @@ export function RegisterForm() {
     setApiError(null);
 
     try {
-      // Mapeamos los nombres del formulario a los que espera el backend
       const dataToSend = {
         email: values.email,
         password: values.password,
-        name: values.nombre, // 'nombre' se convierte en 'name'
+        name: values.nombre,
         apellido: values.apellido,
-        telefono: values.telefono,
-        institucion: values.institucion,
-        cargo: values.cargo,
+        // 👇 Unimos los campos para el backend
+        telefono: `${values.prefijo}${values.numeroLocal}`,
       };
 
       await registerUser(dataToSend);
@@ -206,7 +251,7 @@ export function RegisterForm() {
                         <div className='relative'>
                           <Input
                             type={showPassword ? 'text' : 'password'}
-                            placeholder='Mínimo 8 caracteres'
+                            placeholder='Nueva contraseña'
                             {...field}
                             disabled={isLoading}
                           />
@@ -238,7 +283,7 @@ export function RegisterForm() {
                         <div className='relative'>
                           <Input
                             type={showConfirmPassword ? 'text' : 'password'}
-                            placeholder='Repite tu contraseña'
+                            placeholder='Nueva contraseña'
                             {...field}
                             disabled={isLoading}
                           />
@@ -264,95 +309,103 @@ export function RegisterForm() {
                 />
               </div>
             </div>
+            {/* --- PASO 2: DATOS PERSONALES --- */}
             <div className={step === 2 ? 'block' : 'hidden'}>
               <div className='space-y-4'>
-                <div className='grid grid-cols-2 gap-4'>
-                  <FormField
-                    control={form.control}
-                    name='nombre'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder='Ingresa tu nombre'
-                            {...field}
+                <FormField
+                  control={form.control}
+                  name='nombre'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nombre</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Ingresa tu nombre'
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      {/* Muestra el error solo si el campo fue tocado */}
+                      {formState.touchedFields.nombre &&
+                        formState.errors.nombre && <FormMessage />}
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='apellido'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Apellido</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='Ingresa tu apellido'
+                          {...field}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      {/* Muestra el error solo si el campo fue tocado */}
+                      {formState.touchedFields.apellido &&
+                        formState.errors.apellido && <FormMessage />}
+                    </FormItem>
+                  )}
+                />
+
+                <FormItem>
+                  <FormLabel>Teléfono</FormLabel>
+                  <div className='flex items-start space-x-2'>
+                    <FormField
+                      control={form.control}
+                      name='prefijo'
+                      render={({ field }) => (
+                        <FormItem className='w-[120px]'>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
                             disabled={isLoading}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name='apellido'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Apellido</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder='Ingresa tu apellido'
-                            {...field}
-                            disabled={isLoading}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name='telefono'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Teléfono</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Ingresa tu número'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='institucion'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Institución</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Ingresa tu institución'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='cargo'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cargo</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Ingresa tu cargo'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder='Prefijo' />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className='bg-white'>
+                              <SelectItem value='0412'>0412</SelectItem>
+                              <SelectItem value='0414'>0414</SelectItem>
+                              <SelectItem value='0416'>0416</SelectItem>
+                              <SelectItem value='0424'>0424</SelectItem>
+                              <SelectItem value='0426'>0426</SelectItem>
+                              <SelectItem value='0422'>0422</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {/* Muestra el error solo si el campo fue tocado */}
+                          {formState.touchedFields.prefijo &&
+                            formState.errors.prefijo && <FormMessage />}
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='numeroLocal'
+                      render={({ field }) => (
+                        <FormItem className='flex-1'>
+                          <FormControl>
+                            <Input
+                              type='tel'
+                              placeholder='1234567'
+                              maxLength={7}
+                              {...field}
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          {/* Muestra el error solo si el campo fue tocado */}
+                          {formState.touchedFields.numeroLocal &&
+                            formState.errors.numeroLocal && <FormMessage />}
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </FormItem>
               </div>
             </div>
 
@@ -415,7 +468,7 @@ export function RegisterForm() {
           </AlertDialogHeader>
           <AlertDialogAction
             onClick={() => router.push('/login')}
-            className='bg-[#001A70] hover:bg-[#001A70]/90'
+            className='bg-[#001A70] text-white hover:bg-[#001A70]/90'
           >
             Entendido
           </AlertDialogAction>
