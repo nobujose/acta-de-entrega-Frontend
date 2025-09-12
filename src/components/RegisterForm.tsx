@@ -448,9 +448,11 @@ export function RegisterForm() {
         </Form>
         <div className='text-center mt-6 text-sm'>
           <span className='text-gray-600'>¿Ya tienes una cuenta? </span>
+
           <Link
             href='/login'
-            className='font-bold text-[#001A70] hover:underline'
+            className='font-semibold text-[#001A70] hover:underline'
+            replace
           >
             Inicia sesión
           </Link>
