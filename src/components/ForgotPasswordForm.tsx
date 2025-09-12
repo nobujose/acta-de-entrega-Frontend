@@ -27,12 +27,9 @@ const step1Schema = z.object({
   email: z.string().email({ message: 'Debe ser un correo válido.' }),
 });
 const step2Schema = z.object({
-  otp: z
-    .string()
-    .min(6, {
-      message:
-        'intrude el codigo que se a enviado al correo del paso anterior.',
-    }),
+  otp: z.string().min(6, {
+    message: 'intrude el codigo que se a enviado al correo del paso anterior.',
+  }),
 });
 const step3Schema = z
   .object({
@@ -130,7 +127,7 @@ export function ForgotPasswordForm() {
         resetToken
       );
       alert('¡Contraseña actualizada con éxito!');
-      router.push('/login');
+      router.replace('/login');
     } catch (error) {
       if (error instanceof Error) {
         setApiError(error.message);
@@ -145,8 +142,8 @@ export function ForgotPasswordForm() {
   return (
     <div className='w-full max-w-md'>
       <div className='text-center mb-8'>
-        <h1 className='text-3xl font-bold text-gray-800'>
-          {step === 1 && 'Recuperar contraseña'}
+        <h1 className='text-3xl font-bold text-[#001A70]'>
+          {step === 1 && 'Recupera tu contraseña'}
           {step === 2 && 'Verificar código'}
           {step === 3 && 'Establecer nueva contraseña'}
         </h1>
@@ -154,7 +151,7 @@ export function ForgotPasswordForm() {
           {step === 1 && 'Ingresa el correo electrónico asociado a tu cuenta.'}
           {step === 2 && (
             <>
-              Hemos enviado un código a{' '}
+              Te hemos enviado un código a{' '}
               <span className='font-bold'>{email}</span>
             </>
           )}
