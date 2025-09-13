@@ -19,6 +19,7 @@ const config: Config = {
         'icon-gray-bg': '#F3F4F6', // Color de fondo de icono gris "Express"
         'text-answer': '#4F7396', // Color del texto de la respuesta
         'body-dashboard': '#E8EDF2', // Color de fondo para el dashboard layout
+        'boton-anexos-gratis': '#D7D5D5', // Color al presionar el botón de anexos gratis
       },
       boxShadow: {
         'blue-soft':

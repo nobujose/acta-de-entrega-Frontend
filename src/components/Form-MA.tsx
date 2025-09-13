@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Card,
   CardContent,
@@ -37,13 +36,15 @@ import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { createActaMaximaAutoridad } from '@/services/actasService';
 import { actaMaximaAutoridadSchema } from '@/lib/schemas';
+import { cn } from '@/lib/utils';
+import { InputCompuesto } from './InputCompuesto';
 
 type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
 
 const steps = [
   {
     id: 1,
-    title: 'Datos Generales del Acta',
+    title: 'Datos generales del Acta',
     fields: [
       'email',
       'rifOrgano',
@@ -313,46 +314,45 @@ const dynamicStepContent: DynamicContent = {
       {
         name: 'disponeRelacionMontosFondosAsignados',
         label:
-          '¿Dispone Usted, del documento Relación de los montos de los fondos asignados?',
+          '¿Dispone usted del documento Relación de los montos de los fondos asignados?',
       },
       {
         name: 'disponeSaldoEfectivoFondos',
         label:
-          '¿Dispone Usted, del documento Saldo en efectivo de dichos fondos?',
+          '¿Dispone usted del documento Saldo en efectivo de dichos fondos?',
       },
       {
         name: 'disponeRelacionBienesAsignados',
-        label:
-          '¿Dispone Usted, del documento Relación de los bienes asignados?',
+        label: '¿Dispone usted del documento Relación de los bienes asignados?',
       },
       {
         name: 'disponeRelacionBienesAsignadosUnidadBienes',
         label:
-          '¿Dispone Usted, del documento Relación de los Bienes asignados emitida por la Unidad de Bienes?',
+          '¿Dispone usted del documento Relación de los bienes asignados emitida por la Unidad de Bienes?',
       },
       {
         name: 'disponeEstadosBancariosConciliados',
         label:
-          '¿Dispone Usted, del documento Estados bancarios actualizados y conciliados a la fecha de entrega?',
+          '¿Dispone usted del documento Estados bancarios actualizados y conciliados a la fecha de entrega?',
       },
       {
         name: 'disponeListaComprobantesGastos',
-        label: '¿Dispone Usted, del documento lista de comprobantes de gastos?',
+        label: '¿Dispone usted del documento lista de comprobantes de gastos?',
       },
       {
         name: 'disponeChequesEmitidosPendientesCobro',
         label:
-          '¿Dispone Usted, del documento Cheques emitidos pendientes de cobro?',
+          '¿Dispone usted del documento Cheques emitidos pendientes de cobro?',
       },
       {
         name: 'disponeListadoTransferenciaBancaria',
         label:
-          '¿Dispone Usted, del documento listado o reporte de Transferencia Bancaria?',
+          '¿Dispone usted del documento listado o reporte de transferencia bancaria?',
       },
       {
         name: 'disponeCaucionFuncionario',
         label:
-          '¿Dispone Usted, del documento Caución del funcionario encargado de la Administración de los Recursos Financieros a la fecha del cese de funciones?',
+          '¿Dispone usted del documento Caución del funcionario encargado de la Administración de los recursos financieros a la fecha del cese de funciones?',
       },
     ],
   },
@@ -364,7 +364,7 @@ const dynamicStepContent: DynamicContent = {
       {
         name: 'disponeCuadroDemostrativoRecaudado',
         label:
-          '¿Dispone Usted, del documento cuadro demostrativo del detalle de lo liquidado y recaudado por los rubros respectivos, y de los derechos pendientes de recaudación de años anteriores?',
+          '¿Dispone usted del documento cuadro demostrativo del detalle de lo liquidado y recaudado por los rubros respectivos, y de los derechos pendientes de recaudación de años anteriores?',
       },
     ],
   },
@@ -377,7 +377,7 @@ const dynamicStepContent: DynamicContent = {
       {
         name: 'disponeRelacionExpedientesAbiertos',
         label:
-          '¿Dispone Usted, del documento relación de los expedientes abiertos con ocasión del ejercicio de la potestad de investigación, así como de los procedimientos administrativos para la determinación de responsabilidades?',
+          '¿Dispone usted del documento relación de los expedientes abiertos con ocasión del ejercicio de la potestad de investigación, así como de los procedimientos administrativos para la determinación de responsabilidades?',
       },
     ],
   },
@@ -388,22 +388,22 @@ const dynamicStepContent: DynamicContent = {
     questions: [
       {
         name: 'disponeSituacionTesoroNacional',
-        label: '¿Dispone Usted, del documento Situación del Tesoro Nacional?',
+        label: '¿Dispone usted del documento Situación del Tesoro Nacional?',
       },
       {
         name: 'disponeInfoEjecucionPresupuestoNacional',
         label:
-          '¿Dispone Usted, del documento información de la ejecución del presupuesto nacional de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
+          '¿Dispone usted del documento información de la ejecución del presupuesto nacional de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
       },
       {
         name: 'disponeMontoDeudaPublicaNacional',
         label:
-          '¿Dispone Usted, del documento Monto de la deuda pública nacional interna y externa?',
+          '¿Dispone usted del documento Monto de la deuda pública nacional interna y externa?',
       },
       {
         name: 'disponeSituacionCuentasNacion',
         label:
-          '¿Dispone Usted, del documento Situación de las cuentas de la Nación?',
+          '¿Dispone usted del documento Situación de las cuentas de la Nación?',
       },
     ],
   },
@@ -416,17 +416,17 @@ const dynamicStepContent: DynamicContent = {
     questions: [
       {
         name: 'disponeSituacionTesoroEstadal',
-        label: '¿Dispone Usted, del documento Situación del Tesoro Estadal?',
+        label: '¿Dispone usted del documento Situación del Tesoro Estadal?',
       },
       {
         name: 'disponeInfoEjecucionPresupuestoEstadal',
         label:
-          '¿Dispone Usted, del documento Información de la ejecución del presupuesto estadal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
+          '¿Dispone usted del documento Información de la ejecución del presupuesto estadal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
       },
       {
         name: 'disponeSituacionCuentasEstado',
         label:
-          '¿Dispone Usted, del documento Situación de las cuentas del respectivo estado?',
+          '¿Dispone usted del documento Situación de las cuentas del respectivo estado?',
       },
     ],
   },
@@ -438,27 +438,27 @@ const dynamicStepContent: DynamicContent = {
       {
         name: 'disponeSituacionTesoroDistritalMunicipal',
         label:
-          '¿Dispone Usted, del documento Situación del Tesoro Distrital o Municipal?',
+          '¿Dispone usted del documento Situación del tesoro distrital o municipal?',
       },
       {
         name: 'disponeInfoEjecucionPresupuestoDistritalMunicipal',
         label:
-          '¿Dispone Usted, del documento Información de la ejecución del presupuesto distrital o municipal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
+          '¿Dispone usted del documento Información de la ejecución del presupuesto distrital o municipal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
       },
       {
         name: 'disponeSituacionCuentasDistritalesMunicipales',
         label:
-          '¿Dispone Usted, del documento Situación de las cuentas distritales o municipales?',
+          '¿Dispone usted del documento Situación de las cuentas distritales o municipales?',
       },
       {
         name: 'disponeInventarioTerrenosEjidos',
         label:
-          '¿Dispone Usted, del documento Inventario detallado de los terrenos ejidos y de los terrenos propios distritales o municipales?',
+          '¿Dispone usted del documento Inventario detallado de los terrenos ejidos y de los terrenos propios distritales o municipales?',
       },
       {
         name: 'disponeRelacionIngresosVentaTerrenos',
         label:
-          '¿Dispone Usted, del documento Relación de Ingresos producto de las ventas de terrenos ejidos o terrenos propios distritales o municipales?',
+          '¿Dispone usted del documento Relación de Ingresos producto de las ventas de terrenos ejidos o terrenos propios distritales o municipales?',
       },
     ],
   },
@@ -620,52 +620,101 @@ export function ActaMaximaAutoridadForm() {
     />
   );
 
-  // Componente específico para las preguntas de Sí, No, No Aplica
+  // --- INICIO DE LA MEJORA ---
+  // Reemplazamos el antiguo `SiNoQuestion` que usaba RadioGroup por este nuevo componente.
+  // Este enfoque es el ideal porque:
+  // 1. NO se modifica el archivo base `button.tsx` de Shadcn.
+  // 2. Todos los estilos personalizados y la lógica se encapsulan aquí mismo.
+  // 3. Es fácilmente reutilizable dentro de este formulario.
   const SiNoQuestion = ({
     name,
     label,
   }: {
     name: keyof FormData;
     label: string;
-  }) => (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className='space-y-3 p-4 border rounded-md'>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              className='flex items-center space-x-4'
-              disabled={isLoading}
-            >
-              <FormItem className='flex items-center space-x-2 space-y-0'>
-                <FormControl>
-                  <RadioGroupItem value='SI' />
-                </FormControl>
-                <FormLabel className='font-normal'>Sí</FormLabel>
-              </FormItem>
-              <FormItem className='flex items-center space-x-2 space-y-0'>
-                <FormControl>
-                  <RadioGroupItem value='NO' />
-                </FormControl>
-                <FormLabel className='font-normal'>No</FormLabel>
-              </FormItem>
-              <FormItem className='flex items-center space-x-2 space-y-0'>
-                <FormControl>
-                  <RadioGroupItem value='NO APLICA' />
-                </FormControl>
-                <FormLabel className='font-normal'>No Aplica</FormLabel>
-              </FormItem>
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
+  }) => {
+    // --- Implementación de Estilos Locales ---
+    // Definimos los estilos como constantes para que el código JSX sea más limpio.
+
+    // Estilo para los botones NO seleccionados (efecto 3D elevado):
+    // - `bg-white`: Fondo blanco.
+    // - `text-black`: Texto negro para contraste.
+    // - `border-gray-300`: Borde sutil.
+    // - `shadow-md`: Sombra para dar el efecto de que "sobresale".
+    // - `hover:bg-gray-100`: Un leve cambio de color al pasar el cursor.
+    const unselectedStyle =
+      'bg-white text-black border-gray-300 shadow-md hover:bg-gray-100';
+
+    // Estilo para el botón SELECCIONADO (efecto 3D presionado):
+    // - `bg-slate-200`: Fondo gris claro, como en la imagen.
+    // - `text-slate-900`: Texto oscuro para legibilidad sobre el fondo gris.
+    // - `border-gray-400`: Un borde ligeramente más oscuro.
+    // - `shadow-inner`: La clave del efecto "presionado", aplica una sombra interior.
+    // - `hover:bg-slate-200`: Mantenemos el mismo color en hover para que no parezca que "salta" de nuevo.
+    const selectedStyle =
+      'bg-slate-200 text-slate-900 border-gray-400 shadow-inner hover:bg-slate-200';
+
+    return (
+      <FormField
+        control={form.control}
+        name={name}
+        render={({ field }) => (
+          <FormItem className='space-y-3 p-4 border rounded-md'>
+            <FormLabel>{label}</FormLabel>
+            <FormControl>
+              <div className='flex items-center space-x-4'>
+                {/* Botón SI */}
+                <Button
+                  type='button'
+                  // Usamos una variante base de Shadcn, como 'outline', para que herede
+                  // la forma y el tamaño, pero la sobreescribimos con `className`.
+                  variant='outline'
+                  onClick={() => field.onChange('SI')}
+                  disabled={isLoading}
+                  // Aquí ocurre la magia: `cn` aplica `selectedStyle` si el valor del campo
+                  // es 'SI'; de lo contrario, aplica `unselectedStyle`.
+                  className={cn(
+                    field.value === 'SI' ? selectedStyle : unselectedStyle
+                  )}
+                >
+                  SI
+                </Button>
+
+                {/* Botón NO (misma lógica) */}
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={() => field.onChange('NO')}
+                  disabled={isLoading}
+                  className={cn(
+                    field.value === 'NO' ? selectedStyle : unselectedStyle
+                  )}
+                >
+                  NO
+                </Button>
+
+                {/* Botón NO APLICA (misma lógica) */}
+                <Button
+                  type='button'
+                  variant='outline'
+                  onClick={() => field.onChange('NO APLICA')}
+                  disabled={isLoading}
+                  className={cn(
+                    field.value === 'NO APLICA'
+                      ? selectedStyle
+                      : unselectedStyle
+                  )}
+                >
+                  NO APLICA
+                </Button>
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  };
 
   return (
     <Card className='w-full bg-white'>
@@ -712,15 +761,35 @@ export function ActaMaximaAutoridadForm() {
                       label='Dirección de correo electrónico'
                       subtitle='Ej: ejemplo@dominio.com'
                     />
-                    <FormFieldWithExtras
+                    <FormField
+                      control={form.control}
                       name='rifOrgano'
-                      label='RIF  del órgano, entidad, oficina o dependencia de la Administración Pública'
-                      subtitle='Ej: G-0000000-0'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            RIF del órgano, entidad, oficina o dependencia de la
+                            Administración Pública
+                          </FormLabel>
+                          <FormDescription className='italic'>
+                            Ej: G-00000000-0
+                          </FormDescription>
+                          <FormControl>
+                            <InputCompuesto
+                              type='rif'
+                              options={['G', 'J', 'E']} // Opciones para el desplegable
+                              placeholder=''
+                              {...field}
+                              onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                     <FormFieldWithExtras
                       name='denominacionCargo'
                       label='Denominación del cargo'
-                      subtitle='Ej: Presidencia, Dirección, Coordinación'
+                      subtitle='Ej: Presidencia, dirección, coordinación'
                     />
                     <FormFieldWithExtras
                       name='nombreOrgano'
@@ -863,10 +932,27 @@ export function ActaMaximaAutoridadForm() {
                     label='Nombre'
                     subtitle='Ej: Pedro Jose Rodríguez Hernández'
                   />
-                  <FormFieldWithExtras
+                  <FormField
+                    control={form.control}
                     name='cedulaServidorEntrante'
-                    label='Cédula'
-                    subtitle='Ej: V-00.000.000'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cédula</FormLabel>
+                        <FormDescription className='italic'>
+                          Ej: V-00.000.000
+                        </FormDescription>
+                        <FormControl>
+                          <InputCompuesto
+                            type='cedula'
+                            options={['V', 'E']} // Opciones para el desplegable
+                            placeholder=''
+                            {...field}
+                            onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                   <FormFieldWithExtras
                     name='profesionServidorEntrante'
@@ -879,19 +965,34 @@ export function ActaMaximaAutoridadForm() {
                     subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                   />
                 </div>
-                <h3 className='text-lg font-semibold border-b pb-2'>
-                  Auditor(a)
-                </h3>
+                <h3 className='text-lg font-semibold border-b pb-2'>Auditor</h3>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
                     name='nombreAuditor'
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
                   />
-                  <FormFieldWithExtras
+                  <FormField
+                    control={form.control}
                     name='cedulaAuditor'
-                    label='Cédula'
-                    subtitle='Ej: V-00.000.000'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cédula</FormLabel>
+                        <FormDescription className='italic'>
+                          Ej: V-00.000.000
+                        </FormDescription>
+                        <FormControl>
+                          <InputCompuesto
+                            type='cedula'
+                            options={['V', 'E']} // Opciones para el desplegable
+                            placeholder=''
+                            {...field}
+                            onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                   <FormFieldWithExtras
                     name='profesionAuditor'
@@ -910,10 +1011,27 @@ export function ActaMaximaAutoridadForm() {
                       label='Nombre'
                       subtitle='Ej: Pedro José Rodríguez Hernández'
                     />
-                    <FormFieldWithExtras
+                    <FormField
+                      control={form.control}
                       name='cedulaTestigo1'
-                      label='Cédula'
-                      subtitle='Ej: V-00.000.000'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cédula</FormLabel>
+                          <FormDescription className='italic'>
+                            Ej: V-00.000.000
+                          </FormDescription>
+                          <FormControl>
+                            <InputCompuesto
+                              type='cedula'
+                              options={['V', 'E']} // Opciones para el desplegable
+                              placeholder=''
+                              {...field}
+                              onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo1'
@@ -928,10 +1046,27 @@ export function ActaMaximaAutoridadForm() {
                       label='Nombre'
                       subtitle='Ej: Pedro José Rodríguez Hernández'
                     />
-                    <FormFieldWithExtras
+                    <FormField
+                      control={form.control}
                       name='cedulaTestigo2'
-                      label='Cédula'
-                      subtitle='Ej: V-00.000.000'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cédula</FormLabel>
+                          <FormDescription className='italic'>
+                            Ej: V-00.000.000
+                          </FormDescription>
+                          <FormControl>
+                            <InputCompuesto
+                              type='cedula'
+                              options={['V', 'E']} // Opciones para el desplegable
+                              placeholder=''
+                              {...field}
+                              onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
                     <FormFieldWithExtras
                       name='profesionTestigo2'
@@ -949,10 +1084,27 @@ export function ActaMaximaAutoridadForm() {
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
                   />
-                  <FormFieldWithExtras
+                  <FormField
+                    control={form.control}
                     name='cedulaServidorSaliente'
-                    label='Cédula'
-                    subtitle='Ej: V-00.000.000'
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Cédula</FormLabel>
+                        <FormDescription className='italic'>
+                          Ej: V-00.000.000
+                        </FormDescription>
+                        <FormControl>
+                          <InputCompuesto
+                            type='cedula'
+                            options={['V', 'E']} // Opciones para el desplegable
+                            placeholder=''
+                            {...field}
+                            onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                   <FormFieldWithExtras
                     name='designacionServidorSaliente'
@@ -967,23 +1119,23 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-4'>
                 <SiNoQuestion
                   name='disponeEstadoSituacionPresupuestaria'
-                  label='¿Dispone Usted, del documento Estado de Situación Presupuestaria muestra todos los momentos presupuestarios y sus detalles. Incluye: Presupuesto Original, Modificaciones, Presupuesto Modificado, Compromisos, Causado, Pagado, Por Pagar y Presupuesto Disponible a la fecha de entrega?'
+                  label='¿Dispone usted del documento Estado de situación presupuestaria  que muestra todos los momentos presupuestarios y sus detalles. Incluye: presupuesto original, modificaciones, presupuesto modificado, compromisos, causado, pagado, por pagar y presupuesto disponible a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='disponeRelacionGastosComprometidosNoCausados'
-                  label='¿Dispone Usted, del documento Relación de Gastos Comprometidos, no causados a la fecha de entrega?'
+                  label='¿Dispone usted del documento Relación de gastos comprometidos no causados a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='disponeRelacionGastosComprometidosCausadosNoPagados'
-                  label='¿Dispone Usted, del documento Relación de Gastos Comprometidos, causados y no pagados a la fecha de entrega?'
+                  label='¿Dispone usted del documento Relación de gastos comprometidos causados y no pagados a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='disponeEstadoPresupuestarioPorPartidas'
-                  label='¿Dispone Usted, del documento Estado Presupuestario del Ejercicio vigente por partidas?'
+                  label='¿Dispone usted del documento Estado presupuestario del ejercicio vigente por partidas?'
                 />
                 <SiNoQuestion
                   name='disponeEstadoPresupuestarioDetalleCuentas'
-                  label='¿Dispone Usted, del documento Estado Presupuestario del Ejercicio con los detalles de sus cuentas?'
+                  label='¿Dispone usted del documento Estado presupuestario del ejercicio con los detalles de sus cuentas?'
                 />
               </div>
             )}
@@ -992,79 +1144,79 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-4'>
                 <SiNoQuestion
                   name='disponeEstadosFinancieros'
-                  label='¿Dispone Usted, del documento Estados Financieros a la fecha de entrega?'
+                  label='¿Dispone usted del documento Estados financieros a la fecha de la entrega?'
                 />
                 <SiNoQuestion
                   name='disponeBalanceComprobacion'
-                  label='¿Dispone Usted, del documento Balance de Comprobación a la fecha de elaboración de los Estados Financieros y sus notas explicativas a la fecha de entrega?'
+                  label='¿Dispone usted del documento Balance de comprobación a la fecha de la elaboración de los estados financieros y sus notas explicativas a la fecha de la entrega?'
                 />
                 <SiNoQuestion
                   name='disponeEstadoSituacionFinanciera'
-                  label='¿Dispone Usted, del documento Estado de Situación Financiera / Balance General y sus notas explicativas a la fecha de entrega?'
+                  label='¿Dispone usted del documento Estado de situación financiera / balance general y sus notas explicativas a la fecha de la entrega?'
                 />
                 <SiNoQuestion
                   name='disponeEstadoRendimientoFinanciero'
-                  label='¿Dispone Usted, del documento Estado de Rendimiento Financiero / Estado de Ganancia y Pérdidas y sus notas explicativas a la fecha de entrega?'
+                  label='¿Dispone usted del documento Estado de rendimiento financiero / Estado de ganancias y pérdidas y sus notas explicativas a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='disponeEstadoMovimientosPatrimonio'
-                  label='¿Dispone Usted, del documento Estado de Movimientos de las Cuentas de Patrimonio y sus notas explicativas a la fecha de entrega?'
+                  label='¿Dispone usted del documento Estado de movimientos de las cuentas de patrimonio y sus notas explicativas a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='disponeRelacionCuentasPorCobrar'
-                  label='¿Dispone Usted, del documento Una Relación de Cuentas por Cobrar a la fecha del Acta de Entrega?'
+                  label='¿Dispone usted del documento Relación de cuentas por cobrar a la fecha del Acta de Entrega?'
                 />
                 <SiNoQuestion
                   name='disponeRelacionCuentasPorPagar'
-                  label='¿Dispone Usted, del documento Relación de Cuentas por Pagar a la fecha del Acta de Entrega?'
+                  label='¿Dispone usted del documento Relación de cuentas por pagar a la fecha del Acta de Entrega?'
                 />
                 <SiNoQuestion
                   name='disponeRelacionCuentasFondosTerceros'
-                  label='¿Dispone Usted, del documento Relación de las Cuentas de los Fondos de Terceros?'
+                  label='¿Dispone usted del documento Relación de las cuentas de los fondos de terceros?'
                 />
                 <SiNoQuestion
                   name='disponeSituacionFondosAnticipo'
-                  label='¿Dispone Usted, del documento Situación de los Fondos en Anticipo?'
+                  label='¿Dispone usted del documento Situación de los fondos en anticipo?'
                 />
                 <SiNoQuestion
                   name='disponeSituacionCajaChica'
-                  label='¿Dispone Usted, del documento Situación de la Caja Chica?'
+                  label='¿Dispone usted del documento Situación de la caja chica?'
                 />
                 <SiNoQuestion
                   name='disponeActaArqueoCajasChicas'
-                  label='¿Dispone Usted, del documento Acta de arqueo de las Cajas Chicas a la fecha de entrega?'
+                  label='¿Dispone usted del documento Acta de arqueo de las cajas chicas a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='disponeListadoRegistroAuxiliarProveedores'
-                  label='¿Dispone Usted, del documento Listado del Registro Auxiliar de Proveedores?'
+                  label='¿Dispone usted del documento Listado del registro auxiliar de proveedores?'
                 />
                 <SiNoQuestion
                   name='disponeReportesLibrosContables'
-                  label='¿Dispone Usted, del documento Reportes de Libros Contables (Diario y mayores analíticos) a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reportes de libros contables (diario y mayores analíticos) a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
                   name='disponeReportesCuentasBancarias'
-                  label='¿Dispone Usted, del documento Reportes de las Cuentas Bancarias (Movimientos a la fecha del cese de funciones)?'
+                  label='¿Dispone usted del documento Reportes de las cuentas bancarias (movimientos a la fecha del cese de funciones)?'
                 />
                 <SiNoQuestion
                   name='disponeReportesConciliacionesBancarias'
-                  label='¿Dispone Usted, del documento Reportes de las Conciliaciones Bancarias a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reportes de las conciliaciones bancarias a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
                   name='disponeReportesRetenciones'
-                  label='¿Dispone Usted, del documento Reportes de Retenciones de pagos pendientes por enterar correspondientes a ISLR, IVA y Retenciones por Contratos (obras, bienes y servicios) a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reportes de retenciones de pagos pendientes por enterar correspondientes a ISLR, IVA y Retenciones por contratos (obras, bienes y servicios) a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
                   name='disponeReporteProcesosContrataciones'
-                  label='¿Dispone Usted, del documento Reporte de los Procesos de Contrataciones Públicas a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reporte de los procesos de Contrataciones Públicas a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
                   name='disponeReporteFideicomisoPrestaciones'
-                  label='¿Dispone Usted, del documento Reporte del Fideicomiso de Prestaciones Sociales a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reporte del fideicomiso de prestaciones sociales a la fecha del cese de funciones?'
                 />
                 <SiNoQuestion
                   name='disponeReporteBonosVacacionales'
-                  label='¿Dispone Usted, del documento Reporte de Bonos Vacacionales a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reporte de bonos vacacionales a la fecha del cese de funciones?'
                 />
               </div>
             )}
@@ -1073,15 +1225,15 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-4'>
                 <SiNoQuestion
                   name='disponeCuadroResumenCargos'
-                  label='¿Dispone Usted, del documento cuadro resumen indicando el número de cargos existentes, clasificados en empleados, obreros, fijos o contratados?'
+                  label='¿Dispone usted del documento cuadro resumen indicando el número de cargos existentes, clasificados en empleados, obreros, fijos o contratados?'
                 />
                 <SiNoQuestion
                   name='disponeCuadroResumenValidadoRRHH'
-                  label='¿Dispone Usted, del documento cuadro resumen validado por la Oficina de Recursos Humanos?'
+                  label='¿Dispone usted del documento cuadro resumen validado por la Oficina de recursos humanos?'
                 />
                 <SiNoQuestion
                   name='disponeReporteNominas'
-                  label='¿Dispone Usted, del documento Reporte de Nóminas a la fecha del cese de funciones?'
+                  label='¿Dispone usted del documento Reporte de nóminas a la fecha del cese de funciones?'
                 />
               </div>
             )}
@@ -1090,7 +1242,7 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-4'>
                 <SiNoQuestion
                   name='disponeInventarioBienes'
-                  label='¿Dispone Usted, del documento Inventario de Bienes e Inmuebles esta elaborado a la fecha de entrega. Debe contener: comprobación física, condición de los bienes, responsable patrimonial, responsable por uso, fecha de verificación, número del acta de verificación, código, descripción, marca, modelo, número del serial, estado de conservación, ubicación y valor de mercado de los bienes?'
+                  label='¿Dispone usted del documento Inventario de bienes e inmuebles esta elaborado a la fecha de entrega. Debe contener: comprobación física, condición de los bienes, responsable patrimonial, responsable por uso, fecha de verificación, número del acta de verificación, código, descripción, marca, modelo, número del serial, estado de conservación, ubicación y valor de mercado de los bienes?'
                 />
               </div>
             )}
@@ -1099,7 +1251,7 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-4'>
                 <SiNoQuestion
                   name='disponeEjecucionPlanOperativo'
-                  label='¿Dispone Usted, del documento Ejecución del Plan Operativo a la fecha de entrega?'
+                  label='¿Dispone usted del documento Ejecución del Plan Operativo a la fecha de entrega?'
                 />
                 <SiNoQuestion
                   name='incluyeCausasIncumplimientoMetas'
@@ -1107,7 +1259,7 @@ export function ActaMaximaAutoridadForm() {
                 />
                 <SiNoQuestion
                   name='disponePlanOperativoAnual'
-                  label='¿Dispone Usted, del documento Plan Operativo Anual?'
+                  label='¿Dispone usted del documento Plan Operativo anual?'
                 />
               </div>
             )}
@@ -1116,7 +1268,7 @@ export function ActaMaximaAutoridadForm() {
               <div className='space-y-4'>
                 <SiNoQuestion
                   name='disponeClasificacionArchivo'
-                  label='¿Dispone Usted, del documento clasificación del archivo?'
+                  label='¿Dispone usted del documento clasificación del archivo?'
                 />
                 <SiNoQuestion
                   name='incluyeUbicacionFisicaArchivo'
@@ -1134,12 +1286,17 @@ export function ActaMaximaAutoridadForm() {
                     <FormItem>
                       <FormLabel>
                         Cualquier otra información o documentación que se
-                        considere necesaria
+                        considere necesaria indicando la fecha de corte.
                       </FormLabel>
                       <ShadcnCardDescription className='text-xs'>
-                        Puede aportar datos adicionales que puedan influir en la
-                        evaluación. La fecha de corte es crucial para establecer
-                        un límite temporal para la información.
+                        Está referida a que además de los documentos requeridos
+                        de manera estándar, las partes involucradas pueden
+                        aportar datos adicionales que puedan influir en la
+                        evaluación o decisión del organismo correspondiente. La
+                        fecha de corte es crucial porque establece un límite
+                        temporal para la información presentada, asegurando que
+                        todas las partes estén en la misma página respecto a la
+                        temporalidad de los datos.
                       </ShadcnCardDescription>
                       <FormControl>
                         <Textarea
