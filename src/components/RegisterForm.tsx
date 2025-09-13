@@ -19,20 +19,16 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+
 import { Input } from '@/components/ui/input';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { registerUser } from '@/services/authService'; // -> 1. Importamos la nueva función
+// 1. Importamos únicamente nuestro nuevo componente de alerta
+import { SuccessAlertDialog } from './SuccessAlertDialog';
 
 // Importa Zod como siempre
 
@@ -459,23 +455,14 @@ export function RegisterForm() {
         </div>
       </div>
 
-      <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¡Registro Exitoso!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Hemos enviado un correo para que valides tu cuenta. Por favor,
-              revisa tu bandeja de entrada.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogAction
-            onClick={() => router.push('/login')}
-            className='bg-[#001A70] text-white hover:bg-[#001A70]/90'
-          >
-            Entendido
-          </AlertDialogAction>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Reemplaza el AlertDialog anterior por nuestro nuevo componente */}
+      <SuccessAlertDialog
+        isOpen={showSuccessDialog}
+        onClose={() => setShowSuccessDialog(false)}
+        title='¡Registro Exitoso!'
+        description='Hemos enviado un correo para que valides tu cuenta. Por favor, revisa tu bandeja de entrada.'
+        onConfirm={() => router.push('/login')}
+      />
     </>
   );
 }
