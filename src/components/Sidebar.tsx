@@ -77,7 +77,7 @@ export default function Sidebar() {
   return (
     <aside
       className={cn(
-        'relative z-50 flex h-full flex-col bg-sidebar-bg text-black transition-all duration-300 ease-in-out',
+        'relative z-50 flex h-full flex-col bg-white text-black transition-all duration-300 ease-in-out',
         isCollapsed ? 'w-20' : 'w-64'
       )}
     >
@@ -119,8 +119,8 @@ export default function Sidebar() {
               'flex items-center gap-3 py-2 w-full transition-all duration-200',
               isCollapsed ? 'justify-center px-4' : 'px-4',
               pathname === link.href
-                ? 'bg-white text-black font-semibold'
-                : 'text-gray-700 hover:bg-sidebar-hover-bg hover:text-black rounded-md'
+                ? 'bg-body-dashboard text-black font-semibold'
+                : 'text-gray-700 hover:bg-gray-300 hover:text-black rounded-md'
             )}
           >
             <link.icon className='h-4 w-4 shrink-0' />
@@ -142,8 +142,8 @@ export default function Sidebar() {
               'flex items-center gap-3 py-2 w-full transition-all duration-200',
               isCollapsed ? 'justify-center px-4' : 'px-4',
               pathname === aboutLink.href
-                ? 'bg-white text-gray-900 font-semibold'
-                : 'text-gray-700 hover:bg-sidebar-hover-bg hover:text-black rounded-md'
+                ? 'bg-body-dashboard text-gray-900 font-semibold'
+                : 'text-gray-700 hover:bg-gray-300 hover:text-black rounded-md'
             )}
           >
             <aboutLink.icon className='h-4 w-4 shrink-0' />
@@ -152,7 +152,6 @@ export default function Sidebar() {
             )}
           </Link>
 
-          {/* ▼▼▼ CAMBIO: Botón de Cerrar Sesión ▼▼▼ */}
           <Button
             variant='ghost'
             title={isCollapsed ? 'Cerrar Sesión' : ''}
@@ -172,7 +171,7 @@ export default function Sidebar() {
           <div
             className={cn(
               'flex items-center gap-3 rounded-md px-3 py-2',
-              !isCollapsed && 'hover:bg-sidebar-hover-bg cursor-pointer group'
+              !isCollapsed && 'hover:bg-gray-300 cursor-pointer group'
             )}
           >
             <Avatar className='h-8 w-8 shrink-0'>

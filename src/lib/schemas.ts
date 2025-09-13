@@ -1,12 +1,17 @@
 import * as z from 'zod';
 
+// Expresión regular para RIF (ej: G-20000000-0)
+const rifRegex = /^[GJE]-\d{8}-\d{1}$/;
+// Expresión regular para Cédula (ej: V-12345678)
+const cedulaRegex = /^[VE]-\d{7,8}$/;
+
 export const actaMaximaAutoridadSchema = z.object({
   // --- Datos Generales ---
   email: z
     .string()
     .min(1, 'Campo Requerido')
     .email({ message: 'Debe ser un correo válido.' }),
-  rifOrgano: z.string().min(1, 'El RIF es requerido.'),
+  rifOrgano: z.string().regex(rifRegex, 'El RIF es requerido.'),
   denominacionCargo: z
     .string()
     .min(1, 'La denominación del cargo es requerida.'),
@@ -20,20 +25,24 @@ export const actaMaximaAutoridadSchema = z.object({
 
   // --- Servidores Públicos y Testigos ---
   nombreServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorEntrante: z
+    .string()
+    .regex(cedulaRegex, 'La cédula es requerida.'),
   profesionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
   designacionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
   nombreAuditor: z.string().min(1, 'Este campo es requerido.'),
-  cedulaAuditor: z.string().min(1, 'Este campo es requerido.'),
+  cedulaAuditor: z.string().regex(cedulaRegex, 'La cédula es requerida.'),
   profesionAuditor: z.string().min(1, 'Este campo es requerido.'),
   nombreTestigo1: z.string().min(1, 'Este campo es requerido.'),
-  cedulaTestigo1: z.string().min(1, 'Este campo es requerido.'),
+  cedulaTestigo1: z.string().regex(cedulaRegex, 'La cédula es requerida.'),
   profesionTestigo1: z.string().min(1, 'Este campo es requerido.'),
   nombreTestigo2: z.string().min(1, 'Este campo es requerido.'),
-  cedulaTestigo2: z.string().min(1, 'Este campo es requerido.'),
+  cedulaTestigo2: z.string().regex(cedulaRegex, 'La cédula es requerida.'),
   profesionTestigo2: z.string().min(1, 'Este campo es requerido.'),
   nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorSaliente: z
+    .string()
+    .regex(cedulaRegex, 'La cédula es requerida.'),
   designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
 
   // --- Anexos (SI/NO) ---
