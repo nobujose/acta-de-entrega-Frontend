@@ -21,6 +21,7 @@ import {
 import Image from 'next/image';
 import { useModalStore } from '@/stores/useModalStore';
 import { useAuthStore } from '@/stores/useAuthStore';
+import apiClient from '@/lib/axios'; // <-- 1. Asegúrate de que apiClient esté importado
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -67,7 +68,17 @@ export default function Sidebar() {
   const handleLogoutClick = () => {
     openModal('logoutConfirmation', {
       title: '¿Estás seguro que quieres cerrar sesión?',
-      onConfirm: () => {
+      onConfirm: async () => {
+        // 2. Convertimos esta función en 'async'
+        try {
+          // ▼▼▼ 3. AÑADIMOS LA LLAMADA AL BACKEND ▼▼▼
+          // Le decimos al backend que vamos a cerrar sesión ANTES de borrar el token
+          await apiClient.post('/auth/logout');
+        } catch (error) {
+          // Si falla la notificación, lo mostramos en la consola pero continuamos
+          // con el cierre de sesión para no bloquear al usuario.
+          console.error('No se pudo notificar el logout al servidor:', error);
+        }
         logout(); // Llama a la función de logout del store
         router.push('/login');
       },
