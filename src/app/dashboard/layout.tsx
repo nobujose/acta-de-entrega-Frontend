@@ -3,7 +3,7 @@ import Sidebar from '@/components/Sidebar';
 import { HeaderProvider } from '@/context/HeaderContext';
 import { ModalProvider } from '@/components/ModalProvider';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-
+import { PopupManager } from '@/components/PopupManager';
 export default function DashboardLayout({
   children,
 }: {
@@ -22,6 +22,7 @@ export default function DashboardLayout({
           </div>
         </div>
         <ModalProvider />
+        <PopupManager />
       </HeaderProvider>
     </ProtectedRoute>
   );

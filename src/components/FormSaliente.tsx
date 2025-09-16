@@ -628,7 +628,12 @@ export function ActaSalienteForm() {
                           disabled={isLoading}
                         />
                       </FormControl>
-                      <FormMessage />
+                      {/* ▼▼▼ AQUÍ ESTÁ EL CAMBIO ▼▼▼ */}
+                      <div className='h-5'>
+                        {' '}
+                        {/* Contenedor con altura fija de 20px */}
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -637,15 +642,17 @@ export function ActaSalienteForm() {
                   name='rifOrgano'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>RIF del órgano</FormLabel>
+                      <FormLabel>RIF del órgano...</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder='G-00000000-0'
-                          {...field}
-                          disabled={isLoading}
-                        />
+                        <Input placeholder='Ej: G-00000000-0' {...field} />
                       </FormControl>
-                      <FormMessage />
+
+                      {/* ▼▼▼ AQUÍ ESTÁ EL CAMBIO ▼▼▼ */}
+                      <div className='h-5'>
+                        {' '}
+                        {/* Contenedor con altura fija de 20px */}
+                        <FormMessage />
+                      </div>
                     </FormItem>
                   )}
                 />
