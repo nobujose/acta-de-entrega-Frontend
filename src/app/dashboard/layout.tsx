@@ -12,7 +12,7 @@ export default function DashboardLayout({
   return (
     <ProtectedRoute>
       <HeaderProvider>
-        <div className='flex h-screen bg-body-dashboard text-gray-800'>
+        <div className='flex h-screen overflow-hidden bg-body-dashboard text-gray-800'>
           <Sidebar />
           <div className='flex flex-1 flex-col overflow-hidden'>
             <Header />

@@ -97,7 +97,9 @@ function FormLabel({
     <Label
       data-slot='form-label'
       data-error={!!error}
-      className={cn('', className)}
+      // ▼▼▼ AQUÍ ESTÁ EL CAMBIO ▼▼▼
+      // Le damos una altura mínima de 2rem (32px), suficiente para dos líneas de texto.
+      className={cn('min-h-[2rem]', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -125,14 +127,24 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
 
 function FormDescription({ className, ...props }: React.ComponentProps<'p'>) {
   const { formDescriptionId } = useFormField();
+  const body = props.children;
 
   return (
     <p
-      data-slot='form-description'
       id={formDescriptionId}
-      className={cn('text-muted-foreground text-sm', className)}
+      className={cn(
+        'text-sm', // Estilo de texto base
+        // 1. Altura mínima para reservar espacio para hasta 3 líneas
+        'min-h-[3rem]',
+        // 2. Si hay texto, se muestra; si no, se hace invisible
+        body ? 'text-muted-foreground' : 'invisible',
+        className
+      )}
       {...props}
-    />
+    >
+      {/* 3. Contenido de relleno para que el espacio se mantenga */}
+      {body || '-'}
+    </p>
   );
 }
 
@@ -140,8 +152,18 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField();
   const body = error ? String(error?.message ?? '') : props.children;
 
+  // Clases base para el párrafo del mensaje
+  const baseClasses = 'text-sm font-medium';
+
   if (!body) {
-    return null;
+    // Si NO hay error, renderiza un marcador de posición invisible
+    // que ocupa exactamente el mismo espacio que un mensaje de error.
+    return (
+      <p className={cn(baseClasses, 'text-transparent', className)} {...props}>
+        &nbsp;{' '}
+        {/* Un espacio "no rompible" para asegurar que el elemento tenga altura */}
+      </p>
+    );
   }
 
   return (
