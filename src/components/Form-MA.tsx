@@ -96,6 +96,15 @@ const steps = [
       'disponeRelacionGastosComprometidosCausadosNoPagados',
       'disponeEstadoPresupuestarioPorPartidas',
       'disponeEstadoPresupuestarioDetalleCuentas',
+    ],
+  },
+  {
+    id: 4,
+    title:
+      'Anexo I: Estado de las cuentas que reflejen la SITUACIÓN FINANCIERA Y PATRIMONIAL, cuando sea aplicable.',
+    subtitle:
+      '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+    fields: [
       'disponeEstadosFinancieros',
       'disponeBalanceComprobacion',
       'disponeEstadoSituacionFinanciera',
@@ -112,22 +121,9 @@ const steps = [
       'disponeReportesCuentasBancarias',
       'disponeReportesConciliacionesBancarias',
       'disponeReportesRetenciones',
-    ],
-  },
-  {
-    id: 4,
-    title:
-      'Anexo I: Estado de las cuentas que reflejen la SITUACIÓN FINANCIERA Y PATRIMONIAL, cuando sea aplicable.',
-    subtitle:
-      '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
       'disponeReporteProcesosContrataciones',
       'disponeReporteFideicomisoPrestaciones',
       'disponeReporteBonosVacacionales',
-      'disponeCuadroResumenCargos',
-      'disponeCuadroResumenValidadoRRHH',
-      'disponeReporteNominas',
-      'disponeInventarioBienes',
     ],
   },
   {
@@ -137,11 +133,9 @@ const steps = [
     subtitle:
       '(Artículo 11.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeEjecucionPlanOperativo',
-      'incluyeCausasIncumplimientoMetas',
-      'disponePlanOperativoAnual',
-      'disponeClasificacionArchivo',
-      'incluyeUbicacionFisicaArchivo',
+      'disponeCuadroResumenCargos',
+      'disponeCuadroResumenValidadoRRHH',
+      'disponeReporteNominas',
     ],
   },
   {
@@ -149,31 +143,7 @@ const steps = [
     title: 'Anexo III.  Inventario de bienes muebles e inmuebles.',
     subtitle:
       '(Artículo 11.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-    ],
+    fields: ['disponeInventarioBienes'],
   },
   {
     id: 7,
@@ -182,29 +152,9 @@ const steps = [
     subtitle:
       '(Artículo 11.4 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
+      'disponeEjecucionPlanOperativo',
+      'incluyeCausasIncumplimientoMetas',
+      'disponePlanOperativoAnual',
     ],
   },
   {
@@ -212,6 +162,19 @@ const steps = [
     title: 'Anexo V. Índice general del archivo.',
     subtitle:
       '(Artículo 11.5 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+    fields: ['disponeClasificacionArchivo', 'incluyeUbicacionFisicaArchivo'],
+  },
+  {
+    id: 9,
+    title: 'Anexo VI.',
+    subtitle:
+      '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+    fields: ['Anexo_VI', 'Anexos_VII'],
+  },
+  {
+    id: 10,
+    title: 'Anexos Específicos',
+    subtitle: 'Seleccione una opción en el paso anterior',
     fields: [
       'disponeRelacionMontosFondosAsignados',
       'disponeSaldoEfectivoFondos',
@@ -236,16 +199,52 @@ const steps = [
       'disponeSituacionCuentasDistritalesMunicipales',
       'disponeInventarioTerrenosEjidos',
       'disponeRelacionIngresosVentaTerrenos',
-    ],
-  },
-  {
-    id: 9,
-    title: 'Anexo VI.',
-    subtitle:
-      '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'Anexo_VI',
-      'Anexos_VII',
+      'disponeRelacionMontosFondosAsignados',
+      'disponeSaldoEfectivoFondos',
+      'disponeRelacionBienesAsignados',
+      'disponeRelacionBienesAsignadosUnidadBienes',
+      'disponeEstadosBancariosConciliados',
+      'disponeListaComprobantesGastos',
+      'disponeChequesEmitidosPendientesCobro',
+      'disponeListadoTransferenciaBancaria',
+      'disponeCaucionFuncionario',
+      'disponeCuadroDemostrativoRecaudado',
+      'disponeRelacionExpedientesAbiertos',
+      'disponeSituacionTesoroNacional',
+      'disponeInfoEjecucionPresupuestoNacional',
+      'disponeMontoDeudaPublicaNacional',
+      'disponeSituacionCuentasNacion',
+      'disponeSituacionTesoroEstadal',
+      'disponeInfoEjecucionPresupuestoEstadal',
+      'disponeSituacionCuentasEstado',
+      'disponeSituacionTesoroDistritalMunicipal',
+      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
+      'disponeSituacionCuentasDistritalesMunicipales',
+      'disponeInventarioTerrenosEjidos',
+      'disponeRelacionIngresosVentaTerrenos',
+      'disponeRelacionMontosFondosAsignados',
+      'disponeSaldoEfectivoFondos',
+      'disponeRelacionBienesAsignados',
+      'disponeRelacionBienesAsignadosUnidadBienes',
+      'disponeEstadosBancariosConciliados',
+      'disponeListaComprobantesGastos',
+      'disponeChequesEmitidosPendientesCobro',
+      'disponeListadoTransferenciaBancaria',
+      'disponeCaucionFuncionario',
+      'disponeCuadroDemostrativoRecaudado',
+      'disponeRelacionExpedientesAbiertos',
+      'disponeSituacionTesoroNacional',
+      'disponeInfoEjecucionPresupuestoNacional',
+      'disponeMontoDeudaPublicaNacional',
+      'disponeSituacionCuentasNacion',
+      'disponeSituacionTesoroEstadal',
+      'disponeInfoEjecucionPresupuestoEstadal',
+      'disponeSituacionCuentasEstado',
+      'disponeSituacionTesoroDistritalMunicipal',
+      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
+      'disponeSituacionCuentasDistritalesMunicipales',
+      'disponeInventarioTerrenosEjidos',
+      'disponeRelacionIngresosVentaTerrenos',
       'disponeSaldoEfectivoFondos',
       'disponeRelacionBienesAsignados',
       'disponeRelacionBienesAsignadosUnidadBienes',
@@ -269,12 +268,6 @@ const steps = [
       'disponeInventarioTerrenosEjidos',
       'disponeRelacionIngresosVentaTerrenos',
     ],
-  },
-  {
-    id: 10,
-    title: 'Anexos Específicos',
-    subtitle: 'Seleccione una opción en el paso anterior',
-    fields: [],
   },
   {
     id: 11,
@@ -1363,6 +1356,7 @@ export function ActaMaximaAutoridadForm() {
                           placeholder='Describa aquí la información adicional...'
                           {...field}
                           disabled={isLoading}
+                          maxLength={500}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1437,6 +1431,7 @@ export function ActaMaximaAutoridadForm() {
                                     {...field}
                                     rows={8}
                                     disabled={isLoading}
+                                    maxLength={500}
                                   />
                                 </FormControl>
                                 <FormMessage />

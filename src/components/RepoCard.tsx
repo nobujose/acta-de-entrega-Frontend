@@ -1,4 +1,3 @@
-// src/components/RepoCard.tsx
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,8 +18,7 @@ export function RepoCard({
   isGratis = false,
 }: RepoCardProps) {
   return (
-    <Card className='flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4'>
-      {/* ▼▼▼ AQUÍ ESTÁ EL CAMBIO PRINCIPAL ▼▼▼ */}
+    <Card className='bg-white flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4'>
       {/* Reemplazamos las alturas variables por una proporción fija de video (16:9) */}
       <div className='relative w-full aspect-video mb-4'>
         {isGratis && (
@@ -35,7 +33,6 @@ export function RepoCard({
           className='rounded-xl object-cover' // object-cover asegura que la imagen cubra el espacio sin deformarse
         />
       </div>
-      {/* ▲▲▲ FIN DEL CAMBIO ▲▲▲ */}
 
       <div className='w-full h-[2px] bg-primary-blue mb-4 rounded-full' />
 
