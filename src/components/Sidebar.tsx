@@ -7,21 +7,21 @@ import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { CgHome } from 'react-icons/cg';
 import {
-  Menu,
-  Home,
-  Bot,
-  BookOpenText,
-  CircleAlert,
-  Folder,
-  StickyNote,
-  CircleQuestionMark,
-  LogOut,
-} from 'lucide-react';
+  AiOutlineBook,
+  AiOutlineFileSearch,
+  AiOutlineLogout,
+} from 'react-icons/ai';
+import { LuLayoutDashboard } from 'react-icons/lu';
+import { FiHelpCircle } from 'react-icons/fi';
+import { LiaRobotSolid } from 'react-icons/lia';
+import { BiInfoCircle } from 'react-icons/bi';
+import { GiHamburgerMenu } from 'react-icons/gi';
 import Image from 'next/image';
 import { useModalStore } from '@/stores/useModalStore';
 import { useAuthStore } from '@/stores/useAuthStore';
-import apiClient from '@/lib/axios'; // <-- 1. Asegúrate de que apiClient esté importado
+import apiClient from '@/lib/axios';
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -32,38 +32,42 @@ export default function Sidebar() {
   const { open: openModal } = useModalStore();
 
   const navLinks = [
-    { href: '/dashboard', label: 'Inicio', icon: Home },
+    {
+      href: '/dashboard',
+      label: 'Inicio',
+      icon: CgHome,
+    },
     {
       href: '/dashboard/repositorio',
       label: 'Repositorio Legal',
-      icon: Folder,
+      icon: AiOutlineBook,
     },
     {
       href: '/dashboard/revision',
       label: 'Revisión de acta',
-      icon: StickyNote,
+      icon: AiOutlineFileSearch,
     },
     {
       href: '/dashboard/panel-actas',
       label: 'Panel de actas',
-      icon: BookOpenText,
+      icon: LuLayoutDashboard,
     },
     {
       href: '/dashboard/faq',
       label: 'Preguntas frecuentes',
-      icon: CircleQuestionMark,
+      icon: FiHelpCircle,
     },
     {
       href: '/dashboard/asistenteia',
       label: 'Asistente virtual',
-      icon: Bot,
+      icon: LiaRobotSolid,
     },
   ];
 
   const aboutLink = {
     href: '/dashboard/acerca-de',
     label: 'Acerca de',
-    icon: CircleAlert,
+    icon: BiInfoCircle,
   };
 
   const handleLogoutClick = () => {
@@ -108,7 +112,7 @@ export default function Sidebar() {
           className='h-8 w-8 shrink-0 text-black hover:bg-sidebar-hover-bg'
           onClick={() => setIsCollapsed(!isCollapsed)}
         >
-          <Menu className='h-4 w-4' />
+          <GiHamburgerMenu className='h-4 w-4' />
         </Button>
         {!isCollapsed && (
           <Link
@@ -180,7 +184,7 @@ export default function Sidebar() {
               isCollapsed ? 'justify-center px-4' : 'px-4 justify-start'
             )}
           >
-            <LogOut className='h-4 w-4 shrink-0' />
+            <AiOutlineLogout className='h-4 w-4 shrink-0' />
             {!isCollapsed && <span className='truncate'>Cerrar sesión</span>}
           </Button>
         </div>

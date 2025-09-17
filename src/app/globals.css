@@ -1,4 +1,12 @@
-/* src/app/globals.css */
+@layer base {
+  body {
+    height: 100vh;
+    overflow-y: hidden;
+  }
+}
+
+@import 'react-datepicker/dist/react-datepicker.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
