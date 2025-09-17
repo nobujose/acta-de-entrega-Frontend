@@ -19,7 +19,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang='es'>
-      <body className={roboto.className}>{children}</body>
+      <body className={roboto.className}>
+        {children}
+        <div id='datepicker-portal'></div>
+        <div id='timepicker-portal'></div>
+      </body>
     </html>
   );
 }

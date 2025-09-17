@@ -38,6 +38,9 @@ import { createActaMaximaAutoridad } from '@/services/actasService';
 import { actaMaximaAutoridadSchema } from '@/lib/schemas';
 import { cn } from '@/lib/utils';
 import { InputCompuesto } from './InputCompuesto';
+import { LocationSelector } from './LocationSelector';
+import { CustomDatePicker } from './DatePicker';
+import { CustomTimePicker } from './TimePicker';
 
 type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
 
@@ -93,6 +96,15 @@ const steps = [
       'disponeRelacionGastosComprometidosCausadosNoPagados',
       'disponeEstadoPresupuestarioPorPartidas',
       'disponeEstadoPresupuestarioDetalleCuentas',
+    ],
+  },
+  {
+    id: 4,
+    title:
+      'Anexo I: Estado de las cuentas que reflejen la SITUACIÓN FINANCIERA Y PATRIMONIAL, cuando sea aplicable.',
+    subtitle:
+      '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+    fields: [
       'disponeEstadosFinancieros',
       'disponeBalanceComprobacion',
       'disponeEstadoSituacionFinanciera',
@@ -109,22 +121,9 @@ const steps = [
       'disponeReportesCuentasBancarias',
       'disponeReportesConciliacionesBancarias',
       'disponeReportesRetenciones',
-    ],
-  },
-  {
-    id: 4,
-    title:
-      'Anexo I: Estado de las cuentas que reflejen la SITUACIÓN FINANCIERA Y PATRIMONIAL, cuando sea aplicable.',
-    subtitle:
-      '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
       'disponeReporteProcesosContrataciones',
       'disponeReporteFideicomisoPrestaciones',
       'disponeReporteBonosVacacionales',
-      'disponeCuadroResumenCargos',
-      'disponeCuadroResumenValidadoRRHH',
-      'disponeReporteNominas',
-      'disponeInventarioBienes',
     ],
   },
   {
@@ -134,11 +133,9 @@ const steps = [
     subtitle:
       '(Artículo 11.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeEjecucionPlanOperativo',
-      'incluyeCausasIncumplimientoMetas',
-      'disponePlanOperativoAnual',
-      'disponeClasificacionArchivo',
-      'incluyeUbicacionFisicaArchivo',
+      'disponeCuadroResumenCargos',
+      'disponeCuadroResumenValidadoRRHH',
+      'disponeReporteNominas',
     ],
   },
   {
@@ -146,31 +143,7 @@ const steps = [
     title: 'Anexo III.  Inventario de bienes muebles e inmuebles.',
     subtitle:
       '(Artículo 11.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-    ],
+    fields: ['disponeInventarioBienes'],
   },
   {
     id: 7,
@@ -179,29 +152,9 @@ const steps = [
     subtitle:
       '(Artículo 11.4 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
     fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
+      'disponeEjecucionPlanOperativo',
+      'incluyeCausasIncumplimientoMetas',
+      'disponePlanOperativoAnual',
     ],
   },
   {
@@ -209,6 +162,19 @@ const steps = [
     title: 'Anexo V. Índice general del archivo.',
     subtitle:
       '(Artículo 11.5 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+    fields: ['disponeClasificacionArchivo', 'incluyeUbicacionFisicaArchivo'],
+  },
+  {
+    id: 9,
+    title: 'Anexo VI.',
+    subtitle:
+      '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
+    fields: ['Anexo_VI', 'Anexos_VII'],
+  },
+  {
+    id: 10,
+    title: 'Anexos Específicos',
+    subtitle: 'Seleccione una opción en el paso anterior',
     fields: [
       'disponeRelacionMontosFondosAsignados',
       'disponeSaldoEfectivoFondos',
@@ -233,16 +199,52 @@ const steps = [
       'disponeSituacionCuentasDistritalesMunicipales',
       'disponeInventarioTerrenosEjidos',
       'disponeRelacionIngresosVentaTerrenos',
-    ],
-  },
-  {
-    id: 9,
-    title: 'Anexo VI.',
-    subtitle:
-      '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'Anexo_VI',
-      'Anexos_VII',
+      'disponeRelacionMontosFondosAsignados',
+      'disponeSaldoEfectivoFondos',
+      'disponeRelacionBienesAsignados',
+      'disponeRelacionBienesAsignadosUnidadBienes',
+      'disponeEstadosBancariosConciliados',
+      'disponeListaComprobantesGastos',
+      'disponeChequesEmitidosPendientesCobro',
+      'disponeListadoTransferenciaBancaria',
+      'disponeCaucionFuncionario',
+      'disponeCuadroDemostrativoRecaudado',
+      'disponeRelacionExpedientesAbiertos',
+      'disponeSituacionTesoroNacional',
+      'disponeInfoEjecucionPresupuestoNacional',
+      'disponeMontoDeudaPublicaNacional',
+      'disponeSituacionCuentasNacion',
+      'disponeSituacionTesoroEstadal',
+      'disponeInfoEjecucionPresupuestoEstadal',
+      'disponeSituacionCuentasEstado',
+      'disponeSituacionTesoroDistritalMunicipal',
+      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
+      'disponeSituacionCuentasDistritalesMunicipales',
+      'disponeInventarioTerrenosEjidos',
+      'disponeRelacionIngresosVentaTerrenos',
+      'disponeRelacionMontosFondosAsignados',
+      'disponeSaldoEfectivoFondos',
+      'disponeRelacionBienesAsignados',
+      'disponeRelacionBienesAsignadosUnidadBienes',
+      'disponeEstadosBancariosConciliados',
+      'disponeListaComprobantesGastos',
+      'disponeChequesEmitidosPendientesCobro',
+      'disponeListadoTransferenciaBancaria',
+      'disponeCaucionFuncionario',
+      'disponeCuadroDemostrativoRecaudado',
+      'disponeRelacionExpedientesAbiertos',
+      'disponeSituacionTesoroNacional',
+      'disponeInfoEjecucionPresupuestoNacional',
+      'disponeMontoDeudaPublicaNacional',
+      'disponeSituacionCuentasNacion',
+      'disponeSituacionTesoroEstadal',
+      'disponeInfoEjecucionPresupuestoEstadal',
+      'disponeSituacionCuentasEstado',
+      'disponeSituacionTesoroDistritalMunicipal',
+      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
+      'disponeSituacionCuentasDistritalesMunicipales',
+      'disponeInventarioTerrenosEjidos',
+      'disponeRelacionIngresosVentaTerrenos',
       'disponeSaldoEfectivoFondos',
       'disponeRelacionBienesAsignados',
       'disponeRelacionBienesAsignadosUnidadBienes',
@@ -266,12 +268,6 @@ const steps = [
       'disponeInventarioTerrenosEjidos',
       'disponeRelacionIngresosVentaTerrenos',
     ],
-  },
-  {
-    id: 10,
-    title: 'Anexos Específicos',
-    subtitle: 'Seleccione una opción en el paso anterior',
-    fields: [],
   },
   {
     id: 11,
@@ -589,12 +585,14 @@ export function ActaMaximaAutoridadForm() {
     subtitle,
     placeholder,
     type = 'text',
+    maxLength,
   }: {
     name: keyof FormData;
     label: string;
     subtitle?: string;
     placeholder?: string;
     type?: string;
+    maxLength?: number;
   }) => (
     <FormField
       control={form.control}
@@ -611,6 +609,7 @@ export function ActaMaximaAutoridadForm() {
               type={type}
               placeholder={placeholder}
               {...field}
+              maxLength={maxLength}
               disabled={isLoading}
             />
           </FormControl>
@@ -716,6 +715,12 @@ export function ActaMaximaAutoridadForm() {
     );
   };
 
+  const navButtonStyleGray =
+    'bg-white text-black border-gray-300 shadow-md hover:bg-gray-100 active:bg-slate-200 active:shadow-inner active:border-gray-400 transition-all duration-150';
+
+  const navButtonStyleBlue =
+    'bg-primary-blue text-white border-blue-800 shadow-md hover:bg-primary-blue-dark active:bg-blue-800 active:shadow-inner active:border-blue-900 transition-all duration-150';
+
   return (
     <Card className='w-full bg-white'>
       <CardHeader>
@@ -790,11 +795,13 @@ export function ActaMaximaAutoridadForm() {
                       name='denominacionCargo'
                       label='Denominación del cargo'
                       subtitle='Ej: Presidencia, dirección, coordinación'
+                      maxLength={50}
                     />
                     <FormFieldWithExtras
                       name='nombreOrgano'
                       label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública'
                       subtitle='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
+                      maxLength={50}
                     />
                   </div>
                 </div>
@@ -811,31 +818,66 @@ export function ActaMaximaAutoridadForm() {
                     </p>
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-                    <FormFieldWithExtras
-                      name='estadoSuscripcion'
-                      label='Estado donde se suscribe el acta'
-                      subtitle='Ej: Lara'
-                    />
-                    <FormFieldWithExtras
-                      name='ciudadSuscripcion'
-                      label='Ciudad donde se suscribe el acta'
-                      subtitle='Ej: Barquisimeto'
-                    />
-                    <FormFieldWithExtras
+                    <LocationSelector control={form.control} form={form} />
+
+                    <FormField
+                      control={form.control}
                       name='horaSuscripcion'
-                      label='Hora de suscripción del acta'
-                      type='time'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col justify-end'>
+                          <FormLabel>Hora de suscripción del acta</FormLabel>
+                          <FormControl>
+                            <CustomTimePicker
+                              // react-datepicker usa objetos Date, así que convertimos el valor
+                              value={
+                                field.value
+                                  ? new Date(`1970-01-01T${field.value}`)
+                                  : null
+                              }
+                              onChange={(date) => {
+                                // Guardamos la hora en formato HH:mm
+                                field.onChange(
+                                  date
+                                    ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+                                    : ''
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                    <FormFieldWithExtras
+
+                    <FormField
+                      control={form.control}
                       name='fechaSuscripcion'
-                      label='Fecha de la suscripción'
-                      type='date'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col justify-end'>
+                          <FormLabel>Fecha de la suscripción</FormLabel>
+                          <FormControl>
+                            <CustomDatePicker
+                              // react-datepicker usa objetos Date, así que convertimos el valor
+                              value={field.value ? new Date(field.value) : null}
+                              onChange={(date) => {
+                                // Guardamos la fecha en formato YYYY-MM-DD
+                                field.onChange(
+                                  date ? date.toISOString().split('T')[0] : ''
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
+
                     <div className='md:col-span-2'>
                       <FormFieldWithExtras
                         name='direccionOrgano'
                         label='Dirección exacta y completa de la ubicación del órgano, entidad, oficina o dependencia que se entrega'
                         subtitle='Ej: Avenida 00, entre calles 00 y 00, Edif. Central, Piso 2, Despacho de la presidencia'
+                        maxLength={300}
                       />
                     </div>
                     <div className='md:col-span-2'>
@@ -931,6 +973,7 @@ export function ActaMaximaAutoridadForm() {
                     name='nombreServidorEntrante'
                     label='Nombre'
                     subtitle='Ej: Pedro Jose Rodríguez Hernández'
+                    maxLength={50}
                   />
                   <FormField
                     control={form.control}
@@ -958,11 +1001,13 @@ export function ActaMaximaAutoridadForm() {
                     name='profesionServidorEntrante'
                     label='Profesión'
                     subtitle='Ej: Contador, Ingeniero, Abogado'
+                    maxLength={50}
                   />
                   <FormFieldWithExtras
                     name='designacionServidorEntrante'
                     label='Datos de designación'
                     subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                    maxLength={150}
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>Auditor</h3>
@@ -971,6 +1016,7 @@ export function ActaMaximaAutoridadForm() {
                     name='nombreAuditor'
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
+                    maxLength={50}
                   />
                   <FormField
                     control={form.control}
@@ -998,6 +1044,7 @@ export function ActaMaximaAutoridadForm() {
                     name='profesionAuditor'
                     label='Profesión'
                     subtitle='Ej: Contador, Ingeniero, Abogado'
+                    maxLength={50}
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -1010,6 +1057,7 @@ export function ActaMaximaAutoridadForm() {
                       name='nombreTestigo1'
                       label='Nombre'
                       subtitle='Ej: Pedro José Rodríguez Hernández'
+                      maxLength={50}
                     />
                     <FormField
                       control={form.control}
@@ -1037,6 +1085,7 @@ export function ActaMaximaAutoridadForm() {
                       name='profesionTestigo1'
                       label='Profesión'
                       subtitle='Ej: Contador, Ingeniero, Abogado'
+                      maxLength={50}
                     />
                   </div>
                   <div className='space-y-4 p-4 border rounded-md'>
@@ -1045,6 +1094,7 @@ export function ActaMaximaAutoridadForm() {
                       name='nombreTestigo2'
                       label='Nombre'
                       subtitle='Ej: Pedro José Rodríguez Hernández'
+                      maxLength={50}
                     />
                     <FormField
                       control={form.control}
@@ -1072,6 +1122,7 @@ export function ActaMaximaAutoridadForm() {
                       name='profesionTestigo2'
                       label='Profesión'
                       subtitle='Ej: Contador, Ingeniero, Abogado'
+                      maxLength={50}
                     />
                   </div>
                 </div>
@@ -1083,6 +1134,7 @@ export function ActaMaximaAutoridadForm() {
                     name='nombreServidorSaliente'
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
+                    maxLength={50}
                   />
                   <FormField
                     control={form.control}
@@ -1110,6 +1162,7 @@ export function ActaMaximaAutoridadForm() {
                     name='designacionServidorSaliente'
                     label='Datos de designación'
                     subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                    maxLength={150}
                   />
                 </div>
               </div>
@@ -1303,6 +1356,7 @@ export function ActaMaximaAutoridadForm() {
                           placeholder='Describa aquí la información adicional...'
                           {...field}
                           disabled={isLoading}
+                          maxLength={500}
                         />
                       </FormControl>
                       <FormMessage />
@@ -1377,6 +1431,7 @@ export function ActaMaximaAutoridadForm() {
                                     {...field}
                                     rows={8}
                                     disabled={isLoading}
+                                    maxLength={500}
                                   />
                                 </FormControl>
                                 <FormMessage />
@@ -1428,6 +1483,7 @@ export function ActaMaximaAutoridadForm() {
                     variant='outline'
                     onClick={prevStep}
                     disabled={isLoading}
+                    className={navButtonStyleGray}
                   >
                     Anterior
                   </Button>
@@ -1448,9 +1504,9 @@ export function ActaMaximaAutoridadForm() {
                 {currentStep < steps.length - 1 && (
                   <Button
                     type='button'
-                    variant='outline'
                     onClick={nextStep}
                     disabled={isLoading}
+                    className={navButtonStyleBlue}
                   >
                     Siguiente
                   </Button>
@@ -1458,8 +1514,8 @@ export function ActaMaximaAutoridadForm() {
                 {currentStep === steps.length - 1 && (
                   <Button
                     type='submit'
-                    className='bg-primary-blue hover:bg-primary-blue-dark text-white'
                     disabled={isLoading}
+                    className={navButtonStyleBlue}
                   >
                     {isLoading ? 'Creando Acta...' : 'Crear Acta'}
                   </Button>
