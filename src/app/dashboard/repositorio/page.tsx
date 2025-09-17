@@ -21,7 +21,7 @@ const cardData = [
       'https://drive.google.com/file/d/1L5y59yCxXiOfbDyuuU3V_5RfT1qouzI-/view',
   },
   {
-    imageUrl: '/repositorio/Portada-para-APP.png',
+    imageUrl: '/repositorio/imagen curso para APP.png',
     description:
       'Este programa te equipará con las competencias esenciales para la elaboración y gestión de Actas de Entrega. Profundiza en el marco jurídico y los procedimientos clave, asegurando la transparencia y mitigación de riesgos en la administración pública.',
     buttonText: 'Más información',

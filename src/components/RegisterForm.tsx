@@ -29,6 +29,9 @@ import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { registerUser } from '@/services/authService'; // -> 1. Importamos la nueva función
 // 1. Importamos únicamente nuestro nuevo componente de alerta
 import { SuccessAlertDialog } from './SuccessAlertDialog';
+import { LegalPopup } from './LegalPopup';
+import { TermsContent } from './TermsContent';
+import { PrivacyContent } from './PrivacyContent';
 
 // Importa Zod como siempre
 
@@ -95,6 +98,10 @@ export function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  // ▼▼▼ ASEGÚRATE DE TENER ESTAS DOS LÍNEAS ▼▼▼
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  // ... (el resto de tu componente)
   // -> 2. Nuevos estados para manejar la carga y los errores
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -405,23 +412,27 @@ export function RegisterForm() {
               </div>
             </div>
 
+            {/* ▼▼▼ ESTE ES EL BLOQUE CORREGIDO ▼▼▼ */}
             <div className='text-sm bg-gray-50 p-4 rounded-lg text-center text-gray-600'>
               Al crear una cuenta, aceptas los{' '}
-              <Link
-                href='/terminos'
+              <button
+                type='button'
+                onClick={() => setIsTermsOpen(true)}
                 className='font-semibold text-[#001A70] hover:underline'
               >
                 Términos y Condiciones
-              </Link>{' '}
+              </button>{' '}
               y la{' '}
-              <Link
-                href='/privacidad'
+              <button
+                type='button'
+                onClick={() => setIsPrivacyOpen(true)}
                 className='font-semibold text-[#001A70] hover:underline'
               >
                 Política de Privacidad
-              </Link>
+              </button>
               .
             </div>
+            {/* ▲▲▲ FIN DEL BLOQUE CORREGIDO ▲▲▲ */}
 
             {step === 1 ? (
               <Button
@@ -463,6 +474,22 @@ export function RegisterForm() {
         description='Hemos enviado un correo para que valides tu cuenta. Por favor, revisa tu bandeja de entrada.'
         onConfirm={() => router.push('/login')}
       />
+      {/* ▼▼▼ 2. USAMOS NUESTROS NUEVOS COMPONENTES. ¡MIRA QUÉ LIMPIO! ▼▼▼ */}
+      <LegalPopup
+        isOpen={isTermsOpen}
+        onOpenChange={setIsTermsOpen}
+        title='Términos y Condiciones'
+      >
+        <TermsContent />
+      </LegalPopup>
+
+      <LegalPopup
+        isOpen={isPrivacyOpen}
+        onOpenChange={setIsPrivacyOpen}
+        title='Política de Privacidad'
+      >
+        <PrivacyContent />
+      </LegalPopup>
     </>
   );
 }

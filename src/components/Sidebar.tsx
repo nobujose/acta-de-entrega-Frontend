@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Menu,
   Home,
@@ -27,7 +27,8 @@ export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuthStore();
+  // Obtenemos tanto el 'user' como la función 'logout'
+  const { user, logout } = useAuthStore();
   const { open: openModal } = useModalStore();
 
   const navLinks = [
@@ -85,6 +86,13 @@ export default function Sidebar() {
     });
   };
 
+  // ▼▼▼ REEMPLAZA ESTA FUNCIÓN ▼▼▼
+  const getInitials = (name: string = '', lastName: string = '') => {
+    const firstNameInitial = name ? name[0] : '';
+    const lastNameInitial = lastName ? lastName[0] : '';
+    return `${firstNameInitial}${lastNameInitial}`.toUpperCase();
+  };
+  // ▲▲▲ FIN DE LA FUNCIÓN MODIFICADA ▲▲▲
   return (
     <aside
       className={cn(
@@ -179,29 +187,31 @@ export default function Sidebar() {
 
         {/* Perfil de Usuario con su separador */}
         <div className='border-t border-gray-400 pt-2'>
-          <div
+          <Link
+            href='/dashboard/perfil'
             className={cn(
-              'flex items-center gap-3 rounded-md px-3 py-2',
-              !isCollapsed && 'hover:bg-gray-300 cursor-pointer group'
+              'flex items-center gap-3 rounded-md px-3 py-2 transition-colors',
+              !isCollapsed && 'hover:bg-sidebar-hover-bg cursor-pointer group'
             )}
           >
             <Avatar className='h-8 w-8 shrink-0'>
-              <AvatarImage src='/placeholder-user.jpg' alt='Usuario' />
               <AvatarFallback className='bg-primary-blue text-white text-sm'>
-                JL
+                {/* Usamos el nombre y el apellido para las iniciales */}
+                {user ? getInitials(user.name, user.apellido) : ''}
               </AvatarFallback>
             </Avatar>
             {!isCollapsed && (
               <div className='min-w-0 flex-1'>
                 <p className='truncate text-sm font-medium text-gray-800 group-hover:text-black'>
-                  Julio Lopera
+                  {/* Mostramos el nombre y el apellido juntos */}
+                  {user ? `${user.name} ${user.apellido || ''}` : 'Usuario'}
                 </p>
                 <p className='truncate text-xs text-gray-600'>
-                  julio.lopera@universitas.com
+                  {user?.email || 'email@ejemplo.com'}
                 </p>
               </div>
             )}
-          </div>
+          </Link>
         </div>
       </div>
     </aside>

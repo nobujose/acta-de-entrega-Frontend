@@ -3,6 +3,7 @@ import { create } from 'zustand';
 interface User {
   email: string;
   name: string;
+  apellido?: string;
   role: string;
   isFirstLogin?: boolean; // 1. Añadimos el campo opcional aquí
 }
