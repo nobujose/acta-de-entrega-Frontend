@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import Card from '@/components/Card';
 import { Button } from '@/components/ui/button';
-import { FileDown, ShieldCheck, FileUp, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import {
   FaFacebookSquare,
   FaInstagramSquare,
