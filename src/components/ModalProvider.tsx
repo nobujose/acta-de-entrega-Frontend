@@ -12,9 +12,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils'; // Importar la utilidad cn
-
+// ▼▼▼ 1. IMPORTAMOS LO QUE NECESITAREMOS ▼▼▼
+import { useRouter } from 'next/navigation';
+import { KeyRound, UserCog, Trash2 } from 'lucide-react';
 export function ModalProvider() {
   const { isOpen, close, type, payload } = useModalStore();
+  const router = useRouter(); // Para la navegación
 
   if (!type) {
     return null;
@@ -67,6 +70,58 @@ export function ModalProvider() {
         </DialogContent>
       );
       break;
+    // ▼▼▼ 2. AÑADIMOS EL CASO PARA NUESTRO NUEVO POPUP ▼▼▼
+    case 'userProfileOptions':
+      modalContent = (
+        <DialogContent className='bg-white max-w-sm'>
+          <DialogHeader>
+            <DialogTitle>Opciones de Perfil</DialogTitle>
+            <DialogDescription>
+              Selecciona la acción que deseas realizar.
+            </DialogDescription>
+          </DialogHeader>
+          <div className='flex flex-col space-y-2 py-4'>
+            <Button
+              variant='outline'
+              className='w-full justify-start'
+              onClick={() => {
+                // Redirigimos a la página de perfil con el parámetro ?tab=edit
+                router.push('/dashboard/perfil?tab=edit');
+                close();
+              }}
+            >
+              <UserCog className='mr-2 h-4 w-4' />
+              Editar Usuario
+            </Button>
+            <Button
+              variant='outline'
+              className='w-full justify-start'
+              onClick={() => {
+                // Redirigimos a la página de perfil con el parámetro ?tab=password
+                router.push('/dashboard/perfil?tab=password');
+                close();
+              }}
+            >
+              <KeyRound className='mr-2 h-4 w-4' />
+              Cambiar Clave
+            </Button>
+            <Button
+              variant='outline'
+              className='w-full justify-start text-red-600 hover:text-red-600 hover:bg-red-50'
+              onClick={() => {
+                // Redirigimos a la página de perfil con el parámetro ?tab=delete
+                router.push('/dashboard/perfil?tab=delete');
+                close();
+              }}
+            >
+              <Trash2 className='mr-2 h-4 w-4' />
+              Eliminar Usuario
+            </Button>
+          </div>
+        </DialogContent>
+      );
+      break;
+
     default:
       modalContent = null;
   }

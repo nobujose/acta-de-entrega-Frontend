@@ -101,7 +101,9 @@ export default function AsistenteVirtualPage() {
           <AvatarImage src='/ia/julioAI.jpg' alt='AsesorIA' />
           <AvatarFallback>IA</AvatarFallback>
         </Avatar>
-        <h2 className='text-xl font-semibold text-gray-800'>Julio AI</h2>
+        <h2 className='text-xl font-semibold text-gray-800'>
+          AsesorIA Actas de Entrega
+        </h2>
       </div>
 
       <div className='flex-1 p-6 overflow-y-auto space-y-6'>
