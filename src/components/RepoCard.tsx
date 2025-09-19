@@ -1,3 +1,4 @@
+// src/components/RepoCard.tsx
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ interface RepoCardProps {
   buttonText: string;
   linkHref: string;
   isGratis?: boolean;
+  priority?: boolean;
 }
 
 export function RepoCard({
@@ -16,10 +18,10 @@ export function RepoCard({
   buttonText,
   linkHref,
   isGratis = false,
+  priority = false,
 }: RepoCardProps) {
   return (
-    <Card className='bg-white flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4'>
-      {/* Reemplazamos las alturas variables por una proporción fija de video (16:9) */}
+    <Card className='flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4'>
       <div className='relative w-full aspect-video mb-4'>
         {isGratis && (
           <div className='absolute top-3 right-3 z-10 rounded-full bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-md'>
@@ -29,8 +31,11 @@ export function RepoCard({
         <Image
           src={imageUrl}
           alt={buttonText}
-          fill // Propiedad moderna para rellenar el contenedor
-          className='rounded-xl object-cover' // object-cover asegura que la imagen cubra el espacio sin deformarse
+          fill
+          className='rounded-xl object-cover'
+          priority={priority}
+          // ▼▼▼ AQUÍ ESTÁ LA LÍNEA AÑADIDA ▼▼▼
+          sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
         />
       </div>
 
