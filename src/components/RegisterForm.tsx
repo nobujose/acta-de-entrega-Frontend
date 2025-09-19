@@ -281,7 +281,7 @@ export function RegisterForm() {
                   name='confirmPassword'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirmar Contraseña</FormLabel>
+                      <FormLabel>Confirmar contraseña</FormLabel>
                       <FormControl>
                         <div className='relative'>
                           <Input
