@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { ReactNode } from 'react';
 
 // Definimos los tipos de modales que puede haber
-export type ModalType = 'logoutConfirmation';
+export type ModalType = 'logoutConfirmation' | 'userProfileOptions';
 
 interface ModalPayload {
   title: string;

@@ -25,12 +25,12 @@ export function SuccessAlertDialog({
   onClose,
   title,
   description,
-  buttonText = 'Entendido', // Valor por defecto para el botón
+  buttonText = 'Entendido',
   onConfirm,
 }: SuccessAlertDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent>
+      <AlertDialogContent className='bg-white'>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
