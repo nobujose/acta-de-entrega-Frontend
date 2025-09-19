@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useHeader } from '@/context/HeaderContext';
-import Image from 'next/image'; // Importamos el componente de Imagen
+import Image from 'next/image';
 
 export default function AcercaDePage() {
   const { setTitle } = useHeader();
@@ -17,13 +17,14 @@ export default function AcercaDePage() {
       <div className='p-8'>
         {/* Encabezado con Logo y Título */}
         <div className='flex flex-col sm:flex-row items-center text-center sm:text-left mb-6'>
-          <Image
-            src='/AZUL 250PX.svg' // Asegúrate de que tu logo esté en la carpeta `public`
-            alt='Universitas Legal Logo'
-            width={100}
-            height={100}
-            className='mb-4 sm:mb-0 sm:mr-6'
-          />
+          <div className='relative h-[100px] w-[100px] flex-shrink-0 mb-4 sm:mb-0 sm:mr-6'>
+            <Image
+              src='/AZUL 250PX.svg' // (Recomendado) Renombrar a "logo-azul.svg"
+              alt='Universitas Legal Logo'
+              fill // 2. Usamos 'fill' para que la imagen llene el contenedor
+              className='object-contain' // 3. 'object-contain' para que no se deforme
+            />
+          </div>
           <div>
             <h2 className='text-3xl font-bold text-[#001A70] mb-2'>
               Acerca de Actas de Entrega
