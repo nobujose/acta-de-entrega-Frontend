@@ -224,7 +224,7 @@ export function ForgotPasswordForm() {
                 name='otp'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Código de Verificación</FormLabel>
+                    <FormLabel>Código de verificación</FormLabel>
                     <FormControl>
                       <Input
                         placeholder='123456'
@@ -244,7 +244,7 @@ export function ForgotPasswordForm() {
                   name='password'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nueva Contraseña</FormLabel>
+                      <FormLabel>Nueva contraseña</FormLabel>
                       <FormControl>
                         <div className='relative'>
                           <Input
@@ -275,7 +275,7 @@ export function ForgotPasswordForm() {
                   name='confirmPassword'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                      <FormLabel>Confirmar nueva contraseña</FormLabel>
                       <FormControl>
                         <div className='relative'>
                           <Input
@@ -343,7 +343,7 @@ export function ForgotPasswordForm() {
       <SuccessAlertDialog
         isOpen={showSuccessDialog}
         onClose={() => setShowSuccessDialog(false)}
-        title='¡Contraseña Actualizada!'
+        title='¡Contraseña actualizada!'
         description='Tu contraseña ha sido actualizada con éxito. Ahora serás redirigido para iniciar sesión.'
         onConfirm={() => router.push('/login')}
       />
