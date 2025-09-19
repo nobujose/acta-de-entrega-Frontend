@@ -66,6 +66,7 @@ export default function RepositorioLegalPage() {
           description={card.description}
           buttonText={card.buttonText}
           linkHref={card.linkHref}
+          priority={index < 6}
         />
       ))}
     </div>

@@ -1,3 +1,4 @@
+// src/components/Sidebar.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -210,7 +211,6 @@ export default function AppSidebar() {
           isDesktopCollapsed ? 'w-20 items-center' : 'w-64'
         )}
       >
-        {/* CABECERA DEL SIDEBAR */}
         <div className='flex h-16 shrink-0 items-center border-b gap-x-4 px-4'>
           <Button
             variant='ghost'
@@ -223,18 +223,18 @@ export default function AppSidebar() {
           {!isDesktopCollapsed && (
             <Link
               href='/dashboard'
-              className='ml-2 flex items-center gap-2 font-semibold'
+              className='relative h-[48px] w-[120px]' // Contenedor con posición relativa
             >
               <Image
                 src='/logo de universitas legal.svg'
                 alt='Universitas Legal Logo'
-                width={120}
-                height={75}
+                fill
+                className='object-contain'
+                priority
               />
             </Link>
           )}
         </div>
-        {/* FIN DE LA CABECERA */}
         <SidebarContent isCollapsed={isDesktopCollapsed} />
         <SidebarFooter isCollapsed={isDesktopCollapsed} />
       </aside>
@@ -249,20 +249,22 @@ export default function AppSidebar() {
       pageWrapId={'page-wrap'}
       outerContainerId={'outer-container'}
     >
-      {/* ▼▼▼ CONTENEDOR FLEX PRINCIPAL AÑADIDO ▼▼▼ */}
       <div className='flex flex-col h-screen bg-white'>
-        {/* Cabecera con altura fija, no se encogerá */}
-        <div className='flex h-16 shrink-0 items-center justify-center border-b relative'>
-          <Link href='/dashboard' onClick={() => setMobileMenuOpen(false)}>
+        <div className='flex h-16 shrink-0 items-center justify-center border-b'>
+          <Link
+            href='/dashboard'
+            onClick={() => setMobileMenuOpen(false)}
+            className='relative h-[48px] w-[120px]' // Contenedor con posición relativa
+          >
             <Image
               src='/logo de universitas legal.svg'
               alt='Universitas Legal Logo'
-              width={120}
-              height={75}
+              fill
+              className='object-contain'
+              priority
             />
           </Link>
         </div>
-        {/* Pasamos isCollapsed={false} porque en móvil nunca estará colapsado */}
         <SidebarContent isCollapsed={false} />
         <SidebarFooter isCollapsed={false} />
       </div>
