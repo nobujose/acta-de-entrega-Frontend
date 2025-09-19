@@ -3,13 +3,16 @@
 import { useEffect } from 'react';
 import Card from '@/components/Card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import {
   FaFacebookSquare,
   FaInstagramSquare,
   FaLinkedin,
 } from 'react-icons/fa';
-import { FaSquareXTwitter, FaSquareTwitter } from 'react-icons/fa6';
+import {
+  FaSquareXTwitter,
+  FaSquareTwitter,
+  FaArrowRight,
+} from 'react-icons/fa6';
 import { HiDocumentArrowUp, HiDocumentArrowDown } from 'react-icons/hi2';
 import { SiSpringsecurity } from 'react-icons/si';
 import { useHeader } from '@/context/HeaderContext';
@@ -96,7 +99,7 @@ export default function DashboardPage() {
               className='flex items-center gap-2'
             >
               Más información
-              <ArrowRight className='ml-2 h-5 w-5' />
+              <FaArrowRight className='ml-2 h-5 w-5' />
             </a>
           </Button>
         </div>
