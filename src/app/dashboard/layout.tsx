@@ -1,9 +1,10 @@
 import Header from '@/components/Header';
 import AppSidebar from '@/components/Sidebar';
 import { HeaderProvider } from '@/context/HeaderContext';
-import { ModalProvider } from '@/components/ModalProvider';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PopupManager } from '@/components/PopupManager';
+import { LogoutConfirmationDialog } from '@/components/LogoutConfirmationDialog';
+
 export default function DashboardLayout({
   children,
 }: {
@@ -24,7 +25,7 @@ export default function DashboardLayout({
             </main>
           </div>
         </div>
-        <ModalProvider />
+        <LogoutConfirmationDialog />
         <PopupManager />
       </HeaderProvider>
     </ProtectedRoute>

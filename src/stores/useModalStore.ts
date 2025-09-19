@@ -7,7 +7,7 @@ export type ModalType = 'logoutConfirmation' | 'userProfileOptions';
 
 interface ModalPayload {
   title: string;
-  description?: string;
+  description?: React.ReactNode;
   content?: ReactNode;
   onConfirm: () => void;
 }

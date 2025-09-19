@@ -84,9 +84,13 @@ const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
 
 // Componente principal que aplica la lógica responsiva
 export default function AppSidebar() {
-  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const { isMobileMenuOpen, setMobileMenuOpen } = useSidebarStore();
+  const {
+    isMobileMenuOpen,
+    setMobileMenuOpen,
+    isDesktopCollapsed, // <-- Nuevo estado
+    toggleDesktopCollapse, // <-- Nueva función
+  } = useSidebarStore();
 
   // Mover la lógica que necesita el Footer aquí para que esté disponible
   const pathname = usePathname();
@@ -101,15 +105,30 @@ export default function AppSidebar() {
 
   const handleLogoutClick = () => {
     openModal('logoutConfirmation', {
-      title: '¿Estás seguro que quieres cerrar sesión?',
-      onConfirm: async () => {
-        try {
-          await apiClient.post('/auth/logout');
-        } catch (error) {
-          console.error('No se pudo notificar el logout al servidor:', error);
-        }
+      title: '¿Ya te vas?',
+      description: (
+        <>
+          ¡No te preocupes! Tu progreso se ha guardado.
+          <br />
+          Vuelve pronto para continuar donde lo dejaste.
+        </>
+      ),
+      onConfirm: () => {
+        // 1. Cierra la sesión en el cliente (navegador) INMEDIATAMENTE.
         logout();
+
+        // 2. Redirige al usuario al login INMEDIATAMENTE.
         router.push('/login');
+
+        // 3. Notifica al servidor en segundo plano ("Fire-and-Forget").
+        //    Si esta llamada falla, no afecta la experiencia del usuario.
+        apiClient.post('/auth/logout').catch((error) => {
+          // Este error solo se verá en la consola del desarrollador.
+          console.error(
+            'El servidor no pudo ser notificado del logout:',
+            error
+          );
+        });
       },
     });
   };
@@ -197,7 +216,7 @@ export default function AppSidebar() {
             variant='ghost'
             size='icon'
             className='h-8 w-8 shrink-0 text-black hover:bg-gray-200'
-            onClick={() => setIsDesktopCollapsed(!isDesktopCollapsed)}
+            onClick={toggleDesktopCollapse}
           >
             <GiHamburgerMenu className='h-4 w-4' />
           </Button>
