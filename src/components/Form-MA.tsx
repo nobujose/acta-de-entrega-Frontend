@@ -32,459 +32,35 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/HeaderContext';
 import { Textarea } from '@/components/ui/textarea';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { createActaMaximaAutoridad } from '@/services/actasService';
-import { actaMaximaAutoridadSchema } from '@/lib/schemas';
-import { cn } from '@/lib/utils';
 import { InputCompuesto } from './InputCompuesto';
 import { LocationSelector } from './LocationSelector';
 import { CustomDatePicker } from './DatePicker';
 import { CustomTimePicker } from './TimePicker';
+import { SiNoQuestion } from './SiNoQuestion';
+import { SuccessAlertDialog } from './SuccessAlertDialog';
+import { actaMaximaAutoridadSchema } from '@/lib/schemas';
+import { CiCircleCheck } from 'react-icons/ci';
+import {
+  steps,
+  anexosAdicionalesTitulos,
+  dynamicStepContent,
+  DynamicContent, // Importamos el tipo también
+} from '@/lib/acta-ma-constants';
 
 type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
-
-const steps = [
-  {
-    id: 1,
-    title: 'Datos generales del Acta',
-    fields: [
-      'email',
-      'rifOrgano',
-      'denominacionCargo',
-      'nombreOrgano',
-      'ciudadSuscripcion',
-      'estadoSuscripcion',
-      'horaSuscripcion',
-      'fechaSuscripcion',
-      'direccionOrgano',
-      'motivoEntrega',
-    ],
-  },
-  {
-    id: 2,
-    title: 'Intervinientes en el Acta',
-    subtitle: 'Artículo 10.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009',
-    fields: [
-      'nombreServidorEntrante',
-      'cedulaServidorEntrante',
-      'profesionServidorEntrante',
-      'designacionServidorEntrante',
-      'nombreAuditor',
-      'cedulaAuditor',
-      'profesionAuditor',
-      'nombreTestigo1',
-      'cedulaTestigo1',
-      'profesionTestigo1',
-      'nombreTestigo2',
-      'cedulaTestigo2',
-      'profesionTestigo2',
-      'nombreServidorSaliente',
-      'cedulaServidorSaliente',
-      'designacionServidorSaliente',
-    ],
-  },
-  {
-    id: 3,
-    title:
-      'Anexo I: Estado de las cuentas que reflejen la SITUACIÓN PRESUPUESTARIA, cuando sea aplicable.',
-    subtitle:
-      '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeEstadoSituacionPresupuestaria',
-      'disponeRelacionGastosComprometidosNoCausados',
-      'disponeRelacionGastosComprometidosCausadosNoPagados',
-      'disponeEstadoPresupuestarioPorPartidas',
-      'disponeEstadoPresupuestarioDetalleCuentas',
-    ],
-  },
-  {
-    id: 4,
-    title:
-      'Anexo I: Estado de las cuentas que reflejen la SITUACIÓN FINANCIERA Y PATRIMONIAL, cuando sea aplicable.',
-    subtitle:
-      '(Artículo 11.1 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeEstadosFinancieros',
-      'disponeBalanceComprobacion',
-      'disponeEstadoSituacionFinanciera',
-      'disponeEstadoRendimientoFinanciero',
-      'disponeEstadoMovimientosPatrimonio',
-      'disponeRelacionCuentasPorCobrar',
-      'disponeRelacionCuentasPorPagar',
-      'disponeRelacionCuentasFondosTerceros',
-      'disponeSituacionFondosAnticipo',
-      'disponeSituacionCajaChica',
-      'disponeActaArqueoCajasChicas',
-      'disponeListadoRegistroAuxiliarProveedores',
-      'disponeReportesLibrosContables',
-      'disponeReportesCuentasBancarias',
-      'disponeReportesConciliacionesBancarias',
-      'disponeReportesRetenciones',
-      'disponeReporteProcesosContrataciones',
-      'disponeReporteFideicomisoPrestaciones',
-      'disponeReporteBonosVacacionales',
-    ],
-  },
-  {
-    id: 5,
-    title:
-      'Anexo II.  Mención del número de cargos existentes, con señalamiento de si son empleados u obreros, fijos o contratados, así como el número de jubilados y pensionados, de ser el caso.',
-    subtitle:
-      '(Artículo 11.2 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeCuadroResumenCargos',
-      'disponeCuadroResumenValidadoRRHH',
-      'disponeReporteNominas',
-    ],
-  },
-  {
-    id: 6,
-    title: 'Anexo III.  Inventario de bienes muebles e inmuebles.',
-    subtitle:
-      '(Artículo 11.3 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: ['disponeInventarioBienes'],
-  },
-  {
-    id: 7,
-    title:
-      'Anexo IV. Situación de la ejecución del plan operativo de conformidad con los objetivos propuestos y las metas fijadas en el presupuesto correspondiente.',
-    subtitle:
-      '(Artículo 11.4 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: [
-      'disponeEjecucionPlanOperativo',
-      'incluyeCausasIncumplimientoMetas',
-      'disponePlanOperativoAnual',
-    ],
-  },
-  {
-    id: 8,
-    title: 'Anexo V. Índice general del archivo.',
-    subtitle:
-      '(Artículo 11.5 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: ['disponeClasificacionArchivo', 'incluyeUbicacionFisicaArchivo'],
-  },
-  {
-    id: 9,
-    title: 'Anexo VI.',
-    subtitle:
-      '(Artículo 11.6 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    fields: ['Anexo_VI', 'Anexos_VII'],
-  },
-  {
-    id: 10,
-    title: 'Anexos Específicos',
-    subtitle: 'Seleccione una opción en el paso anterior',
-    fields: [
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-      'disponeRelacionMontosFondosAsignados',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-      'disponeSaldoEfectivoFondos',
-      'disponeRelacionBienesAsignados',
-      'disponeRelacionBienesAsignadosUnidadBienes',
-      'disponeEstadosBancariosConciliados',
-      'disponeListaComprobantesGastos',
-      'disponeChequesEmitidosPendientesCobro',
-      'disponeListadoTransferenciaBancaria',
-      'disponeCaucionFuncionario',
-      'disponeCuadroDemostrativoRecaudado',
-      'disponeRelacionExpedientesAbiertos',
-      'disponeSituacionTesoroNacional',
-      'disponeInfoEjecucionPresupuestoNacional',
-      'disponeMontoDeudaPublicaNacional',
-      'disponeSituacionCuentasNacion',
-      'disponeSituacionTesoroEstadal',
-      'disponeInfoEjecucionPresupuestoEstadal',
-      'disponeSituacionCuentasEstado',
-      'disponeSituacionTesoroDistritalMunicipal',
-      'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-      'disponeSituacionCuentasDistritalesMunicipales',
-      'disponeInventarioTerrenosEjidos',
-      'disponeRelacionIngresosVentaTerrenos',
-    ],
-  },
-  {
-    id: 11,
-    title: 'Finalización y Envío',
-    subtitle: 'Último paso antes de generar su acta.',
-    fields: ['autorizaEnvioCorreoAlternativo', 'correoAlternativo'],
-  },
-];
-
-// Definir los tipos para la Unión Discriminada
-type QuestionsStep = {
-  type: 'questions';
-  title: string;
-  subtitle: string;
-  questions: { name: string; label: string }[];
-};
-
-type TextareaStep = {
-  type: 'textarea';
-  title: string;
-  subtitle: string;
-  fieldName: keyof FormData; // Usamos keyof FormData para asegurar que el nombre sea válido
-};
-
-type DynamicStep = QuestionsStep | TextareaStep;
-
-// Definimos el tipo para el objeto principal
-type DynamicContent = {
-  [key: string]: DynamicStep;
-};
-
-// Aquí mapeamos cada opción del Select a su contenido correspondiente.
-const dynamicStepContent: DynamicContent = {
-  'UNIDADES ADMINISTRADORAS': {
-    type: 'questions',
-    title: 'Anexo VII. UNIDADES ADMINISTRADORAS',
-    subtitle:
-      '(Artículo 53 Reglamento Nº 1 de la Ley Orgánica de la Administración Financiera del Sector Público Sobre el Sistema Presupuestario.)',
-    questions: [
-      {
-        name: 'disponeRelacionMontosFondosAsignados',
-        label:
-          '¿Dispone usted del documento Relación de los montos de los fondos asignados?',
-      },
-      {
-        name: 'disponeSaldoEfectivoFondos',
-        label:
-          '¿Dispone usted del documento Saldo en efectivo de dichos fondos?',
-      },
-      {
-        name: 'disponeRelacionBienesAsignados',
-        label: '¿Dispone usted del documento Relación de los bienes asignados?',
-      },
-      {
-        name: 'disponeRelacionBienesAsignadosUnidadBienes',
-        label:
-          '¿Dispone usted del documento Relación de los bienes asignados emitida por la Unidad de Bienes?',
-      },
-      {
-        name: 'disponeEstadosBancariosConciliados',
-        label:
-          '¿Dispone usted del documento Estados bancarios actualizados y conciliados a la fecha de entrega?',
-      },
-      {
-        name: 'disponeListaComprobantesGastos',
-        label: '¿Dispone usted del documento lista de comprobantes de gastos?',
-      },
-      {
-        name: 'disponeChequesEmitidosPendientesCobro',
-        label:
-          '¿Dispone usted del documento Cheques emitidos pendientes de cobro?',
-      },
-      {
-        name: 'disponeListadoTransferenciaBancaria',
-        label:
-          '¿Dispone usted del documento listado o reporte de transferencia bancaria?',
-      },
-      {
-        name: 'disponeCaucionFuncionario',
-        label:
-          '¿Dispone usted del documento Caución del funcionario encargado de la Administración de los recursos financieros a la fecha del cese de funciones?',
-      },
-    ],
-  },
-  'ÓRGANOS O ENTIDADES QUE MANEJAN RAMOS ESPECÍFICOS': {
-    type: 'questions',
-    title: 'Anexo VIII. ÓRGANOS O ENTIDADES QUE MANEJAN RAMOS ESPECÍFICOS',
-    subtitle: '(Artículo 13 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    questions: [
-      {
-        name: 'disponeCuadroDemostrativoRecaudado',
-        label:
-          '¿Dispone usted del documento cuadro demostrativo del detalle de lo liquidado y recaudado por los rubros respectivos, y de los derechos pendientes de recaudación de años anteriores?',
-      },
-    ],
-  },
-  'ÓRGANOS DE CONTROL FISCAL': {
-    type: 'questions',
-    title: 'Anexo IX. ÓRGANOS DE CONTROL FISCAL',
-    subtitle:
-      '(Artículo 14 Resolución CGR N.º 01-000162 de fecha 27-07-2009 y el Título III Artículos 53 y 54 de la Ley Orgánica de la Contraloría General de la República y del Sistema Nacional de Control Fiscal, con indicación del estado en que se encuentran.)',
-    questions: [
-      {
-        name: 'disponeRelacionExpedientesAbiertos',
-        label:
-          '¿Dispone usted del documento relación de los expedientes abiertos con ocasión del ejercicio de la potestad de investigación, así como de los procedimientos administrativos para la determinación de responsabilidades?',
-      },
-    ],
-  },
-  'MINISTERIO DE FINANZAS': {
-    type: 'questions',
-    title: 'Anexo X. MINISTERIO DE FINANZAS',
-    subtitle: 'Base: Artículo 14 Resolución CGR N.º 01-000162',
-    questions: [
-      {
-        name: 'disponeSituacionTesoroNacional',
-        label: '¿Dispone usted del documento Situación del Tesoro Nacional?',
-      },
-      {
-        name: 'disponeInfoEjecucionPresupuestoNacional',
-        label:
-          '¿Dispone usted del documento información de la ejecución del presupuesto nacional de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
-      },
-      {
-        name: 'disponeMontoDeudaPublicaNacional',
-        label:
-          '¿Dispone usted del documento Monto de la deuda pública nacional interna y externa?',
-      },
-      {
-        name: 'disponeSituacionCuentasNacion',
-        label:
-          '¿Dispone usted del documento Situación de las cuentas de la Nación?',
-      },
-    ],
-  },
-
-  'GOBERNACIONES, OFICINAS O DEPENDENCIAS DE HACIENDA ESTADAL': {
-    type: 'questions',
-    title:
-      'Anexo XI. GOBERNACIONES, OFICINAS O DEPENDENCIAS DE HACIENDA ESTADAL',
-    subtitle: '(Artículo 16 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    questions: [
-      {
-        name: 'disponeSituacionTesoroEstadal',
-        label: '¿Dispone usted del documento Situación del Tesoro Estadal?',
-      },
-      {
-        name: 'disponeInfoEjecucionPresupuestoEstadal',
-        label:
-          '¿Dispone usted del documento Información de la ejecución del presupuesto estadal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
-      },
-      {
-        name: 'disponeSituacionCuentasEstado',
-        label:
-          '¿Dispone usted del documento Situación de las cuentas del respectivo estado?',
-      },
-    ],
-  },
-  'ALCALDÍAS, DIRECCIÓN DE HACIENDA DISTRITAL O MUNICIPAL': {
-    type: 'questions',
-    title: 'Anexo XII. ALCALDÍAS, DIRECCIÓN DE HACIENDA DISTRITAL O MUNICIPAL',
-    subtitle: '(Artículo 17 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    questions: [
-      {
-        name: 'disponeSituacionTesoroDistritalMunicipal',
-        label:
-          '¿Dispone usted del documento Situación del tesoro distrital o municipal?',
-      },
-      {
-        name: 'disponeInfoEjecucionPresupuestoDistritalMunicipal',
-        label:
-          '¿Dispone usted del documento Información de la ejecución del presupuesto distrital o municipal de ingresos y egresos del ejercicio presupuestario en curso y de los derechos pendientes de recaudación de años anteriores?',
-      },
-      {
-        name: 'disponeSituacionCuentasDistritalesMunicipales',
-        label:
-          '¿Dispone usted del documento Situación de las cuentas distritales o municipales?',
-      },
-      {
-        name: 'disponeInventarioTerrenosEjidos',
-        label:
-          '¿Dispone usted del documento Inventario detallado de los terrenos ejidos y de los terrenos propios distritales o municipales?',
-      },
-      {
-        name: 'disponeRelacionIngresosVentaTerrenos',
-        label:
-          '¿Dispone usted del documento Relación de Ingresos producto de las ventas de terrenos ejidos o terrenos propios distritales o municipales?',
-      },
-    ],
-  },
-  'RELACIÓN DE INFORMES DE AUDITORÍAS': {
-    type: 'textarea',
-    title: 'Anexo XIII. RELACIÓN DE INFORMES DE AUDITORÍAS',
-    subtitle:
-      'DE LAS ACCIONES EMPRENDIDAS POR EL SERVIDOR SALIENTE COMO CONSECUENCIA DE LAS OBSERVACIONES FORMULADAS POR LA UNIDAD DE AUTIRORÍA INTERNA DE LA UNIDAD ORGANIZATIVA QUE ENTREGA, PRODUCTO DE LAS ÚLTIMAS ACTUACIONES DE ESTAS.',
-    fieldName: 'accionesAuditoria',
-  },
-
-  'DEFICIENCIAS, ERRORES U OMISIONES DEL ACTA DE ENTREGA QUE SE ADVIRTIERON, ASÍ COMO CUALESQUIERA OTRAS SITUACIONES ESPECIALES QUE CONVENGA SEÑALAR EN EL MOMENTO DEL ACTO DE ENTREGA Y RECEPCIÓN':
-    {
-      type: 'textarea',
-      title:
-        'Anexo XIV. INDICAR LAS DEFICIENCIAS, ERRORES U OMISIONES  DEL ACTA DE ENTREGA QUE SE ADVIRTIERON, ASÍ COMO CUALESQUIERA OTRAS SITUACIONES ESPECIALES QUE CONVENGA SEÑALAR EN EL MOMENTO DEL ACTO DE ENTREGA Y RECEPCIÓN DE LA ÓRGANO, ENTIDAD, DIRECCIÓN, COORDINACIÓN EN RESGUARDO DE LA DEBIDA DELIMITACIÓN DE RESPONSABILIDADES.',
-      subtitle:
-        '(Artículo 20 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-      fieldName: 'deficienciasActa',
-    },
-};
-
-type DynamicStepKey = keyof typeof dynamicStepContent;
+type DynamicStepKey = keyof DynamicContent;
 
 export function ActaMaximaAutoridadForm() {
   const router = useRouter();
   const { setTitle } = useHeader();
   const [currentStep, setCurrentStep] = useState(0);
-
-  // 3. NUEVOS ESTADOS PARA GESTIONAR LA LLAMADA A LA API
+  const [finalStepAnswered, setFinalStepAnswered] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [dialogContent, setDialogContent] = useState({
+    title: '',
+    description: '',
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -495,7 +71,7 @@ export function ActaMaximaAutoridadForm() {
   const form = useForm<FormData>({
     mode: 'onChange',
     resolver: zodResolver(actaMaximaAutoridadSchema),
-    shouldUnregister: false, // ✨ AÑADE ESTA LÍNEA
+    shouldUnregister: false,
     defaultValues: {
       email: '',
       rifOrgano: '',
@@ -525,29 +101,90 @@ export function ActaMaximaAutoridadForm() {
       designacionServidorSaliente: '',
       Anexo_VI: '',
       Anexo_VII: '',
+      disponeEstadoSituacionPresupuestaria: '',
+      disponeRelacionGastosComprometidosNoCausados: '',
+      disponeRelacionGastosComprometidosCausadosNoPagados: '',
+      disponeEstadoPresupuestarioPorPartidas: '',
+      disponeEstadoPresupuestarioDetalleCuentas: '',
+      disponeEstadosFinancieros: '',
+      disponeBalanceComprobacion: '',
+      disponeEstadoSituacionFinanciera: '',
+      disponeEstadoRendimientoFinanciero: '',
+      disponeEstadoMovimientosPatrimonio: '',
+      disponeRelacionCuentasPorCobrar: '',
+      disponeRelacionCuentasPorPagar: '',
+      disponeRelacionCuentasFondosTerceros: '',
+      disponeSituacionFondosAnticipo: '',
+      disponeSituacionCajaChica: '',
+      disponeActaArqueoCajasChicas: '',
+      disponeListadoRegistroAuxiliarProveedores: '',
+      disponeReportesLibrosContables: '',
+      disponeReportesCuentasBancarias: '',
+      disponeReportesConciliacionesBancarias: '',
+      disponeReportesRetenciones: '',
+      disponeReporteProcesosContrataciones: '',
+      disponeReporteFideicomisoPrestaciones: '',
+      disponeReporteBonosVacacionales: '',
+      disponeCuadroResumenCargos: '',
+      disponeCuadroResumenValidadoRRHH: '',
+      disponeReporteNominas: '',
+      disponeInventarioBienes: '',
+      disponeEjecucionPlanOperativo: '',
+      incluyeCausasIncumplimientoMetas: '',
+      disponePlanOperativoAnual: '',
+      disponeClasificacionArchivo: '',
+      incluyeUbicacionFisicaArchivo: '',
+      disponeRelacionMontosFondosAsignados: '',
+      disponeSaldoEfectivoFondos: '',
+      disponeRelacionBienesAsignados: '',
+      disponeRelacionBienesAsignadosUnidadBienes: '',
+      disponeEstadosBancariosConciliados: '',
+      disponeListaComprobantesGastos: '',
+      disponeChequesEmitidosPendientesCobro: '',
+      disponeListadoTransferenciaBancaria: '',
+      disponeCaucionFuncionario: '',
+      disponeCuadroDemostrativoRecaudado: '',
+      disponeRelacionExpedientesAbiertos: '',
+      disponeSituacionTesoroNacional: '',
+      disponeInfoEjecucionPresupuestoNacional: '',
+      disponeMontoDeudaPublicaNacional: '',
+      disponeSituacionCuentasNacion: '',
+      disponeSituacionTesoroEstadal: '',
+      disponeInfoEjecucionPresupuestoEstadal: '',
+      disponeSituacionCuentasEstado: '',
+      disponeSituacionTesoroDistritalMunicipal: '',
+      disponeInfoEjecucionPresupuestoDistritalMunicipal: '',
+      disponeSituacionCuentasDistritalesMunicipales: '',
+      disponeInventarioTerrenosEjidos: '',
+      disponeRelacionIngresosVentaTerrenos: '',
+      accionesAuditoria: '',
+      deficienciasActa: '',
+      interesProducto: '',
     },
   });
 
-  // ...
   const { getValues, watch } = form;
 
-  // CAMBIA ESTA LÍNEA
   const selectedAnexo = watch('Anexo_VII') as DynamicStepKey; // antes era 'anexos'
-  // ...
 
-  // 4. LÓGICA DE ENVÍO ACTUALIZADA PARA CONECTAR CON EL BACKEND
   const onSubmit = async (data: FormData) => {
-    console.log('DATOS FINALES A ENVIAR:', data); // <-- Añade esto
-
+    console.log('DATOS FINALES A ENVIAR:', data);
     setIsLoading(true);
     setApiError(null);
 
     try {
       const response = await createActaMaximaAutoridad(data);
-
       console.log('Respuesta del servidor:', response);
-      alert(`Acta creada con éxito!\nNúmero de Acta: ${response.numeroActa}`);
-      router.push('/dashboard'); // Redirige al dashboard tras el éxito
+
+      // Prepara el contenido para el diálogo de éxito
+      setDialogContent({
+        title: `¡Acta de Entrega N° ${response.numeroActa} generada!`,
+        description:
+          'Su documento ha sido creado exitosamente. Se ha enviado a su dirección de correo electrónico y la recibirá en un plazo de 5 minutos.',
+      });
+
+      // Muestra el diálogo
+      setShowSuccessDialog(true);
     } catch (error) {
       if (error instanceof Error) {
         setApiError(error.message);
@@ -560,11 +197,31 @@ export function ActaMaximaAutoridadForm() {
   };
 
   const nextStep = async () => {
-    const fieldsToValidate = steps[currentStep].fields;
-    const isValid = await form.trigger(fieldsToValidate as (keyof FormData)[]);
+    let fieldsToValidate: (keyof FormData)[] = steps[currentStep]
+      .fields as (keyof FormData)[];
+
+    // validar campos dinámicos
+    if (currentStep === 9) {
+      const selectedAnexoKey = getValues('Anexo_VII') as DynamicStepKey;
+      const anexoContent = dynamicStepContent[selectedAnexoKey];
+
+      if (anexoContent) {
+        if (anexoContent.type === 'questions') {
+          // Si es de preguntas, validamos solo esas preguntas
+          fieldsToValidate = anexoContent.questions.map(
+            (q) => q.name as keyof FormData
+          );
+        } else if (anexoContent.type === 'textarea') {
+          // Si es de texto, validamos solo ese campo de texto
+          fieldsToValidate = [anexoContent.fieldName];
+        }
+      }
+    }
+
+    const isValid = await form.trigger(fieldsToValidate);
+
     if (isValid) {
       if (currentStep === 8 && getValues('Anexo_VII') === 'NO APLICA') {
-        // antes era 'anexos'
         setCurrentStep(10);
       } else if (currentStep < steps.length - 1) {
         setCurrentStep((prev) => prev + 1);
@@ -573,6 +230,10 @@ export function ActaMaximaAutoridadForm() {
   };
 
   const prevStep = () => {
+    if (currentStep === 10 && getValues('Anexo_VII') === 'NO APLICA') {
+      setCurrentStep(8); // Salta del paso 11 al 9 (índices 10 a 8)
+      return;
+    }
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     }
@@ -619,102 +280,6 @@ export function ActaMaximaAutoridadForm() {
     />
   );
 
-  // --- INICIO DE LA MEJORA ---
-  // Reemplazamos el antiguo `SiNoQuestion` que usaba RadioGroup por este nuevo componente.
-  // Este enfoque es el ideal porque:
-  // 1. NO se modifica el archivo base `button.tsx` de Shadcn.
-  // 2. Todos los estilos personalizados y la lógica se encapsulan aquí mismo.
-  // 3. Es fácilmente reutilizable dentro de este formulario.
-  const SiNoQuestion = ({
-    name,
-    label,
-  }: {
-    name: keyof FormData;
-    label: string;
-  }) => {
-    // --- Implementación de Estilos Locales ---
-    // Definimos los estilos como constantes para que el código JSX sea más limpio.
-
-    // Estilo para los botones NO seleccionados (efecto 3D elevado):
-    // - `bg-white`: Fondo blanco.
-    // - `text-black`: Texto negro para contraste.
-    // - `border-gray-300`: Borde sutil.
-    // - `shadow-md`: Sombra para dar el efecto de que "sobresale".
-    // - `hover:bg-gray-100`: Un leve cambio de color al pasar el cursor.
-    const unselectedStyle =
-      'bg-white text-black border-gray-300 shadow-md hover:bg-gray-100';
-
-    // Estilo para el botón SELECCIONADO (efecto 3D presionado):
-    // - `bg-slate-200`: Fondo gris claro, como en la imagen.
-    // - `text-slate-900`: Texto oscuro para legibilidad sobre el fondo gris.
-    // - `border-gray-400`: Un borde ligeramente más oscuro.
-    // - `shadow-inner`: La clave del efecto "presionado", aplica una sombra interior.
-    // - `hover:bg-slate-200`: Mantenemos el mismo color en hover para que no parezca que "salta" de nuevo.
-    const selectedStyle =
-      'bg-slate-200 text-slate-900 border-gray-400 shadow-inner hover:bg-slate-200';
-
-    return (
-      <FormField
-        control={form.control}
-        name={name}
-        render={({ field }) => (
-          <FormItem className='space-y-3 p-4 border rounded-md'>
-            <FormLabel>{label}</FormLabel>
-            <FormControl>
-              <div className='flex items-center space-x-4'>
-                {/* Botón SI */}
-                <Button
-                  type='button'
-                  // Usamos una variante base de Shadcn, como 'outline', para que herede
-                  // la forma y el tamaño, pero la sobreescribimos con `className`.
-                  variant='outline'
-                  onClick={() => field.onChange('SI')}
-                  disabled={isLoading}
-                  // Aquí ocurre la magia: `cn` aplica `selectedStyle` si el valor del campo
-                  // es 'SI'; de lo contrario, aplica `unselectedStyle`.
-                  className={cn(
-                    field.value === 'SI' ? selectedStyle : unselectedStyle
-                  )}
-                >
-                  SI
-                </Button>
-
-                {/* Botón NO (misma lógica) */}
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => field.onChange('NO')}
-                  disabled={isLoading}
-                  className={cn(
-                    field.value === 'NO' ? selectedStyle : unselectedStyle
-                  )}
-                >
-                  NO
-                </Button>
-
-                {/* Botón NO APLICA (misma lógica) */}
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={() => field.onChange('NO APLICA')}
-                  disabled={isLoading}
-                  className={cn(
-                    field.value === 'NO APLICA'
-                      ? selectedStyle
-                      : unselectedStyle
-                  )}
-                >
-                  NO APLICA
-                </Button>
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    );
-  };
-
   const navButtonStyleGray =
     'bg-white text-black border-gray-300 shadow-md hover:bg-gray-100 active:bg-slate-200 active:shadow-inner active:border-gray-400 transition-all duration-150';
 
@@ -738,14 +303,19 @@ export function ActaMaximaAutoridadForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            {/* MENSAJE DE ERROR DE LA API */}
-            {apiError && (
-              <Alert variant='destructive'>
-                <AlertCircle className='h-4 w-4' />
-                <AlertTitle>Error al Crear el Acta</AlertTitle>
-                <AlertDescription>{apiError}</AlertDescription>
-              </Alert>
-            )}
+            {/* ▼▼▼ 3. AÑADE TU COMPONENTE DE ALERTA AQUÍ ▼▼▼ */}
+            <SuccessAlertDialog
+              isOpen={showSuccessDialog}
+              onClose={() => setShowSuccessDialog(false)}
+              title={dialogContent.title}
+              description={dialogContent.description}
+              onConfirm={() => {
+                setShowSuccessDialog(false);
+                // La redirección ahora ocurre cuando el usuario presiona "Entendido"
+                router.push('/dashboard');
+              }}
+            />
+            {/* ▲▲▲ FIN ▲▲▲ */}
 
             {currentStep === 0 && (
               <div className='space-y-8'>
@@ -1377,17 +947,17 @@ export function ActaMaximaAutoridadForm() {
                       >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder='Seleccione un anexo para detallar o indique si no aplica...' />
+                            <SelectValue placeholder='Seleccione un anexo a detallar' />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className='bg-white z-50 max-h-60 overflow-y-auto'>
-                          {Object.keys(dynamicStepContent).map((key) => (
+                          {anexosAdicionalesTitulos.map((anexo) => (
                             <SelectItem
-                              key={key}
-                              value={key}
+                              key={anexo.longTitle}
+                              value={anexo.longTitle}
                               className='whitespace-normal h-auto'
                             >
-                              {key}
+                              {anexo.shortTitle}
                             </SelectItem>
                           ))}
                           <SelectItem value='NO APLICA'>NO APLICA</SelectItem>
@@ -1456,20 +1026,35 @@ export function ActaMaximaAutoridadForm() {
 
             {currentStep === 10 && (
               <div className='space-y-8'>
-                <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed'>
-                  <CheckCircle2 className='mx-auto h-12 w-12 text-green-500' />
-                  <h3 className='mt-4 text-xl font-semibold text-gray-800'>
-                    ¡Ha completado el formulario!
-                  </h3>
-                  <p className='mt-2 text-sm text-gray-600'>
-                    Ha llenado exitosamente el acta de entrega. Por favor,
-                    revise los datos en los pasos anteriores usando el botón
-                    Anterior.
-                    <br />
-                    Una vez que esté seguro, presione Crear Acta para generar el
-                    documento final.
-                  </p>
-                </div>
+                {/* Pregunta sobre la versión Pro */}
+                <SiNoQuestion
+                  name='interesProducto'
+                  label='Nos complace que haya completado su acta. ¿Le gustaría recibir información para obtener la versión Pro con acceso a funcionalidades avanzadas?'
+                  options={['SI', 'NO']}
+                  onValueChange={() => {
+                    // Cuando el usuario responde, mostramos el mensaje de finalización
+                    setFinalStepAnswered(true);
+                  }}
+                  isLoading={isLoading}
+                />
+
+                {/* Mensaje de finalización (condicional) */}
+                {finalStepAnswered && (
+                  <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed transition-opacity duration-500'>
+                    <CiCircleCheck className='mx-auto h-12 w-12 text-green-500' />
+                    <h3 className='mt-4 text-xl font-semibold text-gray-800'>
+                      ¡Ha completado el formulario!
+                    </h3>
+                    <p className='mt-2 text-sm text-gray-600'>
+                      Ha llenado exitosamente el acta de entrega. Por favor,
+                      revise los datos en los pasos anteriores usando el botón
+                      Anterior.
+                      <br />
+                      Una vez que esté seguro, presione Crear Acta para generar
+                      el documento final.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
