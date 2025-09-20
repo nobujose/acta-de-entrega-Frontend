@@ -373,7 +373,12 @@ export function ActaMaximaAutoridadForm() {
                     </p>
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-                    <LocationSelector control={form.control} form={form} />
+                    <LocationSelector
+                      control={form.control}
+                      form={form}
+                      estadoFieldName='estadoSuscripcion'
+                      ciudadFieldName='ciudadSuscripcion'
+                    />
 
                     <FormField
                       control={form.control}
@@ -1096,7 +1101,7 @@ export function ActaMaximaAutoridadForm() {
                     disabled={isLoading}
                     className={navButtonStyleBlue}
                   >
-                    {isLoading ? 'Creando Acta...' : 'Crear Acta'}
+                    {isLoading ? 'Creando Acta...' : 'Crear acta'}
                   </Button>
                 )}
               </div>

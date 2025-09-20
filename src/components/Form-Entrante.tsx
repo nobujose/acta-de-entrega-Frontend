@@ -69,7 +69,7 @@ export function ActaEntranteForm() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-    setTitle('Acta de Entrega Entrante');
+    setTitle('Acta Entrante');
   }, [setTitle]);
 
   const form = useForm<FormData>({
@@ -373,7 +373,12 @@ export function ActaEntranteForm() {
                     </p>
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-                    <LocationSelector control={form.control} form={form} />
+                    <LocationSelector
+                      control={form.control}
+                      form={form}
+                      estadoFieldName='estadoSuscripcion'
+                      ciudadFieldName='ciudadSuscripcion'
+                    />
 
                     <FormField
                       control={form.control}
