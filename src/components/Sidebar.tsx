@@ -21,10 +21,10 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import Image from 'next/image';
 import { useModalStore } from '@/stores/useModalStore';
 import { useAuthStore } from '@/stores/useAuthStore';
-import apiClient from '@/lib/axios';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { slide as Menu } from 'react-burger-menu';
 import { useSidebarStore } from '@/stores/useSidebarStore';
+import { logoutUser } from '@/services/authService';
 
 const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
   const pathname = usePathname();
@@ -114,22 +114,19 @@ export default function AppSidebar() {
           Vuelve pronto para continuar donde lo dejaste.
         </>
       ),
-      onConfirm: () => {
+      onConfirm: async () => {
         // 1. Cierra la sesión en el cliente (navegador) INMEDIATAMENTE.
-        logout();
 
         // 2. Redirige al usuario al login INMEDIATAMENTE.
-        router.push('/login');
 
         // 3. Notifica al servidor en segundo plano ("Fire-and-Forget").
         //    Si esta llamada falla, no afecta la experiencia del usuario.
-        apiClient.post('/auth/logout').catch((error) => {
-          // Este error solo se verá en la consola del desarrollador.
-          console.error(
-            'El servidor no pudo ser notificado del logout:',
-            error
-          );
-        });
+
+        // 4. Luego, cerramos la sesión en el frontend como antes
+
+        router.push('/login');
+        await logoutUser();
+        logout();
       },
     });
   };
