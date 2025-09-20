@@ -8,11 +8,11 @@ import {
   Form,
   FormControl,
   FormField,
+  FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Card,
   CardContent,
@@ -28,403 +27,59 @@ import {
   CardTitle,
   CardDescription as ShadcnCardDescription,
 } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHeader } from '@/context/HeaderContext';
 import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
-
-// Asegúrate de tener esta función en tu actasService.ts
 import { createActaSalientePaga } from '@/services/actasService';
+import { InputCompuesto } from './InputCompuesto';
+import { LocationSelector } from './LocationSelector';
+import { CustomDatePicker } from './DatePicker';
+import { CustomTimePicker } from './TimePicker';
+import { SiNoQuestion } from './SiNoQuestion';
+import { SuccessAlertDialog } from './SuccessAlertDialog';
+import { actaSalienteSchema } from '@/lib/schemas';
+import { CiCircleCheck } from 'react-icons/ci';
+import { LuTriangleAlert } from 'react-icons/lu';
+import {
+  steps,
+  anexosAdicionalesTitulos,
+  dynamicStepContentSaliente,
+  DynamicContent,
+} from '@/lib/acta-saliente-constants';
+import { useFormDirtyStore } from '@/stores/useFormDirtyStore';
+import { useFormState } from 'react-hook-form';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FormFieldWithExtras } from './FormFieldWithExtras';
 
-// --- Esquema de Validación Completo con Zod ---
-const formSchema = z.object({
-  // --- Datos Generales ---
-  email: z
-    .string()
-    .min(1, 'Campo Requerido')
-    .email({ message: 'Debe ser un correo válido.' }),
-  rifOrgano: z.string().min(1, 'El RIF es requerido.'),
-  denominacionCargoEntrega: z
-    .string()
-    .min(1, 'La denominación del cargo es requerida.'),
-  nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
-  ciudadSuscripcion: z.string().min(1, 'La ciudad es requerida.'),
-  estadoSuscripcion: z.string().min(1, 'El estado es requerido.'),
-  horaSuscripcion: z.string().min(1, 'La hora es requerida.'),
-  fechaSuscripcion: z.string().min(1, 'La fecha es requerida.'),
-  direccionOrgano: z.string().min(1, 'La dirección es requerida.'),
-  motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
-
-  // --- Servidores Públicos (Nombres corregidos para Saliente) ---
-  nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  nombreServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
-  designacionServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
-
-  // --- Anexos (SI/NO) ---
-  estadoSituacionPresupuestaria: z.string().optional(),
-  relacionGastosComprometidosNoCausados: z.string().optional(),
-  relacionGastosCausadosNoPagados: z.string().optional(),
-  estadoPresupuestarioPorPartidas: z.string().optional(),
-  estadoPresupuestarioDetalleCuentas: z.string().optional(),
-  estadosFinancieros: z.string().optional(),
-  balanceComprobacion: z.string().optional(),
-  estadoSituacionFinanciera: z.string().optional(),
-  estadoRendimientoFinanciero: z.string().optional(),
-  estadoMovimientosPatrimonio: z.string().optional(),
-  relacionCuentasPorCobrar: z.string().optional(),
-  relacionCuentasPorPagar: z.string().optional(),
-  relacionCuentasFondosTerceros: z.string().optional(),
-  situacionFondosAnticipo: z.string().optional(),
-  situacionCajaChica: z.string().optional(),
-  actaArqueoCajasChicas: z.string().optional(),
-  listadoRegistroAuxiliarProveedores: z.string().optional(),
-  reportesLibrosContables: z.string().optional(),
-  reportesCuentasBancarias: z.string().optional(),
-  reportesConciliacionesBancarias: z.string().optional(),
-  reportesRetenciones: z.string().optional(),
-  reporteProcesosContrataciones: z.string().optional(),
-  reporteFideicomisoPrestaciones: z.string().optional(),
-  reporteBonosVacacionales: z.string().optional(),
-  cuadroResumenCargos: z.string().optional(),
-  cuadroResumenValidadoRRHH: z.string().optional(),
-  reporteNominas: z.string().optional(),
-  inventarioBienes: z.string().optional(),
-  ejecucionPlanOperativo: z.string().optional(),
-  causasIncumplimientoMetas: z.string().optional(),
-  planOperativoAnual: z.string().optional(),
-  clasificacionArchivo: z.string().optional(),
-  ubicacionFisicaArchivo: z.string().optional(),
-  anexo6: z.string().optional(),
-  anexos: z.string().optional(),
-  relacionMontosFondosAsignados: z.string().optional(),
-  saldoEfectivoFondos: z.string().optional(),
-  relacionBienesAsignados: z.string().optional(),
-  relacionBienesAsignadosUnidadBienes: z.string().optional(),
-  estadosBancariosConciliados: z.string().optional(),
-  listaComprobantesGastos: z.string().optional(),
-  chequesEmitidosPendientesCobro: z.string().optional(),
-  listadoTransferenciaBancaria: z.string().optional(),
-  caucionFuncionario: z.string().optional(),
-  cuadroDemostrativoRecaudado: z.string().optional(),
-  relacionExpedientesAbiertos: z.string().optional(),
-  situacionTesoroNacional: z.string().optional(),
-  infoEjecucionPresupuestoNacional: z.string().optional(),
-  montoDeudaPublicaNacional: z.string().optional(),
-  situacionCuentasNacion: z.string().optional(),
-  situacionTesoroEstadal: z.string().optional(),
-  infoEjecucionPresupuestoEstadal: z.string().optional(),
-  situacionCuentasEstado: z.string().optional(),
-  situacionTesoroDistritalMunicipal: z.string().optional(),
-  infoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
-  situacionCuentasDistritalesMunicipales: z.string().optional(),
-  inventarioTerrenosEjidos: z.string().optional(),
-  relacionIngresosVentaTerrenos: z.string().optional(),
-  accionesAuditoria: z.string().optional(),
-  deficienciasActa: z.string().optional(),
-});
-
-type FormData = z.infer<typeof formSchema>;
-
-const steps = [
-  {
-    id: 1,
-    title: 'Datos Generales del Acta',
-    subtitle: 'Información básica del acta y el órgano.',
-    fields: [
-      'email',
-      'rifOrgano',
-      'denominacionCargoEntrega',
-      'nombreOrgano',
-      'ciudadSuscripcion',
-      'estadoSuscripcion',
-      'horaSuscripcion',
-      'fechaSuscripcion',
-      'direccionOrgano',
-      'motivoEntrega',
-    ],
-  },
-  {
-    id: 2,
-    title: 'Participantes en el Acta',
-    subtitle: 'Identificación de los servidores públicos involucrados.',
-    fields: [
-      'nombreServidorSaliente',
-      'cedulaServidorSaliente',
-      'designacionServidorSaliente',
-      'nombreServidorRecibe',
-      'cedulaServidorRecibe',
-      'designacionServidorRecibe',
-    ],
-  },
-  {
-    id: 3,
-    title: 'Anexo I: Situación Presupuestaria',
-    subtitle: '(Artículo 11.1 Resolución CGR N.º 01-000162)',
-    fields: [],
-  },
-  {
-    id: 4,
-    title: 'Anexo I: Situación Financiera y Patrimonial',
-    subtitle: '(Artículo 11.1 Resolución CGR N.º 01-000162)',
-    fields: [],
-  },
-  {
-    id: 5,
-    title: 'Anexo II: Cargos y Personal',
-    subtitle: '(Artículo 11.2 Resolución CGR N.º 01-000162)',
-    fields: [],
-  },
-  {
-    id: 6,
-    title: 'Anexo III: Inventario de Bienes',
-    subtitle: '(Artículo 11.3 Resolución CGR N.º 01-000162)',
-    fields: [],
-  },
-  {
-    id: 7,
-    title: 'Anexo IV: Ejecución del Plan Operativo',
-    subtitle: '(Artículo 11.4 Resolución CGR N.º 01-000162)',
-    fields: [],
-  },
-  {
-    id: 8,
-    title: 'Anexo V: Índice General del Archivo',
-    subtitle: '(Artículo 11.5 Resolución CGR N.º 01-000162)',
-    fields: [],
-  },
-  {
-    id: 9,
-    title: 'Anexo VI y Anexos Adicionales',
-    subtitle: '(Artículo 11.6 Resolución CGR N.º 01-000162)',
-    fields: ['anexo6', 'anexos'],
-  },
-  {
-    id: 10,
-    title: 'Detalle de Anexos Específicos',
-    subtitle: 'Complete la información para el anexo seleccionado.',
-    fields: [],
-  },
-  {
-    id: 11,
-    title: 'Finalización y Envío',
-    subtitle: 'Último paso antes de generar su acta.',
-    fields: [],
-  },
-];
-
-type QuestionsStep = {
-  type: 'questions';
-  title: string;
-  subtitle: string;
-  questions: { name: string; label: string }[];
-};
-type TextareaStep = {
-  type: 'textarea';
-  title: string;
-  subtitle: string;
-  fieldName: keyof FormData;
-};
-type DynamicStep = QuestionsStep | TextareaStep;
-type DynamicContent = { [key: string]: DynamicStep };
-
-const dynamicStepContent: DynamicContent = {
-  'UNIDADES ADMINISTRADORAS': {
-    type: 'questions',
-    title: 'Anexo VII. UNIDADES ADMINISTRADORAS',
-    subtitle:
-      '(Artículo 53 Reglamento Nº 1 de la Ley Orgánica de la Administración Financiera del Sector Público Sobre el Sistema Presupuestario.)',
-    questions: [
-      {
-        name: 'relacionMontosFondosAsignados',
-        label:
-          '¿Dispone Usted, del documento Relación de los montos de los fondos asignados?',
-      },
-      {
-        name: 'saldoEfectivoFondos',
-        label:
-          '¿Dispone Usted, del documento Saldo en efectivo de dichos fondos?',
-      },
-      {
-        name: 'relacionBienesAsignados',
-        label:
-          '¿Dispone Usted, del documento Relación de los bienes asignados?',
-      },
-      {
-        name: 'relacionBienesAsignadosUnidadBienes',
-        label:
-          '¿Dispone Usted, del documento Relación de los Bienes asignados emitida por la Unidad de Bienes?',
-      },
-      {
-        name: 'estadosBancariosConciliados',
-        label:
-          '¿Dispone Usted, del documento Estados bancarios actualizados y conciliados a la fecha de entrega?',
-      },
-      {
-        name: 'listaComprobantesGastos',
-        label: '¿Dispone Usted, del documento lista de comprobantes de gastos?',
-      },
-      {
-        name: 'chequesEmitidosPendientesCobro',
-        label:
-          '¿Dispone Usted, del documento Cheques emitidos pendientes de cobro?',
-      },
-      {
-        name: 'listadoTransferenciaBancaria',
-        label:
-          '¿Dispone Usted, del documento listado o reporte de Transferencia Bancaria?',
-      },
-      {
-        name: 'caucionFuncionario',
-        label:
-          '¿Dispone Usted, del documento Caución del funcionario encargado de la Administración de los Recursos Financieros a la fecha del cese de funciones?',
-      },
-    ],
-  },
-  'ÓRGANOS O ENTIDADES QUE MANEJAN RAMOS ESPECÍFICOS': {
-    type: 'questions',
-    title: 'Anexo VIII. ÓRGANOS O ENTIDADES QUE MANEJAN RAMOS ESPECÍFICOS',
-    subtitle: '(Artículo 13 Resolución CGR N.º 01-000162 de fecha 27-07-2009)',
-    questions: [
-      {
-        name: 'cuadroDemostrativoRecaudado',
-        label:
-          '¿Dispone Usted, del documento cuadro demostrativo del detalle de lo liquidado y recaudado por los rubros respectivos, y de los derechos pendientes de recaudación de años anteriores?',
-      },
-    ],
-  },
-  'ÓRGANOS DE CONTROL FISCAL': {
-    type: 'questions',
-    title: 'Anexo IX. ÓRGANOS DE CONTROL FISCAL',
-    subtitle:
-      '(Artículo 14 Resolución CGR N.º 01-000162 y Título III Artículos 53 y 54 de la Ley Orgánica de la Contraloría General de la República)',
-    questions: [
-      {
-        name: 'relacionExpedientesAbiertos',
-        label:
-          '¿Dispone Usted, del documento relación de los expedientes abiertos con ocasión del ejercicio de la potestad de investigación?',
-      },
-    ],
-  },
-  'MINISTERIO DE FINANZAS': {
-    type: 'questions',
-    title: 'Anexo X. MINISTERIO DE FINANZAS',
-    subtitle: 'Base: Artículo 14 Resolución CGR N.º 01-000162',
-    questions: [
-      {
-        name: 'situacionTesoroNacional',
-        label: '¿Dispone Usted, del documento Situación del Tesoro Nacional?',
-      },
-      {
-        name: 'infoEjecucionPresupuestoNacional',
-        label:
-          '¿Dispone Usted, del documento información de la ejecución del presupuesto nacional?',
-      },
-      {
-        name: 'montoDeudaPublicaNacional',
-        label:
-          '¿Dispone Usted, del documento Monto de la deuda pública nacional interna y externa?',
-      },
-      {
-        name: 'situacionCuentasNacion',
-        label:
-          '¿Dispone Usted, del documento Situación de las cuentas de la Nación?',
-      },
-    ],
-  },
-  'GOBERNACIONES, OFICINAS O DEPENDENCIAS DE HACIENDA ESTADAL': {
-    type: 'questions',
-    title:
-      'Anexo XI. GOBERNACIONES, OFICINAS O DEPENDENCIAS DE HACIENDA ESTADAL',
-    subtitle: '(Artículo 16 Resolución CGR N.º 01-000162)',
-    questions: [
-      {
-        name: 'situacionTesoroEstadal',
-        label: '¿Dispone Usted, del documento Situación del Tesoro Estadal?',
-      },
-      {
-        name: 'infoEjecucionPresupuestoEstadal',
-        label:
-          '¿Dispone Usted, del documento Información de la ejecución del presupuesto estadal?',
-      },
-      {
-        name: 'situacionCuentasEstado',
-        label:
-          '¿Dispone Usted, del documento Situación de las cuentas del respectivo estado?',
-      },
-    ],
-  },
-  'ALCALDÍAS, DIRECCIÓN DE HACIENDA DISTRITAL O MUNICIPAL': {
-    type: 'questions',
-    title: 'Anexo XII. ALCALDÍAS, DIRECCIÓN DE HACIENDA DISTRITAL O MUNICIPAL',
-    subtitle: '(Artículo 17 Resolución CGR N.º 01-000162)',
-    questions: [
-      {
-        name: 'situacionTesoroDistritalMunicipal',
-        label:
-          '¿Dispone Usted, del documento Situación del Tesoro Distrital o Municipal?',
-      },
-      {
-        name: 'infoEjecucionPresupuestoDistritalMunicipal',
-        label:
-          '¿Dispone Usted, del documento Información de la ejecución del presupuesto distrital o municipal?',
-      },
-      {
-        name: 'situacionCuentasDistritalesMunicipales',
-        label:
-          '¿Dispone Usted, del documento Situación de las cuentas distritales o municipales?',
-      },
-      {
-        name: 'inventarioTerrenosEjidos',
-        label:
-          '¿Dispone Usted, del documento Inventario detallado de los terrenos ejidos y propios?',
-      },
-      {
-        name: 'relacionIngresosVentaTerrenos',
-        label:
-          '¿Dispone Usted, del documento Relación de Ingresos producto de las ventas de terrenos?',
-      },
-    ],
-  },
-  'RELACIÓN DE INFORMES DE AUDITORÍAS': {
-    type: 'textarea',
-    title: 'Anexo XIII. RELACIÓN DE INFORMES DE AUDITORÍAS',
-    subtitle:
-      'Acciones emprendidas por el servidor saliente como consecuencia de las observaciones de la Unidad de Auditoría Interna.',
-    fieldName: 'accionesAuditoria',
-  },
-  'DEFICIENCIAS, ERRORES U OMISIONES DEL ACTA DE ENTREGA': {
-    type: 'textarea',
-    title: 'Anexo XIV. DEFICIENCIAS, ERRORES U OMISIONES',
-    subtitle: '(Artículo 20 Resolución CGR N.º 01-000162)',
-    fieldName: 'deficienciasActa',
-  },
-};
-
-type DynamicStepKey = keyof typeof dynamicStepContent;
+type FormData = z.infer<typeof actaSalienteSchema>;
+type DynamicStepKey = keyof DynamicContent;
 
 export function ActaSalienteForm() {
   const router = useRouter();
   const { setTitle } = useHeader();
   const [currentStep, setCurrentStep] = useState(0);
+  const [finalStepAnswered, setFinalStepAnswered] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [dialogContent, setDialogContent] = useState({
+    title: '',
+    description: '',
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-    setTitle('Acta de Entrega Saliente (PRO)');
+    setTitle('Acta Saliente');
   }, [setTitle]);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    mode: 'onChange',
+    resolver: zodResolver(actaSalienteSchema),
+    shouldUnregister: false,
     defaultValues: {
       email: '',
       rifOrgano: '',
-      denominacionCargoEntrega: '',
+      denominacionCargo: '',
       nombreOrgano: '',
       ciudadSuscripcion: '',
       estadoSuscripcion: '',
@@ -432,82 +87,114 @@ export function ActaSalienteForm() {
       fechaSuscripcion: '',
       direccionOrgano: '',
       motivoEntrega: '',
-      nombreServidorSaliente: '',
-      cedulaServidorSaliente: '',
-      designacionServidorSaliente: '',
+
+      nombreServidorEntrega: '',
+      cedulaServidorEntrega: '',
+      designacionServidorEntrega: '',
+
       nombreServidorRecibe: '',
       cedulaServidorRecibe: '',
       designacionServidorRecibe: '',
-      estadoSituacionPresupuestaria: 'NO',
-      relacionGastosComprometidosNoCausados: 'NO',
-      relacionGastosCausadosNoPagados: 'NO',
-      estadoPresupuestarioPorPartidas: 'NO',
-      estadoPresupuestarioDetalleCuentas: 'NO',
-      estadosFinancieros: 'NO',
-      balanceComprobacion: 'NO',
-      estadoSituacionFinanciera: 'NO',
-      estadoRendimientoFinanciero: 'NO',
-      estadoMovimientosPatrimonio: 'NO',
-      relacionCuentasPorCobrar: 'NO',
-      relacionCuentasPorPagar: 'NO',
-      relacionCuentasFondosTerceros: 'NO',
-      situacionFondosAnticipo: 'NO',
-      situacionCajaChica: 'NO',
-      actaArqueoCajasChicas: 'NO',
-      listadoRegistroAuxiliarProveedores: 'NO',
-      reportesLibrosContables: 'NO',
-      reportesCuentasBancarias: 'NO',
-      reportesConciliacionesBancarias: 'NO',
-      reportesRetenciones: 'NO',
-      reporteProcesosContrataciones: 'NO',
-      reporteFideicomisoPrestaciones: 'NO',
-      reporteBonosVacacionales: 'NO',
-      cuadroResumenCargos: 'NO',
-      cuadroResumenValidadoRRHH: 'NO',
-      reporteNominas: 'NO',
-      inventarioBienes: 'NO',
-      ejecucionPlanOperativo: 'NO',
-      causasIncumplimientoMetas: 'NO',
-      planOperativoAnual: 'NO',
-      clasificacionArchivo: 'NO',
-      ubicacionFisicaArchivo: 'NO',
-      anexo6: '',
-      anexos: '',
+
+      Anexo_VI: '',
+      Anexo_VII: '',
+      disponeEstadoSituacionPresupuestaria: '',
+      disponeRelacionGastosComprometidosNoCausados: '',
+      disponeRelacionGastosComprometidosCausadosNoPagados: '',
+      disponeEstadoPresupuestarioPorPartidas: '',
+      disponeEstadoPresupuestarioDetalleCuentas: '',
+      disponeEstadosFinancieros: '',
+      disponeBalanceComprobacion: '',
+      disponeEstadoSituacionFinanciera: '',
+      disponeEstadoRendimientoFinanciero: '',
+      disponeEstadoMovimientosPatrimonio: '',
+      disponeRelacionCuentasPorCobrar: '',
+      disponeRelacionCuentasPorPagar: '',
+      disponeRelacionCuentasFondosTerceros: '',
+      disponeSituacionFondosAnticipo: '',
+      disponeSituacionCajaChica: '',
+      disponeActaArqueoCajasChicas: '',
+      disponeListadoRegistroAuxiliarProveedores: '',
+      disponeReportesLibrosContables: '',
+      disponeReportesCuentasBancarias: '',
+      disponeReportesConciliacionesBancarias: '',
+      disponeReportesRetenciones: '',
+      disponeReporteProcesosContrataciones: '',
+      disponeReporteFideicomisoPrestaciones: '',
+      disponeReporteBonosVacacionales: '',
+      disponeCuadroResumenCargos: '',
+      disponeCuadroResumenValidadoRRHH: '',
+      disponeReporteNominas: '',
+      disponeInventarioBienes: '',
+      disponeEjecucionPlanOperativo: '',
+      incluyeCausasIncumplimientoMetas: '',
+      disponePlanOperativoAnual: '',
+      disponeClasificacionArchivo: '',
+      incluyeUbicacionFisicaArchivo: '',
+      disponeRelacionMontosFondosAsignados: '',
+      disponeSaldoEfectivoFondos: '',
+      disponeRelacionBienesAsignados: '',
+      disponeRelacionBienesAsignadosUnidadBienes: '',
+      disponeEstadosBancariosConciliados: '',
+      disponeListaComprobantesGastos: '',
+      disponeChequesEmitidosPendientesCobro: '',
+      disponeListadoTransferenciaBancaria: '',
+      disponeCaucionFuncionario: '',
+      disponeCuadroDemostrativoRecaudado: '',
+      disponeRelacionExpedientesAbiertos: '',
+      disponeSituacionTesoroNacional: '',
+      disponeInfoEjecucionPresupuestoNacional: '',
+      disponeMontoDeudaPublicaNacional: '',
+      disponeSituacionCuentasNacion: '',
+      disponeSituacionTesoroEstadal: '',
+      disponeInfoEjecucionPresupuestoEstadal: '',
+      disponeSituacionCuentasEstado: '',
+      disponeSituacionTesoroDistritalMunicipal: '',
+      disponeInfoEjecucionPresupuestoDistritalMunicipal: '',
+      disponeSituacionCuentasDistritalesMunicipales: '',
+      disponeInventarioTerrenosEjidos: '',
+      disponeRelacionIngresosVentaTerrenos: '',
+      accionesAuditoria: '',
+      deficienciasActa: '',
+      interesProducto: '',
     },
   });
 
-  const { watch } = form;
-  const selectedAnexo = watch('anexos') as DynamicStepKey;
+  const { getValues, watch } = form;
 
-  // En tu archivo del componente FormSaliente
+  const selectedAnexo = watch('Anexo_VII') as DynamicStepKey;
 
-  async function onSubmit(data: FormData) {
+  const { setIsDirty } = useFormDirtyStore();
+  const { isDirty } = useFormState({ control: form.control });
+
+  // useEffect para comunicar el estado del formulario al store
+  useEffect(() => {
+    setIsDirty(isDirty);
+
+    // Función de limpieza: se ejecuta cuando el componente se desmonta
+    return () => {
+      setIsDirty(false);
+    };
+  }, [isDirty, setIsDirty]);
+
+  const onSubmit = async (data: FormData) => {
+    console.log('DATOS FINALES A ENVIAR:', data);
     setIsLoading(true);
     setApiError(null);
 
-    // --- ¡AQUÍ ESTÁ LA MAGIA! ---
-    // 1. Creamos una copia de los datos del formulario para no modificar el original.
-    const dataToSend = { ...data };
-
-    // 2. Renombramos los campos del "servidor que recibe" a lo que el backend espera.
-    dataToSend.nombreServidorSaliente = data.nombreServidorRecibe;
-    dataToSend.cedulaServidorSaliente = data.cedulaServidorRecibe;
-    dataToSend.designacionServidorSaliente = data.designacionServidorRecibe;
-
-    // (Opcional) Eliminamos los campos antiguos si no quieres que se envíen.
-    //delete dataToSend.nombreServidorRecibe;
-    //delete dataToSend.cedulaServidorRecibe;
-    //delete dataToSend.designacionServidorRecibe;
-    // ------------------------------------
-
     try {
-      // 3. Enviamos los datos ya ajustados al backend.
-      const response = await createActaSalientePaga(dataToSend);
+      const response = await createActaSalientePaga(data);
+      console.log('Respuesta del servidor:', response);
 
-      alert(
-        `¡Acta Saliente (PRO) creada con éxito!\nNúmero de Acta: ${response.numeroActa}`
-      );
-      router.push('/dashboard');
+      // Prepara el contenido para el diálogo de éxito
+      setDialogContent({
+        title: `¡Acta de Entrega N° ${response.numeroActa} generada!`,
+        description:
+          'Su documento ha sido creado exitosamente. Se ha enviado a su dirección de correo electrónico y la recibirá en un plazo de 5 minutos.',
+      });
+
+      // Muestra el diálogo
+      setShowSuccessDialog(true);
     } catch (error) {
       if (error instanceof Error) {
         setApiError(error.message);
@@ -517,13 +204,34 @@ export function ActaSalienteForm() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const nextStep = async () => {
-    const fieldsToValidate = steps[currentStep].fields;
-    const isValid = await form.trigger(fieldsToValidate as (keyof FormData)[]);
+    let fieldsToValidate: (keyof FormData)[] = steps[currentStep]
+      .fields as (keyof FormData)[];
+
+    // validar campos dinámicos
+    if (currentStep === 9) {
+      const selectedAnexoKey = getValues('Anexo_VII') as DynamicStepKey;
+      const anexoContent = dynamicStepContentSaliente[selectedAnexoKey];
+
+      if (anexoContent) {
+        if (anexoContent.type === 'questions') {
+          // Si es de preguntas, validamos solo esas preguntas
+          fieldsToValidate = anexoContent.questions.map(
+            (q) => q.name as keyof FormData
+          );
+        } else if (anexoContent.type === 'textarea') {
+          // Si es de texto, validamos solo ese campo de texto
+          fieldsToValidate = [anexoContent.fieldName];
+        }
+      }
+    }
+
+    const isValid = await form.trigger(fieldsToValidate);
+
     if (isValid) {
-      if (currentStep === 8 && form.getValues('anexos') === 'NO APLICA') {
+      if (currentStep === 8 && getValues('Anexo_VII') === 'NO APLICA') {
         setCurrentStep(10);
       } else if (currentStep < steps.length - 1) {
         setCurrentStep((prev) => prev + 1);
@@ -532,694 +240,736 @@ export function ActaSalienteForm() {
   };
 
   const prevStep = () => {
-    if (currentStep === 10 && form.getValues('anexos') === 'NO APLICA') {
-      setCurrentStep(8);
-    } else if (currentStep > 0) {
+    if (currentStep === 10 && getValues('Anexo_VII') === 'NO APLICA') {
+      setCurrentStep(8); // Salta del paso 11 al 9 (índices 10 a 8)
+      return;
+    }
+    if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
     }
   };
 
-  const SiNoQuestion = ({
-    name,
-    label,
-  }: {
-    name: keyof FormData;
-    label: string;
-  }) => (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field }) => (
-        <FormItem className='space-y-3 p-4 border rounded-md'>
-          <FormLabel>{label}</FormLabel>
-          <FormControl>
-            <RadioGroup
-              onValueChange={field.onChange}
-              value={field.value || 'NO'}
-              className='flex items-center space-x-4'
-              disabled={isLoading}
-            >
-              <FormItem className='flex items-center space-x-2 space-y-0'>
-                <FormControl>
-                  <RadioGroupItem value='SI' />
-                </FormControl>
-                <FormLabel className='font-normal'>Sí</FormLabel>
-              </FormItem>
-              <FormItem className='flex items-center space-x-2 space-y-0'>
-                <FormControl>
-                  <RadioGroupItem value='NO' />
-                </FormControl>
-                <FormLabel className='font-normal'>No</FormLabel>
-              </FormItem>
-            </RadioGroup>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
-  );
+  const navButtonStyleGray =
+    'bg-white text-black border-gray-300 shadow-md hover:bg-gray-100 active:bg-slate-200 active:shadow-inner active:border-gray-400 transition-all duration-150';
+
+  const navButtonStyleBlue =
+    'bg-primary-blue text-white border-blue-800 shadow-md hover:bg-primary-blue-dark active:bg-blue-800 active:shadow-inner active:border-blue-900 transition-all duration-150';
 
   return (
-    <Card className='w-full'>
+    <Card className='w-full bg-white'>
       <CardHeader>
-        <CardTitle>
-          {currentStep === 9 && dynamicStepContent[selectedAnexo]
-            ? dynamicStepContent[selectedAnexo].title
+        <CardTitle className='text-[24px]'>
+          {currentStep === 9 && dynamicStepContentSaliente[selectedAnexo]
+            ? dynamicStepContentSaliente[selectedAnexo].title
             : steps[currentStep].title}
         </CardTitle>
-        <ShadcnCardDescription className='whitespace-pre-line'>
-          {currentStep === 9 && dynamicStepContent[selectedAnexo]
-            ? dynamicStepContent[selectedAnexo].subtitle
+        <ShadcnCardDescription className='whitespace-pre-line italic font-bold'>
+          {currentStep === 9 && dynamicStepContentSaliente[selectedAnexo]
+            ? dynamicStepContentSaliente[selectedAnexo].subtitle
             : steps[currentStep].subtitle}
         </ShadcnCardDescription>
-        <div className='pt-4'>
-          <p className='text-sm font-medium'>
-            Paso {currentStep + 1} de {steps.length}:
-          </p>
-          <Progress
-            value={((currentStep + 1) / steps.length) * 100}
-            className='mt-2'
-          />
-        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {/* Mensaje de error de la API */}
             {apiError && (
               <Alert variant='destructive'>
-                <AlertCircle className='h-4 w-4' />
+                <LuTriangleAlert className='h-4 w-4' />
                 <AlertTitle>Error al Crear el Acta</AlertTitle>
                 <AlertDescription>{apiError}</AlertDescription>
               </Alert>
             )}
 
-            <div style={{ display: currentStep === 0 ? 'block' : 'none' }}>
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-                <FormField
-                  control={form.control}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Correo electrónico</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='ejemplo@correo.com'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      {/* ▼▼▼ AQUÍ ESTÁ EL CAMBIO ▼▼▼ */}
-                      <div className='h-5'>
-                        {' '}
-                        {/* Contenedor con altura fija de 20px */}
-                        <FormMessage />
-                      </div>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='rifOrgano'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>RIF del órgano...</FormLabel>
-                      <FormControl>
-                        <Input placeholder='Ej: G-00000000-0' {...field} />
-                      </FormControl>
+            <SuccessAlertDialog
+              isOpen={showSuccessDialog}
+              onClose={() => setShowSuccessDialog(false)}
+              title={dialogContent.title}
+              description={dialogContent.description}
+              onConfirm={() => {
+                setShowSuccessDialog(false);
+                // La redirección ahora ocurre cuando el usuario presiona "Entendido"
+                router.push('/dashboard');
+              }}
+            />
 
-                      {/* ▼▼▼ AQUÍ ESTÁ EL CAMBIO ▼▼▼ */}
-                      <div className='h-5'>
-                        {' '}
-                        {/* Contenedor con altura fija de 20px */}
-                        <FormMessage />
-                      </div>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='denominacionCargoEntrega'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Denominación del cargo</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Presidencia, Dirección...'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='nombreOrgano'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nombre del órgano</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Instituto Nacional de...'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='ciudadSuscripcion'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ciudad donde se suscribe</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Barquisimeto'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='estadoSuscripcion'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Estado donde se suscribe</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Lara'
-                          {...field}
-                          disabled={isLoading}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='horaSuscripcion'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Hora de suscripción</FormLabel>
-                      <FormControl>
-                        <Input type='time' {...field} disabled={isLoading} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='fechaSuscripcion'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fecha de suscripción</FormLabel>
-                      <FormControl>
-                        <Input type='date' {...field} disabled={isLoading} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className='md:col-span-2'>
+            {currentStep === 0 && (
+              <div className='space-y-8'>
+                {/* --- Primera Sección: Identificación --- */}
+                <div className='space-y-4 p-6 border rounded-lg'>
+                  <div className='mb-4'>
+                    <h3 className='font-bold text-lg'>
+                      Identificación del cargo y organismo
+                    </h3>
+                    <p className='text-sm text-gray-500 italic font-bold'>
+                      Artículo 10.2 Resolución CGR N.º 01-000162 de fecha
+                      27-07-2009
+                    </p>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+                    <FormFieldWithExtras
+                      name='email'
+                      label='Dirección de correo electrónico'
+                      subtitle='Ej: ejemplo@dominio.com'
+                    />
+                    <FormField
+                      control={form.control}
+                      name='rifOrgano'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            RIF del órgano, entidad, oficina o dependencia de la
+                            Administración Pública
+                          </FormLabel>
+                          <FormDescription className='italic'>
+                            Ej: G-00000000-0
+                          </FormDescription>
+                          <FormControl>
+                            <InputCompuesto
+                              type='rif'
+                              options={['G', 'J', 'E']} // Opciones para el desplegable
+                              placeholder=''
+                              {...field}
+                              onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormFieldWithExtras
+                      name='denominacionCargo'
+                      label='Denominación del cargo'
+                      subtitle='Ej: Presidencia, dirección, coordinación'
+                      maxLength={50}
+                      validationType='textOnly'
+                    />
+                    <FormFieldWithExtras
+                      name='nombreOrgano'
+                      label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública'
+                      subtitle='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
+                      maxLength={50}
+                      validationType='textOnly'
+                    />
+                  </div>
+                </div>
+
+                {/* --- Segunda Sección: Detalles de Suscripción --- */}
+                <div className='space-y-4 p-6 border rounded-lg'>
+                  <div className='mb-4'>
+                    <h3 className='font-bold text-lg'>
+                      Detalles de la suscripción del acta
+                    </h3>
+                    <p className='text-sm text-gray-500 italic font-bold'>
+                      Artículo 10.1 Resolución CGR N.º 01-000162 de fecha
+                      27-07-2009
+                    </p>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
+                    <LocationSelector
+                      control={form.control}
+                      form={form}
+                      estadoFieldName='estadoSuscripcion'
+                      ciudadFieldName='ciudadSuscripcion'
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name='horaSuscripcion'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col justify-end'>
+                          <FormLabel>Hora de suscripción del acta</FormLabel>
+                          <FormControl>
+                            <CustomTimePicker
+                              // react-datepicker usa objetos Date, así que convertimos el valor
+                              value={
+                                field.value
+                                  ? new Date(`1970-01-01T${field.value}`)
+                                  : null
+                              }
+                              onChange={(date) => {
+                                // Guardamos la hora en formato HH:mm
+                                field.onChange(
+                                  date
+                                    ? `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+                                    : ''
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name='fechaSuscripcion'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col justify-end'>
+                          <FormLabel>Fecha de la suscripción</FormLabel>
+                          <FormControl>
+                            <CustomDatePicker
+                              // react-datepicker usa objetos Date, así que convertimos el valor
+                              value={field.value ? new Date(field.value) : null}
+                              onChange={(date) => {
+                                // Guardamos la fecha en formato YYYY-MM-DD
+                                field.onChange(
+                                  date ? date.toISOString().split('T')[0] : ''
+                                );
+                              }}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className='md:col-span-2'>
+                      <FormFieldWithExtras
+                        name='direccionOrgano'
+                        label='Dirección exacta y completa de la ubicación del órgano, entidad, oficina o dependencia que se entrega'
+                        subtitle='Ej: Avenida 00, entre calles 00 y 00, Edif. Central, Piso 2, Despacho de la presidencia'
+                        maxLength={300}
+                      />
+                    </div>
+                    <div className='md:col-span-2'>
+                      <FormField
+                        control={form.control}
+                        name='motivoEntrega'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>
+                              Motivo de la entrega del órgano, entidad, oficina
+                              o dependencia de la Administración Pública
+                            </FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              disabled={isLoading}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder='Seleccione un motivo' />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent
+                                position='popper'
+                                className='bg-white z-50 max-h-60 overflow-y-auto'
+                              >
+                                <SelectItem value='Renuncia'>
+                                  Renuncia
+                                </SelectItem>
+                                <SelectItem value='Jubilación'>
+                                  Jubilación
+                                </SelectItem>
+                                <SelectItem value='Muerte'>Muerte</SelectItem>
+                                <SelectItem value='Incapacidad absoluta'>
+                                  Incapacidad absoluta
+                                </SelectItem>
+                                <SelectItem value='Destitución'>
+                                  Destitución
+                                </SelectItem>
+                                <SelectItem value='Supresión del cargo'>
+                                  {' '}
+                                  Supresión del cargo
+                                </SelectItem>
+                                <SelectItem value='Expiración del período'>
+                                  {' '}
+                                  Expiración del período
+                                </SelectItem>
+                                <SelectItem value='Ascenso'>Ascenso</SelectItem>
+                                <SelectItem value='Traslado'>
+                                  Traslado
+                                </SelectItem>
+                                <SelectItem value='Rotación'>
+                                  Rotación
+                                </SelectItem>
+                                <SelectItem value='Comisión de servicio'>
+                                  Comisión de servicio
+                                </SelectItem>
+                                <SelectItem value='Licencia'>
+                                  Licencia
+                                </SelectItem>
+                                <SelectItem value='Suspensión'>
+                                  Suspensión
+                                </SelectItem>
+                                <SelectItem value='Inhabilitación'>
+                                  Inhabilitación
+                                </SelectItem>
+                                <SelectItem value='Revocatoria del mandato'>
+                                  Revocatoria del mandato
+                                </SelectItem>
+                                <SelectItem value='Declaración de abandono del cargo'>
+                                  {' '}
+                                  Declaración de abandono del cargo
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {currentStep === 1 && (
+              <div className='space-y-6'>
+                <h3 className='text-lg font-semibold border-b pb-2'>
+                  Servidor Público Saliente
+                </h3>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                  <FormFieldWithExtras
+                    name='nombreServidorEntrega'
+                    label='Nombre'
+                    subtitle='Ej: Pedro José Rodríguez Hernández'
+                    maxLength={50}
+                    validationType='textOnly'
+                  />
                   <FormField
                     control={form.control}
-                    name='direccionOrgano'
+                    name='cedulaServidorEntrega'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Dirección exacta y completa</FormLabel>
+                        <FormLabel>Cédula</FormLabel>
+                        <FormDescription className='italic'>
+                          Ej: V-00.000.000
+                        </FormDescription>
                         <FormControl>
-                          <Input
-                            placeholder='Avenida 00...'
+                          <InputCompuesto
+                            type='cedula'
+                            options={['V', 'E']} // Opciones para el desplegable
+                            placeholder=''
                             {...field}
-                            disabled={isLoading}
+                            onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  <FormFieldWithExtras
+                    name='designacionServidorEntrega'
+                    label='Datos de designación'
+                    subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                    maxLength={150}
+                  />
                 </div>
-                <div className='md:col-span-2'>
+
+                <h3 className='text-lg font-semibold border-b pb-2'>
+                  Servidor Público Entrante
+                </h3>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                  <FormFieldWithExtras
+                    name='nombreServidorRecibe'
+                    label='Nombre'
+                    subtitle='Ej: Pedro José Rodríguez Hernández'
+                    maxLength={50}
+                    validationType='textOnly'
+                  />
                   <FormField
                     control={form.control}
-                    name='motivoEntrega'
+                    name='cedulaServidorRecibe'
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Motivo de la entrega</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={isLoading}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder='Seleccione un motivo' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value='Renuncia'>Renuncia</SelectItem>
-                            <SelectItem value='Jubilacion'>
-                              Jubilación
-                            </SelectItem>
-                            <SelectItem value='Destitucion'>
-                              Destitución
-                            </SelectItem>
-                            <SelectItem value='Expiracion del periodo'>
-                              Expiración del período
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <FormLabel>Cédula</FormLabel>
+                        <FormDescription className='italic'>
+                          Ej: V-00.000.000
+                        </FormDescription>
+                        <FormControl>
+                          <InputCompuesto
+                            type='cedula'
+                            options={['V', 'E']} // Opciones para el desplegable
+                            placeholder=''
+                            {...field}
+                            onChange={(value) => field.onChange(value)} // Conecta el cambio con el formulario
+                          />
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  <FormFieldWithExtras
+                    name='designacionServidorRecibe'
+                    label='Datos de designación'
+                    subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
+                    maxLength={150}
+                  />
                 </div>
               </div>
-            </div>
+            )}
 
-            <div style={{ display: currentStep === 1 ? 'block' : 'none' }}>
+            {currentStep === 2 && (
+              <div className='space-y-4'>
+                <SiNoQuestion
+                  name='disponeEstadoSituacionPresupuestaria'
+                  label='¿Dispone usted del documento Estado de situación presupuestaria  que muestra todos los momentos presupuestarios y sus detalles. Incluye: presupuesto original, modificaciones, presupuesto modificado, compromisos, causado, pagado, por pagar y presupuesto disponible a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeRelacionGastosComprometidosNoCausados'
+                  label='¿Dispone usted del documento Relación de gastos comprometidos no causados a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeRelacionGastosComprometidosCausadosNoPagados'
+                  label='¿Dispone usted del documento Relación de gastos comprometidos causados y no pagados a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeEstadoPresupuestarioPorPartidas'
+                  label='¿Dispone usted del documento Estado presupuestario del ejercicio vigente por partidas?'
+                />
+                <SiNoQuestion
+                  name='disponeEstadoPresupuestarioDetalleCuentas'
+                  label='¿Dispone usted del documento Estado presupuestario del ejercicio con los detalles de sus cuentas?'
+                />
+              </div>
+            )}
+
+            {currentStep === 3 && (
+              <div className='space-y-4'>
+                <SiNoQuestion
+                  name='disponeEstadosFinancieros'
+                  label='¿Dispone usted del documento Estados financieros a la fecha de la entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeBalanceComprobacion'
+                  label='¿Dispone usted del documento Balance de comprobación a la fecha de la elaboración de los estados financieros y sus notas explicativas a la fecha de la entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeEstadoSituacionFinanciera'
+                  label='¿Dispone usted del documento Estado de situación financiera / balance general y sus notas explicativas a la fecha de la entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeEstadoRendimientoFinanciero'
+                  label='¿Dispone usted del documento Estado de rendimiento financiero / Estado de ganancias y pérdidas y sus notas explicativas a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeEstadoMovimientosPatrimonio'
+                  label='¿Dispone usted del documento Estado de movimientos de las cuentas de patrimonio y sus notas explicativas a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeRelacionCuentasPorCobrar'
+                  label='¿Dispone usted del documento Relación de cuentas por cobrar a la fecha del Acta de Entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeRelacionCuentasPorPagar'
+                  label='¿Dispone usted del documento Relación de cuentas por pagar a la fecha del Acta de Entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeRelacionCuentasFondosTerceros'
+                  label='¿Dispone usted del documento Relación de las cuentas de los fondos de terceros?'
+                />
+                <SiNoQuestion
+                  name='disponeSituacionFondosAnticipo'
+                  label='¿Dispone usted del documento Situación de los fondos en anticipo?'
+                />
+                <SiNoQuestion
+                  name='disponeSituacionCajaChica'
+                  label='¿Dispone usted del documento Situación de la caja chica?'
+                />
+                <SiNoQuestion
+                  name='disponeActaArqueoCajasChicas'
+                  label='¿Dispone usted del documento Acta de arqueo de las cajas chicas a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='disponeListadoRegistroAuxiliarProveedores'
+                  label='¿Dispone usted del documento Listado del registro auxiliar de proveedores?'
+                />
+                <SiNoQuestion
+                  name='disponeReportesLibrosContables'
+                  label='¿Dispone usted del documento Reportes de libros contables (diario y mayores analíticos) a la fecha del cese de funciones?'
+                />
+                <SiNoQuestion
+                  name='disponeReportesCuentasBancarias'
+                  label='¿Dispone usted del documento Reportes de las cuentas bancarias (movimientos a la fecha del cese de funciones)?'
+                />
+                <SiNoQuestion
+                  name='disponeReportesConciliacionesBancarias'
+                  label='¿Dispone usted del documento Reportes de las conciliaciones bancarias a la fecha del cese de funciones?'
+                />
+                <SiNoQuestion
+                  name='disponeReportesRetenciones'
+                  label='¿Dispone usted del documento Reportes de retenciones de pagos pendientes por enterar correspondientes a ISLR, IVA y Retenciones por contratos (obras, bienes y servicios) a la fecha del cese de funciones?'
+                />
+                <SiNoQuestion
+                  name='disponeReporteProcesosContrataciones'
+                  label='¿Dispone usted del documento Reporte de los procesos de Contrataciones Públicas a la fecha del cese de funciones?'
+                />
+                <SiNoQuestion
+                  name='disponeReporteFideicomisoPrestaciones'
+                  label='¿Dispone usted del documento Reporte del fideicomiso de prestaciones sociales a la fecha del cese de funciones?'
+                />
+                <SiNoQuestion
+                  name='disponeReporteBonosVacacionales'
+                  label='¿Dispone usted del documento Reporte de bonos vacacionales a la fecha del cese de funciones?'
+                />
+              </div>
+            )}
+
+            {currentStep === 4 && (
+              <div className='space-y-4'>
+                <SiNoQuestion
+                  name='disponeCuadroResumenCargos'
+                  label='¿Dispone usted del documento cuadro resumen indicando el número de cargos existentes, clasificados en empleados, obreros, fijos o contratados?'
+                />
+                <SiNoQuestion
+                  name='disponeCuadroResumenValidadoRRHH'
+                  label='¿Dispone usted del documento cuadro resumen validado por la Oficina de recursos humanos?'
+                />
+                <SiNoQuestion
+                  name='disponeReporteNominas'
+                  label='¿Dispone usted del documento Reporte de nóminas a la fecha del cese de funciones?'
+                />
+              </div>
+            )}
+
+            {currentStep === 5 && (
+              <div className='space-y-4'>
+                <SiNoQuestion
+                  name='disponeInventarioBienes'
+                  label='¿Dispone usted del documento Inventario de bienes e inmuebles esta elaborado a la fecha de entrega. Debe contener: comprobación física, condición de los bienes, responsable patrimonial, responsable por uso, fecha de verificación, número del acta de verificación, código, descripción, marca, modelo, número del serial, estado de conservación, ubicación y valor de mercado de los bienes?'
+                />
+              </div>
+            )}
+
+            {currentStep === 6 && (
+              <div className='space-y-4'>
+                <SiNoQuestion
+                  name='disponeEjecucionPlanOperativo'
+                  label='¿Dispone usted del documento Ejecución del Plan Operativo a la fecha de entrega?'
+                />
+                <SiNoQuestion
+                  name='incluyeCausasIncumplimientoMetas'
+                  label='¿Usted incluye las causas que originaron el incumplimiento de algunas metas en la ejecución del Plan Operativo?'
+                />
+                <SiNoQuestion
+                  name='disponePlanOperativoAnual'
+                  label='¿Dispone usted del documento Plan Operativo anual?'
+                />
+              </div>
+            )}
+
+            {currentStep === 7 && (
+              <div className='space-y-4'>
+                <SiNoQuestion
+                  name='disponeClasificacionArchivo'
+                  label='¿Dispone usted del documento clasificación del archivo?'
+                />
+                <SiNoQuestion
+                  name='incluyeUbicacionFisicaArchivo'
+                  label='¿Usted incluye la ubicación física del archivo?'
+                />
+              </div>
+            )}
+
+            {currentStep === 8 && (
               <div className='space-y-6'>
-                <div>
-                  <h3 className='text-lg font-semibold border-b pb-2'>
-                    Servidor Público que Entrega (Saliente)
-                  </h3>
-                  <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mt-4'>
-                    <FormField
-                      control={form.control}
-                      name='nombreServidorSaliente'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre Completo</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='cedulaServidorSaliente'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cédula</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='designacionServidorSaliente'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Datos de Designación</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <h3 className='text-lg font-semibold border-b pb-2'>
-                    Servidor Público que Recibe
-                  </h3>
-                  <div className='grid grid-cols-1 md:grid-cols-3 gap-6 mt-4'>
-                    <FormField
-                      control={form.control}
-                      name='nombreServidorRecibe'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre Completo</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='cedulaServidorRecibe'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Cédula</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='designacionServidorRecibe'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Datos de Designación</FormLabel>
-                          <FormControl>
-                            <Input {...field} disabled={isLoading} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              style={{ display: currentStep === 2 ? 'block' : 'none' }}
-              className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'
-            >
-              <SiNoQuestion
-                name='estadoSituacionPresupuestaria'
-                label='¿Dispone del Estado de Situación Presupuestaria?'
-              />
-              <SiNoQuestion
-                name='relacionGastosComprometidosNoCausados'
-                label='¿Dispone de la Relación de Gastos Comprometidos, no causados?'
-              />
-              <SiNoQuestion
-                name='relacionGastosCausadosNoPagados'
-                label='¿Dispone de la Relación de Gastos Comprometidos, causados y no pagados?'
-              />
-              <SiNoQuestion
-                name='estadoPresupuestarioPorPartidas'
-                label='¿Dispone del Estado Presupuestario del Ejercicio vigente por partidas?'
-              />
-              <SiNoQuestion
-                name='estadoPresupuestarioDetalleCuentas'
-                label='¿Dispone del Estado Presupuestario del Ejercicio con detalle de cuentas?'
-              />
-            </div>
-
-            <div
-              style={{ display: currentStep === 3 ? 'block' : 'none' }}
-              className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'
-            >
-              <SiNoQuestion
-                name='estadosFinancieros'
-                label='¿Dispone de los Estados Financieros a la fecha de entrega?'
-              />
-              <SiNoQuestion
-                name='balanceComprobacion'
-                label='¿Dispone del Balance de Comprobación y sus notas explicativas?'
-              />
-              <SiNoQuestion
-                name='estadoSituacionFinanciera'
-                label='¿Dispone del Estado de Situación Financiera / Balance General?'
-              />
-              <SiNoQuestion
-                name='estadoRendimientoFinanciero'
-                label='¿Dispone del Estado de Rendimiento Financiero / Ganancias y Pérdidas?'
-              />
-              <SiNoQuestion
-                name='estadoMovimientosPatrimonio'
-                label='¿Dispone del Estado de Movimientos de las Cuentas de Patrimonio?'
-              />
-              <SiNoQuestion
-                name='relacionCuentasPorCobrar'
-                label='¿Dispone de una Relación de Cuentas por Cobrar?'
-              />
-              <SiNoQuestion
-                name='relacionCuentasPorPagar'
-                label='¿Dispone de una Relación de Cuentas por Pagar?'
-              />
-              <SiNoQuestion
-                name='relacionCuentasFondosTerceros'
-                label='¿Dispone de una Relación de las Cuentas de los Fondos de Terceros?'
-              />
-              <SiNoQuestion
-                name='situacionFondosAnticipo'
-                label='¿Dispone de la Situación de los Fondos en Anticipo?'
-              />
-              <SiNoQuestion
-                name='situacionCajaChica'
-                label='¿Dispone de la Situación de la Caja Chica?'
-              />
-              <SiNoQuestion
-                name='actaArqueoCajasChicas'
-                label='¿Dispone del Acta de arqueo de las Cajas Chicas?'
-              />
-              <SiNoQuestion
-                name='listadoRegistroAuxiliarProveedores'
-                label='¿Dispone del Listado del Registro Auxiliar de Proveedores?'
-              />
-              <SiNoQuestion
-                name='reportesLibrosContables'
-                label='¿Dispone de Reportes de Libros Contables (Diario y mayores analíticos)?'
-              />
-              <SiNoQuestion
-                name='reportesCuentasBancarias'
-                label='¿Dispone de Reportes de las Cuentas Bancarias?'
-              />
-              <SiNoQuestion
-                name='reportesConciliacionesBancarias'
-                label='¿Dispone de Reportes de las Conciliaciones Bancarias?'
-              />
-              <SiNoQuestion
-                name='reportesRetenciones'
-                label='¿Dispone de Reportes de Retenciones pendientes por enterar?'
-              />
-              <SiNoQuestion
-                name='reporteProcesosContrataciones'
-                label='¿Dispone del Reporte de los Procesos de Contrataciones Públicas?'
-              />
-              <SiNoQuestion
-                name='reporteFideicomisoPrestaciones'
-                label='¿Dispone del Reporte del Fideicomiso de Prestaciones Sociales?'
-              />
-              <SiNoQuestion
-                name='reporteBonosVacacionales'
-                label='¿Dispone del Reporte de Bonos Vacacionales?'
-              />
-            </div>
-
-            <div
-              style={{ display: currentStep === 4 ? 'block' : 'none' }}
-              className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'
-            >
-              <SiNoQuestion
-                name='cuadroResumenCargos'
-                label='¿Dispone del cuadro resumen indicando el número de cargos existentes (empleados, obreros, etc.)?'
-              />
-              <SiNoQuestion
-                name='cuadroResumenValidadoRRHH'
-                label='¿Dispone del cuadro resumen validado por la Oficina de Recursos Humanos?'
-              />
-              <SiNoQuestion
-                name='reporteNominas'
-                label='¿Dispone del Reporte de Nóminas a la fecha del cese de funciones?'
-              />
-            </div>
-
-            <div
-              style={{ display: currentStep === 5 ? 'block' : 'none' }}
-              className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'
-            >
-              <SiNoQuestion
-                name='inventarioBienes'
-                label='¿Dispone del Inventario de Bienes Muebles e Inmuebles elaborado a la fecha de entrega?'
-              />
-            </div>
-
-            <div
-              style={{ display: currentStep === 6 ? 'block' : 'none' }}
-              className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'
-            >
-              <SiNoQuestion
-                name='ejecucionPlanOperativo'
-                label='¿Dispone del documento de Ejecución del Plan Operativo a la fecha de entrega?'
-              />
-              <SiNoQuestion
-                name='causasIncumplimientoMetas'
-                label='¿Incluye las causas que originaron el incumplimiento de metas en el Plan Operativo?'
-              />
-              <SiNoQuestion
-                name='planOperativoAnual'
-                label='¿Dispone del Plan Operativo Anual?'
-              />
-            </div>
-
-            <div
-              style={{ display: currentStep === 7 ? 'block' : 'none' }}
-              className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'
-            >
-              <SiNoQuestion
-                name='clasificacionArchivo'
-                label='¿Incluye la clasificación del archivo?'
-              />
-              <SiNoQuestion
-                name='ubicacionFisicaArchivo'
-                label='¿Incluye la ubicación física del archivo?'
-              />
-            </div>
-
-            <div
-              style={{ display: currentStep === 8 ? 'block' : 'none' }}
-              className='space-y-6'
-            >
-              <FormField
-                control={form.control}
-                name='anexo6'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Anexo VI: Información adicional</FormLabel>
-                    <ShadcnCardDescription className='text-xs'>
-                      Aporte datos adicionales que puedan influir en la
-                      evaluación.
-                    </ShadcnCardDescription>
-                    <FormControl>
-                      <Textarea
-                        placeholder='Describa aquí...'
-                        {...field}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='anexos'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Anexos Adicionales</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={isLoading}
-                    >
+                <FormField
+                  control={form.control}
+                  name='Anexo_VI'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Cualquier otra información o documentación que se
+                        considere necesaria indicando la fecha de corte.
+                      </FormLabel>
+                      <ShadcnCardDescription className='text-xs'>
+                        Está referida a que además de los documentos requeridos
+                        de manera estándar, las partes involucradas pueden
+                        aportar datos adicionales que puedan influir en la
+                        evaluación o decisión del organismo correspondiente. La
+                        fecha de corte es crucial porque establece un límite
+                        temporal para la información presentada, asegurando que
+                        todas las partes estén en la misma página respecto a la
+                        temporalidad de los datos.
+                      </ShadcnCardDescription>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder='Seleccione un anexo...' />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Object.keys(dynamicStepContent).map((key) => (
-                          <SelectItem key={key} value={key}>
-                            {key}
-                          </SelectItem>
-                        ))}
-                        <SelectItem value='NO APLICA'>NO APLICA</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div style={{ display: currentStep === 9 ? 'block' : 'none' }}>
-              {selectedAnexo && dynamicStepContent[selectedAnexo] ? (
-                (() => {
-                  const content = dynamicStepContent[selectedAnexo];
-                  switch (content.type) {
-                    case 'questions':
-                      return (
-                        <div className='space-y-4 max-h-[60vh] overflow-y-auto pr-4'>
-                          {content.questions.map((q) => (
-                            <SiNoQuestion
-                              key={q.name}
-                              name={q.name as keyof FormData}
-                              label={q.label}
-                            />
-                          ))}
-                        </div>
-                      );
-                    case 'textarea':
-                      return (
-                        <FormField
-                          control={form.control}
-                          name={content.fieldName}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Textarea
-                                  placeholder={`Describa aquí...`}
-                                  {...field}
-                                  rows={8}
-                                  disabled={isLoading}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                        <Textarea
+                          placeholder='Describa aquí la información adicional...'
+                          {...field}
+                          disabled={isLoading}
+                          maxLength={500}
                         />
-                      );
-                    default:
-                      return null;
-                  }
-                })()
-              ) : (
-                <div className='text-center text-gray-500 py-8'>
-                  <p>
-                    Por favor, seleccione un tipo de anexo en el paso anterior.
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='Anexo_VII'
+                  render={({ field }) => (
+                    <FormItem className='pt-2'>
+                      <FormLabel>ANEXOS ADICIONALES</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        disabled={isLoading}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder='Seleccione un anexo a detallar' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className='bg-white z-50 max-h-60 overflow-y-auto'>
+                          {anexosAdicionalesTitulos.map((anexo) => (
+                            <SelectItem
+                              key={anexo.longTitle}
+                              value={anexo.longTitle}
+                              className='whitespace-normal h-auto'
+                            >
+                              {anexo.shortTitle}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value='NO APLICA'>NO APLICA</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
+            {currentStep === 9 && (
+              <div>
+                {selectedAnexo && dynamicStepContentSaliente[selectedAnexo] ? (
+                  (() => {
+                    const content = dynamicStepContentSaliente[selectedAnexo];
+                    switch (content.type) {
+                      case 'questions':
+                        return (
+                          <div className='space-y-4'>
+                            {content.questions.map((q) => (
+                              <SiNoQuestion
+                                key={q.name}
+                                name={q.name as keyof FormData}
+                                label={q.label}
+                              />
+                            ))}
+                          </div>
+                        );
+                      case 'textarea':
+                        return (
+                          <FormField
+                            control={form.control}
+                            name={content.fieldName}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormControl>
+                                  <Textarea
+                                    placeholder={`Describa aquí la información sobre "${content.title}"...`}
+                                    {...field}
+                                    rows={8}
+                                    disabled={isLoading}
+                                    maxLength={500}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        );
+                      default:
+                        return null;
+                    }
+                  })()
+                ) : (
+                  <div className='text-center text-gray-500 py-8'>
+                    <p>
+                      Por favor, seleccione un tipo de anexo en el paso anterior
+                      para continuar.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {currentStep === 10 && (
+              <div className='space-y-8'>
+                {/* Pregunta sobre la versión Pro */}
+                <SiNoQuestion
+                  name='interesProducto'
+                  label='Nos complace que haya completado su acta. ¿Le gustaría recibir información para obtener la versión Pro con acceso a funcionalidades avanzadas?'
+                  options={['SI', 'NO']}
+                  onValueChange={() => {
+                    // Cuando el usuario responde, mostramos el mensaje de finalización
+                    setFinalStepAnswered(true);
+                  }}
+                  isLoading={isLoading}
+                />
+
+                {/* Mensaje de finalización (condicional) */}
+                {finalStepAnswered && (
+                  <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed transition-opacity duration-500'>
+                    <CiCircleCheck className='mx-auto h-12 w-12 text-green-500' />
+                    <h3 className='mt-4 text-xl font-semibold text-gray-800'>
+                      ¡Ha completado el formulario!
+                    </h3>
+                    <p className='mt-2 text-sm text-gray-600'>
+                      Ha llenado exitosamente el acta de entrega. Por favor,
+                      revise los datos en los pasos anteriores usando el botón
+                      Anterior.
+                      <br />
+                      Una vez que esté seguro, presione Crear Acta para generar
+                      el documento final.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Navegación entre pasos */}
+            <div className='flex items-center justify-between pt-8'>
+              {/* Columna Izquierda (para el botón Anterior) */}
+              <div className='w-1/3'>
+                {currentStep > 0 && (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    onClick={prevStep}
+                    disabled={isLoading}
+                    className={navButtonStyleGray}
+                  >
+                    Anterior
+                  </Button>
+                )}
+              </div>
+
+              {/* Columna Central (para el indicador de Pasos) */}
+              <div className='flex w-1/3 justify-center'>
+                <div className='bg-icon-gray-bg px-4 py-2 rounded-lg shadow-sm'>
+                  <p className='text-sm font-bold text-gray-700'>
+                    Paso {currentStep + 1} de {steps.length}
                   </p>
                 </div>
-              )}
-            </div>
-
-            <div
-              style={{ display: currentStep === 10 ? 'block' : 'none' }}
-              className='space-y-8'
-            >
-              <div className='text-center p-6 mt-8 bg-gray-50 rounded-lg border border-dashed'>
-                <CheckCircle2 className='mx-auto h-12 w-12 text-green-500' />
-                <h3 className='mt-4 text-xl font-semibold'>
-                  ¡Formulario Completo!
-                </h3>
-                <p className='mt-2 text-sm text-gray-600'>
-                  Revise los datos en los pasos anteriores. Una vez seguro,
-                  presione Crear Acta para generar el documento final.
-                </p>
               </div>
-            </div>
 
-            <div className='flex justify-between pt-8'>
-              {currentStep > 0 && (
-                <Button
-                  type='button'
-                  variant='outline'
-                  onClick={prevStep}
-                  disabled={isLoading}
-                >
-                  Anterior
-                </Button>
-              )}
-              <div className='flex-grow' />
-              {currentStep < steps.length - 1 && (
-                <Button type='button' onClick={nextStep} disabled={isLoading}>
-                  Siguiente
-                </Button>
-              )}
-              {currentStep === steps.length - 1 && (
-                <Button
-                  type='submit'
-                  className='bg-[#001A70] hover:bg-[#001A70]/90 text-white'
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Creando Acta...' : 'Crear Acta (PRO)'}
-                </Button>
-              )}
+              {/* Columna Derecha (para el botón Siguiente/Finalizar) */}
+              <div className='flex w-1/3 justify-end'>
+                {currentStep < steps.length - 1 && (
+                  <Button
+                    type='button'
+                    onClick={nextStep}
+                    disabled={isLoading}
+                    className={navButtonStyleBlue}
+                  >
+                    Siguiente
+                  </Button>
+                )}
+                {currentStep === steps.length - 1 && (
+                  <Button
+                    type='submit'
+                    disabled={isLoading}
+                    className={navButtonStyleBlue}
+                  >
+                    {isLoading ? 'Creando Acta...' : 'Crear Acta'}
+                  </Button>
+                )}
+              </div>
             </div>
           </form>
         </Form>
