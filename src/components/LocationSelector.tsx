@@ -14,9 +14,13 @@ import {
   FormMessage,
   FormControl,
 } from '@/components/ui/form';
-import type { Control, UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-import { actaMaximaAutoridadSchema } from '@/lib/schemas';
+import type {
+  Control,
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormReturn,
+} from 'react-hook-form';
 
 // Datos de estados y ciudades de Venezuela
 const venezuelaData = {
@@ -535,31 +539,38 @@ const venezuelaData = {
 
 const estados = Object.keys(venezuelaData);
 
-type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
-
-interface LocationSelectorProps {
-  control: Control<FormData>;
-  form: UseFormReturn<FormData>;
+interface LocationSelectorProps<T extends FieldValues> {
+  control: Control<T>;
+  form: UseFormReturn<T>;
+  // Usamos Path<T> para asegurar que los nombres de campo pertenezcan al formulario
+  estadoFieldName: Path<T>;
+  ciudadFieldName: Path<T>;
 }
 
-export function LocationSelector({ control, form }: LocationSelectorProps) {
+export function LocationSelector<T extends FieldValues>({
+  control,
+  form,
+  estadoFieldName,
+  ciudadFieldName,
+}: LocationSelectorProps<T>) {
   const { watch, setValue } = form;
-  const selectedEstado = watch('estadoSuscripcion');
+  const selectedEstado = watch(estadoFieldName);
 
-  // Obtiene las ciudades del estado seleccionado
   const ciudades = selectedEstado
     ? venezuelaData[selectedEstado as keyof typeof venezuelaData]
     : [];
 
   // Reinicia el valor de la ciudad cuando el estado cambia
   useEffect(() => {
-    setValue('ciudadSuscripcion', '');
-  }, [selectedEstado, setValue]);
+    setValue(ciudadFieldName, '' as PathValue<T, typeof ciudadFieldName>, {
+      shouldValidate: false,
+    });
+  }, [selectedEstado, setValue, ciudadFieldName]);
 
   return (
     <>
       <FormField
-        name='estadoSuscripcion'
+        name={estadoFieldName}
         control={control}
         render={({ field }) => (
           <FormItem>
@@ -587,7 +598,7 @@ export function LocationSelector({ control, form }: LocationSelectorProps) {
       />
 
       <FormField
-        name='ciudadSuscripcion'
+        name={ciudadFieldName}
         control={control}
         render={({ field }) => (
           <FormItem>
@@ -595,7 +606,7 @@ export function LocationSelector({ control, form }: LocationSelectorProps) {
             <Select
               onValueChange={field.onChange}
               value={field.value}
-              disabled={!selectedEstado} // Se deshabilita si no hay estado
+              disabled={!selectedEstado}
             >
               <FormControl>
                 <SelectTrigger>
