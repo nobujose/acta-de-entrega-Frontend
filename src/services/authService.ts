@@ -37,6 +37,19 @@ export const loginUser = async (
   }
 };
 
+export const logoutUser = async (): Promise<void> => {
+  try {
+    // Llama al endpoint POST /auth/logout que creamos.
+    // apiClient ya incluye el token de autorización automáticamente.
+    await apiClient.post('/auth/logout');
+  } catch (error) {
+    // Si la llamada falla (ej. por falta de internet), no queremos que el usuario
+    // se quede "atrapado". Simplemente registramos el error en la consola
+    // y el cierre de sesión en el frontend continuará.
+    console.error('No se pudo notificar el logout al servidor:', error);
+  }
+};
+
 // --- REGISTRO (NUEVO CÓDIGO) ---
 interface RegisterResponse {
   message: string;

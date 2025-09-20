@@ -144,7 +144,7 @@ export function LoginForm() {
             className='w-full bg-[#001A70] hover:bg-[#001A70]/90 text-white text-lg py-6'
             disabled={isLoading}
           >
-            {isLoading ? 'Iniciando...' : 'Iniciar Sesión'}
+            {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
           </Button>
         </form>
       </Form>
