@@ -1,4 +1,3 @@
-// src/app/dashboard/repositorio/page.tsx
 'use client';
 
 import { useEffect } from 'react';
@@ -54,7 +53,7 @@ export default function RepositorioLegalPage() {
   const { setTitle } = useHeader();
 
   useEffect(() => {
-    setTitle('Repositorio Legal');
+    setTitle('Repositorio legal');
   }, [setTitle]);
 
   return (

@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { FaWhatsappSquare } from 'react-icons/fa';
+import { IoLogoWhatsapp } from 'react-icons/io';
 
 const faqData = [
   {
@@ -196,12 +197,12 @@ export default function FaqPage() {
       </Accordion>
       {/* Botón flotante de WhatsApp */}
       <a
-        href='https://wa.me/TUNUMERO'
+        href='https://api.whatsapp.com/send?phone=+584125253023&text=Hola,%20necesito%20ayuda%20en%20la%20APP%20de%20Actas%20de%20Entrega'
         target='_blank'
         rel='noopener noreferrer'
         className='fixed bottom-8 right-8 z-50'
       >
-        <FaWhatsappSquare className='h-14 w-14 text-green-500 transition-transform hover:scale-110' />
+        <IoLogoWhatsapp className='h-14 w-14 text-green-500 transition-transform hover:scale-110' />
       </a>
     </div>
   );

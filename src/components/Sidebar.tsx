@@ -24,6 +24,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { slide as Menu } from 'react-burger-menu';
 import { useSidebarStore } from '@/stores/useSidebarStore';
+import { GuardedLink } from './GuardedLink';
 import { logoutUser } from '@/services/authService';
 
 const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
@@ -33,12 +34,12 @@ const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
     { href: '/dashboard', label: 'Inicio', icon: CgHome },
     {
       href: '/dashboard/repositorio',
-      label: 'Repositorio Legal',
+      label: 'Repositorio legal',
       icon: AiOutlineBook,
     },
     {
       href: '/dashboard/revision',
-      label: 'Revisión de acta',
+      label: 'Compliance',
       icon: AiOutlineFileSearch,
     },
     {
@@ -62,7 +63,7 @@ const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
     <div className='flex-1 overflow-y-auto p-2'>
       <nav className='space-y-1 py-2'>
         {navLinks.map((link) => (
-          <Link
+          <GuardedLink
             key={link.href}
             href={link.href}
             title={isCollapsed ? link.label : ''}
@@ -76,7 +77,7 @@ const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
           >
             <link.icon className='h-5 w-5 shrink-0' />
             {!isCollapsed && <span className='truncate'>{link.label}</span>}
-          </Link>
+          </GuardedLink>
         ))}
       </nav>
     </div>
@@ -145,7 +146,7 @@ export default function AppSidebar() {
     <div className='p-2'>
       <div className='border-t border-gray-400' />
       <div className='py-2'>
-        <Link
+        <GuardedLink
           href={aboutLink.href}
           title={isCollapsed ? aboutLink.label : ''}
           className={cn(
@@ -158,7 +159,7 @@ export default function AppSidebar() {
         >
           <aboutLink.icon className='h-5 w-5 shrink-0' />
           {!isCollapsed && <span className='truncate'>{aboutLink.label}</span>}
-        </Link>
+        </GuardedLink>
         <Button
           variant='ghost'
           title={isCollapsed ? 'Cerrar Sesión' : ''}
@@ -173,7 +174,7 @@ export default function AppSidebar() {
         </Button>
       </div>
       <div className='border-t border-gray-400' />
-      <Link
+      <GuardedLink
         href='/dashboard/perfil'
         className={cn(
           'flex items-center gap-3 rounded-md px-3 py-2 mt-2 transition-colors',
@@ -196,7 +197,7 @@ export default function AppSidebar() {
             </p>
           </div>
         )}
-      </Link>
+      </GuardedLink>
     </div>
   );
 
@@ -218,7 +219,7 @@ export default function AppSidebar() {
             <GiHamburgerMenu className='h-4 w-4' />
           </Button>
           {!isDesktopCollapsed && (
-            <Link
+            <GuardedLink
               href='/dashboard'
               className='relative h-[48px] w-[120px]' // Contenedor con posición relativa
             >
@@ -229,7 +230,7 @@ export default function AppSidebar() {
                 className='object-contain'
                 priority
               />
-            </Link>
+            </GuardedLink>
           )}
         </div>
         <SidebarContent isCollapsed={isDesktopCollapsed} />
@@ -248,7 +249,7 @@ export default function AppSidebar() {
     >
       <div className='flex flex-col h-screen bg-white'>
         <div className='flex h-16 shrink-0 items-center justify-center border-b'>
-          <Link
+          <GuardedLink
             href='/dashboard'
             onClick={() => setMobileMenuOpen(false)}
             className='relative h-[48px] w-[120px]' // Contenedor con posición relativa
@@ -260,7 +261,7 @@ export default function AppSidebar() {
               className='object-contain'
               priority
             />
-          </Link>
+          </GuardedLink>
         </div>
         <SidebarContent isCollapsed={false} />
         <SidebarFooter isCollapsed={false} />

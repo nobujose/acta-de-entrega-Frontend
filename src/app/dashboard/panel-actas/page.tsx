@@ -43,7 +43,11 @@ export default function RevisionDeActaPage() {
             asChild
             className='bg-button-gold hover:bg-button-gold/90 text-primary-blue font-semibold whitespace-nowrap w-full md:w-auto'
           >
-            <a href='#' target='_blank' rel='noopener noreferrer'>
+            <a
+              href='https://api.whatsapp.com/send?phone=+584125253023&text=Hola,%20quiero%20adquirir%20Actas%20de%20Entregas%20PRO'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
               Adquirir versión PRO
               <ArrowRight className='ml-2 h-5 w-5' />
             </a>

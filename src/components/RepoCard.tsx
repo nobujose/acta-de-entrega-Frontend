@@ -21,7 +21,7 @@ export function RepoCard({
   priority = false,
 }: RepoCardProps) {
   return (
-    <Card className='flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4'>
+    <Card className='flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4 bg-white'>
       <div className='relative w-full aspect-video mb-4'>
         {isGratis && (
           <div className='absolute top-3 right-3 z-10 rounded-full bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-md'>
