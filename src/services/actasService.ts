@@ -86,11 +86,6 @@ export const createActaSalientePaga = async (
 // --- NUEVO SERVICIO PARA ACTA ENTRANTE (PAGA) ---
 // --- ACTA MÁXIMA AUTORIDAD (YA EXISTENTE) ---
 
-interface ActaResponse {
-  message: string;
-  numeroActa: string;
-  id: string;
-}
 export const createActaEntrante = async (
   data: ActaEntranteData
 ): Promise<ActaResponse> => {

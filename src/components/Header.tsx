@@ -6,7 +6,6 @@ import { GiHamburgerMenu } from 'react-icons/gi';
 import { useSidebarStore } from '@/stores/useSidebarStore';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import Image from 'next/image';
-import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { GuardedLink } from './GuardedLink';
 
