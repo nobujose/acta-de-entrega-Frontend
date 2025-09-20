@@ -1101,7 +1101,7 @@ export function ActaEntranteForm() {
                     disabled={isLoading}
                     className={navButtonStyleBlue}
                   >
-                    {isLoading ? 'Creando Acta...' : 'Crear Acta'}
+                    {isLoading ? 'Creando Acta...' : 'Crear acta'}
                   </Button>
                 )}
               </div>
