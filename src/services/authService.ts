@@ -1,6 +1,7 @@
 // src/services/authService.ts
 import apiClient from '@/lib/axios';
-import { AxiosError } from 'axios';
+// ▼▼▼ 1. AÑADE ESTA LÍNEA QUE FALTABA ▼▼▼
+import axios, { AxiosError } from 'axios';
 import * as z from 'zod';
 
 // Definimos el tipo de los datos que esperamos del backend al hacer login
@@ -33,6 +34,19 @@ export const loginUser = async (
       );
     }
     throw new Error('No se pudo conectar con el servidor.');
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  try {
+    // Llama al endpoint POST /auth/logout que creamos.
+    // apiClient ya incluye el token de autorización automáticamente.
+    await apiClient.post('/auth/logout');
+  } catch (error) {
+    // Si la llamada falla (ej. por falta de internet), no queremos que el usuario
+    // se quede "atrapado". Simplemente registramos el error en la consola
+    // y el cierre de sesión en el frontend continuará.
+    console.error('No se pudo notificar el logout al servidor:', error);
   }
 };
 
@@ -147,6 +161,30 @@ export const resetPassword = async (
     if (error instanceof AxiosError && error.response && error.response.data) {
       throw new Error(
         error.response.data.message || 'Error al actualizar la contraseña.'
+      );
+    }
+    throw new Error('No se pudo conectar con el servidor.');
+  }
+};
+
+// ▼▼▼ 2. FUNCIÓN CORREGIDA ▼▼▼
+/**
+ * Llama al endpoint del backend para eliminar la cuenta del usuario.
+ * @param password - La contraseña actual del usuario para confirmación.
+ */
+export const deleteAccount = async (
+  password: string
+): Promise<{ message: string }> => {
+  try {
+    const response = await apiClient.delete('/user/delete-account', {
+      data: { password }, // Para peticiones DELETE, los datos van en un objeto 'data'
+    });
+    return response.data;
+  } catch (error) {
+    // Ahora 'axios' está definido y la función funciona correctamente
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(
+        error.response.data.message || 'Error al eliminar la cuenta.'
       );
     }
     throw new Error('No se pudo conectar con el servidor.');

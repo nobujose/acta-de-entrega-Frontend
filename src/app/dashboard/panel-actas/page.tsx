@@ -11,7 +11,7 @@ export default function RevisionDeActaPage() {
 
   // Actualiza el título del Header al cargar la página
   useEffect(() => {
-    setTitle('Revisión de Acta');
+    setTitle('Panel de Actas');
   }, [setTitle]);
 
   return (
@@ -28,14 +28,12 @@ export default function RevisionDeActaPage() {
               Gestiona, corrige y perfecciona todas tus actas en un solo lugar.
             </h2>
             <p className='text-base'>
-              Un simple error en un acta de entrega puede resultar en hallazgos
-              y sanciones.
+              El Panel de Actas es tu centro de control exclusivo de la versión
+              Pro.
               <br />
-              Nuestra herramienta Revisión de Acta Pro te guía en una
-              autoevaluación rápida para
-              <br />
-              identificar incumplimientos y asegurar la correcta gestión de tu
-              organismo.
+              Guarda un historial de todos tus documentos, revisa su estado,
+              edita la información y genera el acta final para enviarla por
+              correo o compartirla con un enlace seguro.
             </p>
           </div>
 
@@ -45,7 +43,11 @@ export default function RevisionDeActaPage() {
             asChild
             className='bg-button-gold hover:bg-button-gold/90 text-primary-blue font-semibold whitespace-nowrap w-full md:w-auto'
           >
-            <a href='#' target='_blank' rel='noopener noreferrer'>
+            <a
+              href='https://api.whatsapp.com/send?phone=+584125253023&text=Hola,%20quiero%20adquirir%20Actas%20de%20Entregas%20PRO'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
               Adquirir versión PRO
               <ArrowRight className='ml-2 h-5 w-5' />
             </a>
@@ -57,7 +59,9 @@ export default function RevisionDeActaPage() {
 
         {/* Lista de características */}
         <div>
-          <p className='text-base font-semibold'>Con la versión Pro podrás:</p>
+          <p className='text-base font-semibold'>
+            Con el Panel de Actas Pro podrás:
+          </p>
           <ul className='list-disc list-inside mt-2 space-y-1 text-base'>
             <li>
               Visualizar y editar todas tus actas guardadas en cualquier

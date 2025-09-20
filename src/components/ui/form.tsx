@@ -97,7 +97,7 @@ function FormLabel({
     <Label
       data-slot='form-label'
       data-error={!!error}
-      className={cn('', className)}
+      className={cn('data-[error=true]:text-destructive', className)}
       htmlFor={formItemId}
       {...props}
     />
@@ -146,12 +146,16 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
 
   return (
     <p
-      data-slot='form-message'
       id={formMessageId}
-      className={cn('text-sm font-medium text-red-600', className)}
+      className={cn(
+        'text-sm font-medium', // Estilo base
+        body ? 'text-red-600' : 'invisible', // Oculta si no hay texto
+        className
+      )}
       {...props}
     >
-      {body}
+      {/* Añade un guion como relleno si está vacío para garantizar que ocupe espacio */}
+      {body || '-'}
     </p>
   );
 }

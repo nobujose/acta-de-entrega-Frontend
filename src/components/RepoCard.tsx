@@ -9,6 +9,7 @@ interface RepoCardProps {
   buttonText: string;
   linkHref: string;
   isGratis?: boolean;
+  priority?: boolean;
 }
 
 export function RepoCard({
@@ -17,15 +18,11 @@ export function RepoCard({
   buttonText,
   linkHref,
   isGratis = false,
+  priority = false,
 }: RepoCardProps) {
   return (
-    <Card className='flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4'>
-      {/* Clases responsivas:
-          - h-[160px]: Altura base para móviles.
-          - sm:h-[200px]: Altura para pantallas pequeñas (tablets en vertical).
-          - md:h-[240px]: Altura para pantallas medianas en adelante (tablets en horizontal y escritorio).
-      */}
-      <div className='relative w-full h-[140px] sm:h-[200px] md:h-[330px] mb-4'>
+    <Card className='flex flex-col overflow-hidden rounded-xl border-gray-200 shadow-md transition-all hover:shadow-lg p-4 bg-white'>
+      <div className='relative w-full aspect-video mb-4'>
         {isGratis && (
           <div className='absolute top-3 right-3 z-10 rounded-full bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-md'>
             GRATIS
@@ -34,9 +31,11 @@ export function RepoCard({
         <Image
           src={imageUrl}
           alt={buttonText}
-          layout='fill'
-          objectFit='cover'
-          className='rounded-xl'
+          fill
+          className='rounded-xl object-cover'
+          priority={priority}
+          // ▼▼▼ AQUÍ ESTÁ LA LÍNEA AÑADIDA ▼▼▼
+          sizes='(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw'
         />
       </div>
 
