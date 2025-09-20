@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import Card from '@/components/Card';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import {
   FaFacebookSquare,
   FaInstagramSquare,
@@ -21,7 +22,7 @@ export default function DashboardPage() {
   const { setTitle } = useHeader();
 
   useEffect(() => {
-    setTitle('Menú Principal');
+    setTitle('Menú principal');
   }, [setTitle]);
 
   return (
@@ -92,15 +93,13 @@ export default function DashboardPage() {
             // y vuelve a su tamaño natural en escritorio.
             className='bg-button-gold hover:bg-button-gold/90 text-primary-blue font-semibold whitespace-nowrap w-full md:w-auto'
           >
-            <a
-              href='#'
-              target='_blank'
-              rel='noopener noreferrer'
+            <Link
+              href='/dashboard/conocenos'
               className='flex items-center gap-2'
             >
               Más información
               <FaArrowRight className='ml-2 h-5 w-5' />
-            </a>
+            </Link>
           </Button>
         </div>
 

@@ -8,6 +8,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery';
 import Image from 'next/image';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { GuardedLink } from './GuardedLink';
 
 export default function Header() {
   const { title } = useHeader(); // Usar el hook para obtener el título del contexto
@@ -29,14 +30,14 @@ export default function Header() {
         </Button>
 
         {isDesktop && isDesktopCollapsed && (
-          <Link href='/dashboard' className='ml-4 flex items-center'>
+          <GuardedLink href='/dashboard' className='ml-4 flex items-center'>
             <Image
               src='/logo de universitas legal.svg'
               alt='Universitas Legal Logo'
               width={120}
               height={75}
             />
-          </Link>
+          </GuardedLink>
         )}
       </div>
 

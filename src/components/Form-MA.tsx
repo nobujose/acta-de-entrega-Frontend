@@ -45,8 +45,10 @@ import {
   steps,
   anexosAdicionalesTitulos,
   dynamicStepContent,
-  DynamicContent, // Importamos el tipo también
+  DynamicContent,
 } from '@/lib/acta-ma-constants';
+import { useFormDirtyStore } from '@/stores/useFormDirtyStore';
+import { useFormState } from 'react-hook-form';
 
 type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
 type DynamicStepKey = keyof DynamicContent;
@@ -165,7 +167,20 @@ export function ActaMaximaAutoridadForm() {
 
   const { getValues, watch } = form;
 
-  const selectedAnexo = watch('Anexo_VII') as DynamicStepKey; // antes era 'anexos'
+  const selectedAnexo = watch('Anexo_VII') as DynamicStepKey;
+
+  const { setIsDirty } = useFormDirtyStore();
+  const { isDirty } = useFormState({ control: form.control });
+
+  // useEffect para comunicar el estado del formulario al store
+  useEffect(() => {
+    setIsDirty(isDirty);
+
+    // Función de limpieza: se ejecuta cuando el componente se desmonta
+    return () => {
+      setIsDirty(false);
+    };
+  }, [isDirty, setIsDirty]);
 
   const onSubmit = async (data: FormData) => {
     console.log('DATOS FINALES A ENVIAR:', data);
@@ -247,6 +262,7 @@ export function ActaMaximaAutoridadForm() {
     placeholder,
     type = 'text',
     maxLength,
+    validationType,
   }: {
     name: keyof FormData;
     label: string;
@@ -254,29 +270,43 @@ export function ActaMaximaAutoridadForm() {
     placeholder?: string;
     type?: string;
     maxLength?: number;
+    validationType?: 'textOnly';
   }) => (
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
-          {/* Se renderiza el subtítulo/ejemplo si existe, en cursiva */}
-          {subtitle && (
-            <FormDescription className='italic'>{subtitle}</FormDescription>
-          )}
-          <FormControl>
-            <Input
-              type={type}
-              placeholder={placeholder}
-              {...field}
-              maxLength={maxLength}
-              disabled={isLoading}
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        // Creamos un manejador de cambio personalizado
+        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          if (validationType === 'textOnly') {
+            // Expresión regular que permite letras (incluyendo acentos y ñ) y espacios
+            const regex = /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g;
+            e.target.value = e.target.value.replace(regex, '');
+          }
+          // Pasamos el evento (con el valor ya filtrado) al controlador del formulario
+          field.onChange(e);
+        };
+
+        return (
+          <FormItem>
+            <FormLabel>{label}</FormLabel>
+            {subtitle && (
+              <FormDescription className='italic'>{subtitle}</FormDescription>
+            )}
+            <FormControl>
+              <Input
+                type={type}
+                placeholder={placeholder}
+                {...field}
+                onChange={handleChange} // Usamos nuestro manejador personalizado
+                maxLength={maxLength}
+                disabled={isLoading}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        );
+      }}
     />
   );
 
@@ -303,7 +333,6 @@ export function ActaMaximaAutoridadForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
-            {/* ▼▼▼ 3. AÑADE TU COMPONENTE DE ALERTA AQUÍ ▼▼▼ */}
             <SuccessAlertDialog
               isOpen={showSuccessDialog}
               onClose={() => setShowSuccessDialog(false)}
@@ -315,7 +344,6 @@ export function ActaMaximaAutoridadForm() {
                 router.push('/dashboard');
               }}
             />
-            {/* ▲▲▲ FIN ▲▲▲ */}
 
             {currentStep === 0 && (
               <div className='space-y-8'>
@@ -366,12 +394,14 @@ export function ActaMaximaAutoridadForm() {
                       label='Denominación del cargo'
                       subtitle='Ej: Presidencia, dirección, coordinación'
                       maxLength={50}
+                      validationType='textOnly'
                     />
                     <FormFieldWithExtras
                       name='nombreOrgano'
                       label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública'
                       subtitle='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
                       maxLength={50}
+                      validationType='textOnly'
                     />
                   </div>
                 </div>
@@ -544,6 +574,7 @@ export function ActaMaximaAutoridadForm() {
                     label='Nombre'
                     subtitle='Ej: Pedro Jose Rodríguez Hernández'
                     maxLength={50}
+                    validationType='textOnly'
                   />
                   <FormField
                     control={form.control}
@@ -572,6 +603,7 @@ export function ActaMaximaAutoridadForm() {
                     label='Profesión'
                     subtitle='Ej: Contador, Ingeniero, Abogado'
                     maxLength={50}
+                    validationType='textOnly'
                   />
                   <FormFieldWithExtras
                     name='designacionServidorEntrante'
@@ -587,6 +619,7 @@ export function ActaMaximaAutoridadForm() {
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
                     maxLength={50}
+                    validationType='textOnly'
                   />
                   <FormField
                     control={form.control}
@@ -615,6 +648,7 @@ export function ActaMaximaAutoridadForm() {
                     label='Profesión'
                     subtitle='Ej: Contador, Ingeniero, Abogado'
                     maxLength={50}
+                    validationType='textOnly'
                   />
                 </div>
                 <h3 className='text-lg font-semibold border-b pb-2'>
@@ -628,6 +662,7 @@ export function ActaMaximaAutoridadForm() {
                       label='Nombre'
                       subtitle='Ej: Pedro José Rodríguez Hernández'
                       maxLength={50}
+                      validationType='textOnly'
                     />
                     <FormField
                       control={form.control}
@@ -656,6 +691,7 @@ export function ActaMaximaAutoridadForm() {
                       label='Profesión'
                       subtitle='Ej: Contador, Ingeniero, Abogado'
                       maxLength={50}
+                      validationType='textOnly'
                     />
                   </div>
                   <div className='space-y-4 p-4 border rounded-md'>
@@ -665,6 +701,7 @@ export function ActaMaximaAutoridadForm() {
                       label='Nombre'
                       subtitle='Ej: Pedro José Rodríguez Hernández'
                       maxLength={50}
+                      validationType='textOnly'
                     />
                     <FormField
                       control={form.control}
@@ -693,6 +730,7 @@ export function ActaMaximaAutoridadForm() {
                       label='Profesión'
                       subtitle='Ej: Contador, Ingeniero, Abogado'
                       maxLength={50}
+                      validationType='textOnly'
                     />
                   </div>
                 </div>
@@ -705,6 +743,7 @@ export function ActaMaximaAutoridadForm() {
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
                     maxLength={50}
+                    validationType='textOnly'
                   />
                   <FormField
                     control={form.control}
