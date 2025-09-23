@@ -2,14 +2,18 @@
 import { create } from 'zustand';
 import { ReactNode } from 'react';
 
-// Definimos los tipos de modales que puede haber
-export type ModalType = 'logoutConfirmation' | 'userProfileOptions';
+// src/stores/useModalStore.ts
+export type ModalType =
+  | 'logoutConfirmation'
+  | 'userProfileOptions'
+  | 'sessionExpiration';
 
 interface ModalPayload {
   title: string;
   description?: React.ReactNode;
   content?: ReactNode;
   onConfirm: () => void;
+  onCancel?: () => void; // <-- AÑADE ESTA LÍNEA
 }
 
 interface ModalStore {

@@ -100,7 +100,7 @@ export function EditProfileForm() {
   return (
     <div className='space-y-4'>
       <div>
-        <h3 className='text-lg font-medium text-[#001A70]'>Editar Perfil</h3>
+        <h3 className='text-lg font-medium text-[#001A70]'>Editar perfil</h3>
         <p className='text-sm text-muted-foreground'>
           Actualiza tu información personal y profesional.
         </p>
@@ -140,7 +140,7 @@ export function EditProfileForm() {
               control={form.control}
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número de Teléfono</FormLabel>
+                  <FormLabel>Número de teléfono</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={!isEditing} />
                   </FormControl>

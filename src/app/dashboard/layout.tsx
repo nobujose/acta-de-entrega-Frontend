@@ -4,6 +4,7 @@ import { HeaderProvider } from '@/context/HeaderContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PopupManager } from '@/components/PopupManager';
 import { LogoutConfirmationDialog } from '@/components/LogoutConfirmationDialog';
+import { SessionManager } from '@/components/SessionManager'; // <-- Importa el nuevo componente
 
 export default function DashboardLayout({
   children,
@@ -27,6 +28,7 @@ export default function DashboardLayout({
         </div>
         <LogoutConfirmationDialog />
         <PopupManager />
+        <SessionManager /> {/* <-- Añade el gestor de sesión aquí */}
       </HeaderProvider>
     </ProtectedRoute>
   );

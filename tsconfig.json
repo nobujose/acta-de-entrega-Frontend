@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "jest.setup.mjs"
+    "jest.setup.mjs",
+    "src/components/.SessionExpirationAlert.tsx"
   ],
   "exclude": ["node_modules"]
 }
