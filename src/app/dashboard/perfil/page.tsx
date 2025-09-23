@@ -40,42 +40,42 @@ export default function PerfilPage() {
   return (
     <div className='max-w-4xl mx-auto space-y-6'>
       {/* Botones que actúan como pestañas */}
-      <div className='p-1 bg-gray-200 rounded-lg flex items-center space-x-1'>
+      <div className='p-1 bg-gray-200 rounded-lg flex flex-col sm:flex-row items-center gap-1'>
         <Button
           variant='ghost'
           onClick={() => setActiveTab('edit')}
           className={cn(
-            'flex-1 transition-all',
+            'w-full sm:flex-1 transition-all', // Ocupa todo el ancho en móvil
             activeTab === 'edit'
               ? 'bg-white shadow text-[#001A70] font-semibold'
               : 'hover:bg-gray-300'
           )}
         >
-          Editar Perfil
+          Editar perfil
         </Button>
         <Button
           variant='ghost'
           onClick={() => setActiveTab('password')}
           className={cn(
-            'flex-1 transition-all',
+            'w-full sm:flex-1 transition-all',
             activeTab === 'password'
               ? 'bg-white shadow text-[#001A70] font-semibold'
               : 'hover:bg-gray-300'
           )}
         >
-          Cambiar Contraseña
+          Cambiar contraseña
         </Button>
         <Button
           variant='ghost'
           onClick={() => setActiveTab('delete')}
           className={cn(
-            'flex-1 transition-all',
+            'w-full sm:flex-1 transition-all',
             activeTab === 'delete'
               ? 'bg-white shadow text-red-600 font-semibold'
               : 'hover:bg-gray-300'
           )}
         >
-          Eliminar Cuenta
+          Eliminar cuenta
         </Button>
       </div>
 
