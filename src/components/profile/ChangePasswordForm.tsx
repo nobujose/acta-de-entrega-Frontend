@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // 1. Importamos useRouter para la redirección
 import apiClient from '@/lib/axios';
 import axios from 'axios';
-import { Eye, EyeOff } from 'lucide-react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { SuccessAlertDialog } from '../SuccessAlertDialog'; // 2. Importamos nuestra alerta reutilizable
 
 // El schema de validación con la nueva regla
@@ -132,9 +132,9 @@ export function ChangePasswordForm() {
                         }
                       >
                         {showCurrentPassword ? (
-                          <EyeOff className='h-4 w-4' />
+                          <FaEyeSlash className='h-4 w-4' />
                         ) : (
-                          <Eye className='h-4 w-4' />
+                          <FaEye className='h-4 w-4' />
                         )}
                       </Button>
                     </div>
@@ -163,9 +163,9 @@ export function ChangePasswordForm() {
                         onClick={() => setShowNewPassword(!showNewPassword)}
                       >
                         {showNewPassword ? (
-                          <EyeOff className='h-4 w-4' />
+                          <FaEyeSlash className='h-4 w-4' />
                         ) : (
-                          <Eye className='h-4 w-4' />
+                          <FaEye className='h-4 w-4' />
                         )}
                       </Button>
                     </div>
@@ -196,9 +196,9 @@ export function ChangePasswordForm() {
                         }
                       >
                         {showConfirmPassword ? (
-                          <EyeOff className='h-4 w-4' />
+                          <FaEyeSlash className='h-4 w-4' />
                         ) : (
-                          <Eye className='h-4 w-4' />
+                          <FaEye className='h-4 w-4' />
                         )}
                       </Button>
                     </div>

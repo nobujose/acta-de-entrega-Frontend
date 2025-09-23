@@ -1,7 +1,7 @@
 // src/app/recuperar-contraseña/page.tsx
 import { ForgotPasswordForm } from '@/components/ForgotPasswordForm';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function ForgotPasswordPage() {
   return (
@@ -11,7 +11,7 @@ export default function ForgotPasswordPage() {
         href='/login'
         className='absolute top-8 left-8 flex items-center text-gray-600 hover:text-gray-800'
       >
-        <ArrowLeft className='mr-2 h-4 w-4' />
+        <FaArrowLeft className='mr-2 h-4 w-4' />
         Volver al inicio de sesión
       </Link>
 
