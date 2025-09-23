@@ -167,7 +167,7 @@ export const resetPassword = async (
   }
 };
 
-// ▼▼▼ 2. FUNCIÓN CORREGIDA ▼▼▼
+// ▼▼▼ 2. FUNCIÓN deleteAccount CORREGIDA ▼▼▼
 /**
  * Llama al endpoint del backend para eliminar la cuenta del usuario.
  * @param password - La contraseña actual del usuario para confirmación.

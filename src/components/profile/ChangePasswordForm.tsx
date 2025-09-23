@@ -96,7 +96,7 @@ export function ChangePasswordForm() {
   return (
     <>
       <div className='space-y-4 max-w-sm'>
-        <h3 className='text-lg font-medium'>Cambiar Contraseña</h3>
+        <h3 className='text-lg font-medium'>Cambiar contraseña</h3>
         <p className='text-sm text-muted-foreground'>
           Asegúrate de que tu nueva contraseña sea segura y diferente a las
           anteriores.
@@ -115,7 +115,7 @@ export function ChangePasswordForm() {
               name='currentPassword'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contraseña Actual</FormLabel>
+                  <FormLabel>Contraseña actual</FormLabel>
                   <FormControl>
                     <div className='relative'>
                       <Input
@@ -148,7 +148,7 @@ export function ChangePasswordForm() {
               name='newPassword'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nueva Contraseña</FormLabel>
+                  <FormLabel>Nueva contraseña</FormLabel>
                   <FormControl>
                     <div className='relative'>
                       <Input
@@ -179,7 +179,7 @@ export function ChangePasswordForm() {
               name='confirmPassword'
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirmar Nueva Contraseña</FormLabel>
+                  <FormLabel>Confirmar nueva contraseña</FormLabel>
                   <FormControl>
                     <div className='relative'>
                       <Input
@@ -212,7 +212,7 @@ export function ChangePasswordForm() {
               disabled={isLoading}
               className='bg-[#001A70] hover:bg-[#001A70]/90 text-white'
             >
-              {isLoading ? 'Actualizando...' : 'Actualizar Contraseña'}
+              {isLoading ? 'Actualizando...' : 'Actualizar contraseña'}
             </Button>
           </form>
         </Form>
