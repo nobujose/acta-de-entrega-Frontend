@@ -23,7 +23,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { slide as Menu } from 'react-burger-menu';
 import { useSidebarStore } from '@/stores/useSidebarStore';
-import { GuardedLink } from './GuardedLink';
+import { GuardedButton } from './GuardedButton';
 import { logoutUser } from '@/services/authService';
 
 const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
@@ -60,23 +60,24 @@ const SidebarContent = ({ isCollapsed = false }: { isCollapsed?: boolean }) => {
 
   return (
     <div className='flex-1 overflow-y-auto p-2'>
-      <nav className='space-y-1 py-2'>
+      <nav className='space-y-1'>
         {navLinks.map((link) => (
-          <GuardedLink
+          <GuardedButton
             key={link.href}
             href={link.href}
+            variant='ghost'
             title={isCollapsed ? link.label : ''}
             className={cn(
-              'flex items-center gap-3 py-2 w-full transition-all duration-200 rounded-md',
-              isCollapsed ? 'justify-center px-2' : 'px-4',
-              pathname === link.href
-                ? 'bg-body-dashboard text-black font-semibold'
-                : 'text-gray-700 hover:bg-gray-200'
+              'w-full justify-start px-4 h-auto py-2 text-base',
+              'text-gray-700 hover:bg-gray-200 hover:rounded-lg',
+              isCollapsed && 'justify-center px-2',
+              pathname === link.href &&
+                'bg-body-dashboard text-black font-semibold'
             )}
           >
             <link.icon className='h-5 w-5 shrink-0' />
             {!isCollapsed && <span className='truncate'>{link.label}</span>}
-          </GuardedLink>
+          </GuardedButton>
         ))}
       </nav>
     </div>
@@ -89,11 +90,10 @@ export default function AppSidebar() {
   const {
     isMobileMenuOpen,
     setMobileMenuOpen,
-    isDesktopCollapsed, // <-- Nuevo estado
-    toggleDesktopCollapse, // <-- Nueva función
+    isDesktopCollapsed,
+    toggleDesktopCollapse,
   } = useSidebarStore();
 
-  // Mover la lógica que necesita el Footer aquí para que esté disponible
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuthStore();
@@ -115,15 +115,6 @@ export default function AppSidebar() {
         </>
       ),
       onConfirm: async () => {
-        // 1. Cierra la sesión en el cliente (navegador) INMEDIATAMENTE.
-
-        // 2. Redirige al usuario al login INMEDIATAMENTE.
-
-        // 3. Notifica al servidor en segundo plano ("Fire-and-Forget").
-        //    Si esta llamada falla, no afecta la experiencia del usuario.
-
-        // 4. Luego, cerramos la sesión en el frontend como antes
-
         router.push('/login');
         await logoutUser();
         logout();
@@ -142,61 +133,86 @@ export default function AppSidebar() {
   }: {
     isCollapsed?: boolean;
   }) => (
-    <div className='p-2'>
-      <div className='border-t border-gray-400' />
-      <div className='py-2'>
-        <GuardedLink
-          href={aboutLink.href}
-          title={isCollapsed ? aboutLink.label : ''}
-          className={cn(
-            'flex items-center gap-3 py-2 w-full transition-all duration-200 rounded-md',
-            isCollapsed ? 'justify-center px-2' : 'px-4',
-            pathname === aboutLink.href
-              ? 'bg-body-dashboard text-black font-semibold'
-              : 'text-gray-700 hover:bg-gray-200'
-          )}
-        >
-          <aboutLink.icon className='h-5 w-5 shrink-0' />
-          {!isCollapsed && <span className='truncate'>{aboutLink.label}</span>}
-        </GuardedLink>
-        <Button
-          variant='ghost'
-          title={isCollapsed ? 'Cerrar Sesión' : ''}
-          onClick={handleLogoutClick}
-          className={cn(
-            'flex items-center gap-3 py-2 w-full transition-all duration-200 text-red-600 hover:bg-red-100 hover:text-red-700 rounded-md',
-            isCollapsed ? 'px-2' : 'px-4 justify-start'
-          )}
-        >
-          <AiOutlineLogout className='h-5 w-5 shrink-0' />
-          {!isCollapsed && <span className='truncate'>Cerrar sesión</span>}
-        </Button>
+    <div className='mt-auto'>
+      <div className='p-2'>
+        <div className='border-t border-gray-300' />
+
+        <div className='w-full space-y-1 py-2'>
+          {/* Estos botones son nuestro modelo a seguir: clases de layout en el botón mismo */}
+          <GuardedButton
+            href={aboutLink.href}
+            variant='ghost'
+            title={isCollapsed ? aboutLink.label : ''}
+            className={cn(
+              'w-full justify-start px-4 h-auto py-2 text-base text-gray-700 hover:bg-gray-200 hover:rounded-lg',
+              pathname === aboutLink.href &&
+                'bg-body-dashboard text-black font-semibold',
+              isCollapsed && 'justify-center px-2'
+            )}
+          >
+            <aboutLink.icon className='h-5 w-5 shrink-0' />
+            {!isCollapsed && (
+              <span className='truncate'>{aboutLink.label}</span>
+            )}
+          </GuardedButton>
+          <Button
+            variant='ghost'
+            title={isCollapsed ? 'Cerrar Sesión' : ''}
+            onClick={handleLogoutClick}
+            className={cn(
+              'w-full justify-start px-4 h-auto py-2 text-base text-red-600 hover:bg-red-100 hover:text-red-700 hover:rounded-lg',
+              isCollapsed && 'justify-center px-2'
+            )}
+          >
+            <AiOutlineLogout className='h-5 w-5 shrink-0' />
+            {!isCollapsed && <span className='truncate'>Cerrar sesión</span>}
+          </Button>
+        </div>
+
+        <div className='border-t border-gray-300' />
+
+        <div className={cn('pt-2')}>
+          <GuardedButton
+            href='/dashboard/perfil'
+            variant='ghost'
+            className={cn(
+              'w-full h-auto justify-start py-2 group',
+              // Aplicamos las clases de layout DIRECTAMENTE al botón
+              // solo cuando NO está colapsado, para imitar a los otros botones.
+              !isCollapsed && 'hover:bg-gray-200 flex items-center gap-3 px-2',
+              isCollapsed && 'justify-center px-2'
+            )}
+          >
+            {isCollapsed ? (
+              <Avatar className='h-8 w-8 shrink-0'>
+                <AvatarFallback className='bg-primary-blue text-white text-sm'>
+                  {user ? getInitials(user.name, user.apellido) : ''}
+                </AvatarFallback>
+              </Avatar>
+            ) : (
+              // Eliminamos el <div> intermedio y usamos un Fragmento de React.
+              // Ahora el Avatar y el div de texto son hijos directos del botón.
+              <>
+                <Avatar className='h-8 w-8 shrink-0'>
+                  <AvatarFallback className='bg-primary-blue text-white text-sm'>
+                    {user ? getInitials(user.name, user.apellido) : ''}
+                  </AvatarFallback>
+                </Avatar>
+                <div className='min-w-0 flex-1 text-left'>
+                  <p className='truncate text-sm font-medium text-gray-800 group-hover:text-black'>
+                    {user
+                      ? `${user.name} ${user.apellido || ''}`.trim()
+                      : 'Usuario'}
+                  </p>
+                  <p className='truncate text-xs text-gray-600'>
+                    {user?.email || 'email@ejemplo.com'}
+                  </p>
+                </div>
+              </>
+            )}
+          </GuardedButton>
+        </div>
       </div>
-      <div className='border-t border-gray-400' />
-      <GuardedLink
-        href='/dashboard/perfil'
-        className={cn(
-          'flex items-center gap-3 rounded-md px-3 py-2 mt-2 transition-colors',
-          isCollapsed && 'justify-center',
-          !isCollapsed && 'hover:bg-gray-200 cursor-pointer group'
-        )}
-      >
-        <Avatar className='h-8 w-8 shrink-0'>
-          <AvatarFallback className='bg-primary-blue text-white text-sm'>
-            {user ? getInitials(user.name, user.apellido) : ''}
-          </AvatarFallback>
-        </Avatar>
-        {!isCollapsed && (
-          <div className='min-w-0 flex-1'>
-            <p className='truncate text-sm font-medium text-gray-800 group-hover:text-black'>
-              {user ? `${user.name} ${user.apellido || ''}`.trim() : 'Usuario'}
-            </p>
-            <p className='truncate text-xs text-gray-600'>
-              {user?.email || 'email@ejemplo.com'}
-            </p>
-          </div>
-        )}
-      </GuardedLink>
     </div>
   );
 
@@ -218,7 +234,7 @@ export default function AppSidebar() {
             <GiHamburgerMenu className='h-4 w-4' />
           </Button>
           {!isDesktopCollapsed && (
-            <GuardedLink
+            <GuardedButton
               href='/dashboard'
               className='relative h-[48px] w-[120px]' // Contenedor con posición relativa
             >
@@ -229,7 +245,7 @@ export default function AppSidebar() {
                 className='object-contain'
                 priority
               />
-            </GuardedLink>
+            </GuardedButton>
           )}
         </div>
         <SidebarContent isCollapsed={isDesktopCollapsed} />
@@ -248,7 +264,7 @@ export default function AppSidebar() {
     >
       <div className='flex flex-col h-screen bg-white'>
         <div className='flex h-16 shrink-0 items-center justify-center border-b'>
-          <GuardedLink
+          <GuardedButton
             href='/dashboard'
             onClick={() => setMobileMenuOpen(false)}
             className='relative h-[48px] w-[120px]' // Contenedor con posición relativa
@@ -260,7 +276,7 @@ export default function AppSidebar() {
               className='object-contain'
               priority
             />
-          </GuardedLink>
+          </GuardedButton>
         </div>
         <SidebarContent isCollapsed={false} />
         <SidebarFooter isCollapsed={false} />

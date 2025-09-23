@@ -7,7 +7,7 @@ import { useSidebarStore } from '@/stores/useSidebarStore';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { GuardedLink } from './GuardedLink';
+import { GuardedButton } from './GuardedButton';
 
 export default function Header() {
   const { title } = useHeader(); // Usar el hook para obtener el título del contexto
@@ -29,14 +29,14 @@ export default function Header() {
         </Button>
 
         {isDesktop && isDesktopCollapsed && (
-          <GuardedLink href='/dashboard' className='ml-4 flex items-center'>
+          <GuardedButton href='/dashboard' className='ml-4 flex items-center'>
             <Image
               src='/logo de universitas legal.svg'
               alt='Universitas Legal Logo'
               width={120}
               height={75}
             />
-          </GuardedLink>
+          </GuardedButton>
         )}
       </div>
 
