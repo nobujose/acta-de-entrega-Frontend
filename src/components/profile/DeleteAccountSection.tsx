@@ -3,7 +3,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// ▼▼▼ 1. IMPORTAMOS la función 'buttonVariants' ▼▼▼
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -26,8 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { deleteAccount } from '@/services/authService';
 import { useAuthStore } from '@/stores/useAuthStore';
-import axios from 'axios';
-import { toast } from 'sonner';
+import axios from 'axios'; // 1. Importamos axios
 
 export function DeleteAccountSection() {
   const router = useRouter();
@@ -38,39 +36,38 @@ export function DeleteAccountSection() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // 2. Creamos un estado para el mensaje de error
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const finalConfirmationPhrase = 'eliminar mi cuenta de actas';
 
-  // ▼▼▼ REEMPLAZA ESTA FUNCIÓN ▼▼▼
   const handleFinalDelete = async () => {
     setIsLoading(true);
+    setErrorMessage(null); // Limpiamos errores previos
     try {
       const response = await deleteAccount(password);
-
-      // Mostramos un mensaje de éxito. Usaremos un alert simple para asegurar
-      // que el usuario lo vea antes de que ocurra la redirección.
       localStorage.setItem('flashMessage', response.message);
-
-      // 2. Deslogueamos al usuario y lo redirigimos
       logout();
       router.push('/login');
     } catch (error) {
+      // 3. Corregimos el catch
       if (axios.isAxiosError(error) && error.response?.data?.message) {
-        toast.error(error.response.data.message);
+        setErrorMessage(error.response.data.message);
       } else if (error instanceof Error) {
-        toast.error(error.message);
+        setErrorMessage(error.message);
       } else {
-        toast.error('Ocurrió un error inesperado.');
+        setErrorMessage('Ocurrió un error inesperado.');
       }
-      setIsLoading(false); // Solo paramos la carga si hay un error
+    } finally {
+      setIsLoading(false);
+      // No cerramos el popup final en caso de error, para que el usuario pueda ver el mensaje
     }
-    // No necesitamos un 'finally' porque el componente se desmontará tras el logout.
   };
-  // ▲▲▲ FIN DE LA FUNCIÓN MODIFICADA ▲▲▲
 
   return (
     <div className='space-y-4 rounded-lg border border-red-500 p-4'>
       <div>
-        <h3 className='text-lg font-medium text-red-600'>Eliminar Cuenta</h3>
+        <h3 className='text-lg font-medium text-red-600'>Eliminar cuenta</h3>
         <p className='text-sm text-muted-foreground mt-2'>
           Esta acción es permanente y no se puede deshacer. Toda tu información
           y actas asociadas serán eliminadas de nuestra plataforma.
@@ -79,7 +76,7 @@ export function DeleteAccountSection() {
       <Button
         variant='destructive'
         onClick={() => setIsFirstConfirmOpen(true)}
-        className='bg-red-600 hover:bg-red-700 text-white'
+        className='bg-red-600 hover:bg-red-700 text-white w-full sm:w-auto whitespace-normal h-auto text-center '
       >
         Sí, entiendo, proceder a eliminar mi cuenta
       </Button>
@@ -89,7 +86,7 @@ export function DeleteAccountSection() {
         open={isFirstConfirmOpen}
         onOpenChange={setIsFirstConfirmOpen}
       >
-        <AlertDialogContent className='bg-white '>
+        <AlertDialogContent className='bg-white'>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás absolutamente seguro?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -99,7 +96,6 @@ export function DeleteAccountSection() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            {/* ▼▼▼ 2. CORREGIMOS EL BOTÓN AQUÍ ▼▼▼ */}
             <AlertDialogAction
               className='bg-red-600 hover:bg-red-700 text-white'
               onClick={() => {
@@ -118,19 +114,25 @@ export function DeleteAccountSection() {
         <DialogContent className='bg-white'>
           <DialogHeader>
             <DialogTitle>Confirmación Final</DialogTitle>
-            {/* ▼▼▼ AQUÍ ESTÁ EL CAMBIO PARA PONER LA FRASE EN NEGRITA ▼▼▼ */}
             <DialogDescription>
               Para continuar, por favor, escribe la frase exacta{' '}
               <strong className='text-foreground'>
                 {finalConfirmationPhrase}
               </strong>{' '}
+              y tu contraseña actual.
             </DialogDescription>
           </DialogHeader>
           <div className='space-y-4 py-4'>
+            {/* 4. Mostramos el mensaje de error aquí */}
+            {errorMessage && (
+              <p className='text-sm font-medium text-red-600'>{errorMessage}</p>
+            )}
+
             <div className='space-y-2'>
               <Label htmlFor='confirmationText'>Frase de confirmación</Label>
               <Input
                 id='confirmationText'
+                name='confirmationText'
                 value={confirmationText}
                 onChange={(e) => setConfirmationText(e.target.value)}
               />
@@ -139,6 +141,7 @@ export function DeleteAccountSection() {
               <Label htmlFor='password'>Contraseña actual</Label>
               <Input
                 id='password'
+                name='password'
                 type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -147,7 +150,7 @@ export function DeleteAccountSection() {
           </div>
           <Button
             variant='destructive'
-            className='w-full  bg-red-600 hover:bg-red-700 text-white'
+            className='w-full bg-red-600 hover:bg-red-700 text-white'
             onClick={handleFinalDelete}
             disabled={
               isLoading ||
