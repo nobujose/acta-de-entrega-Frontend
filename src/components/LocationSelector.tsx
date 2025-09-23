@@ -74,8 +74,6 @@ const venezuelaData = {
     'El Limón',
     'Ocumare de la Costa',
     'San Casimiro',
-    'Palo Negro',
-    'San Casimiro',
     'San Sebastián de los Reyes',
     'Turmero',
     'Las Tejerías',

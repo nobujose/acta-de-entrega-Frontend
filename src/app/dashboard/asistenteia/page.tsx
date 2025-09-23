@@ -4,7 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SendHorizonal } from 'lucide-react';
+import { IoSend } from 'react-icons/io5';
 import apiClient from '@/lib/axios';
 import { useHeader } from '@/context/HeaderContext';
 import { cn } from '@/lib/utils';
@@ -168,7 +168,7 @@ export default function AsistenteVirtualPage() {
             disabled={isLoading || !input.trim()}
             className='bg-primary-blue hover:bg-primary-blue/90 rounded-full w-10 h-10 p-2'
           >
-            <SendHorizonal className='text-white' />
+            <IoSend className='text-white' />
           </Button>
         </form>
       </div>

@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { loginUser } from '@/services/authService';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -123,7 +123,11 @@ export function LoginForm() {
                       onClick={() => setShowPassword(!showPassword)}
                       className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400'
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? (
+                        <FaEyeSlash size={20} />
+                      ) : (
+                        <FaEye size={20} />
+                      )}
                     </button>
                   </div>
                 </FormControl>
