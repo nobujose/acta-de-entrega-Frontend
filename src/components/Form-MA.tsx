@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -41,6 +40,7 @@ import { SiNoQuestion } from './SiNoQuestion';
 import { SuccessAlertDialog } from './SuccessAlertDialog';
 import { actaMaximaAutoridadSchema } from '@/lib/schemas';
 import { CiCircleCheck } from 'react-icons/ci';
+import { LuTriangleAlert } from 'react-icons/lu';
 import {
   steps,
   anexosAdicionalesTitulos,
@@ -49,6 +49,8 @@ import {
 } from '@/lib/acta-ma-constants';
 import { useFormDirtyStore } from '@/stores/useFormDirtyStore';
 import { useFormState } from 'react-hook-form';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FormFieldWithExtras } from './FormFieldWithExtras';
 
 type FormData = z.infer<typeof actaMaximaAutoridadSchema>;
 type DynamicStepKey = keyof DynamicContent;
@@ -254,62 +256,6 @@ export function ActaMaximaAutoridadForm() {
     }
   };
 
-  // Componente reutilizable para campos de texto con ayuda contextual
-  const FormFieldWithExtras = ({
-    name,
-    label,
-    subtitle,
-    placeholder,
-    type = 'text',
-    maxLength,
-    validationType,
-  }: {
-    name: keyof FormData;
-    label: string;
-    subtitle?: string;
-    placeholder?: string;
-    type?: string;
-    maxLength?: number;
-    validationType?: 'textOnly';
-  }) => (
-    <FormField
-      control={form.control}
-      name={name}
-      render={({ field }) => {
-        // Creamos un manejador de cambio personalizado
-        const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          if (validationType === 'textOnly') {
-            // Expresión regular que permite letras (incluyendo acentos y ñ) y espacios
-            const regex = /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g;
-            e.target.value = e.target.value.replace(regex, '');
-          }
-          // Pasamos el evento (con el valor ya filtrado) al controlador del formulario
-          field.onChange(e);
-        };
-
-        return (
-          <FormItem>
-            <FormLabel>{label}</FormLabel>
-            {subtitle && (
-              <FormDescription className='italic'>{subtitle}</FormDescription>
-            )}
-            <FormControl>
-              <Input
-                type={type}
-                placeholder={placeholder}
-                {...field}
-                onChange={handleChange} // Usamos nuestro manejador personalizado
-                maxLength={maxLength}
-                disabled={isLoading}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        );
-      }}
-    />
-  );
-
   const navButtonStyleGray =
     'bg-white text-black border-gray-300 shadow-md hover:bg-gray-100 active:bg-slate-200 active:shadow-inner active:border-gray-400 transition-all duration-150';
 
@@ -333,6 +279,15 @@ export function ActaMaximaAutoridadForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            {/* Mensaje de error de la API */}
+            {apiError && (
+              <Alert variant='destructive'>
+                <LuTriangleAlert className='h-4 w-4' />
+                <AlertTitle>Error al Crear el Acta</AlertTitle>
+                <AlertDescription>{apiError}</AlertDescription>
+              </Alert>
+            )}
+
             <SuccessAlertDialog
               isOpen={showSuccessDialog}
               onClose={() => setShowSuccessDialog(false)}
@@ -418,7 +373,12 @@ export function ActaMaximaAutoridadForm() {
                     </p>
                   </div>
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4'>
-                    <LocationSelector control={form.control} form={form} />
+                    <LocationSelector
+                      control={form.control}
+                      form={form}
+                      estadoFieldName='estadoSuscripcion'
+                      ciudadFieldName='ciudadSuscripcion'
+                    />
 
                     <FormField
                       control={form.control}
@@ -1141,7 +1101,7 @@ export function ActaMaximaAutoridadForm() {
                     disabled={isLoading}
                     className={navButtonStyleBlue}
                   >
-                    {isLoading ? 'Creando Acta...' : 'Crear Acta'}
+                    {isLoading ? 'Creando Acta...' : 'Crear acta'}
                   </Button>
                 )}
               </div>

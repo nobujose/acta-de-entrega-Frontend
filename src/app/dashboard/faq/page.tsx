@@ -8,7 +8,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { FaWhatsappSquare } from 'react-icons/fa';
 import { IoLogoWhatsapp } from 'react-icons/io';
 
 const faqData = [

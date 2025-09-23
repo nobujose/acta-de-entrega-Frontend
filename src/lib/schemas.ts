@@ -1,5 +1,7 @@
 import * as z from 'zod';
 import { dynamicStepContent } from './acta-ma-constants';
+import { dynamicStepContentEntrante } from './acta-entrante-constants';
+import { dynamicStepContentSaliente } from './acta-saliente-constants';
 
 // Expresión regular para RIF (ej: G-20000000-0)
 const rifRegex = /^[GJE]-\d{8}-\d{1}$/;
@@ -205,105 +207,16 @@ export const actaMaximaAutoridadSchema =
     }
   });
 
-// --- Esquema para Acta Saliente (PAGA) ---
+// --- Esquema para Acta Saliente ---
 
-export const actaSalienteSchema = z.object({
+export const actaSalienteSchemaBase = z.object({
   // --- Datos Generales ---
   email: z
     .string()
     .min(1, 'Campo Requerido')
     .email({ message: 'Debe ser un correo válido.' }),
-  rifOrgano: z.string().min(1, 'El RIF es requerido.'),
-  denominacionCargoEntrega: z
-    .string()
-    .min(1, 'La denominación del cargo es requerida.'),
-  nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
-  ciudadSuscripcion: z.string().min(1, 'La ciudad es requerida.'),
-  estadoSuscripcion: z.string().min(1, 'El estado es requerido.'),
-  horaSuscripcion: z.string().min(1, 'La hora es requerida.'),
-  fechaSuscripcion: z.string().min(1, 'La fecha es requerida.'),
-  direccionOrgano: z.string().min(1, 'La dirección es requerida.'),
-  motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
-
-  // --- Servidores Públicos (Saliente) ---
-  nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  nombreServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
-  designacionServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
-
-  // --- Anexos (Todos opcionales) ---
-  estadoSituacionPresupuestaria: z.string().optional(),
-  relacionGastosComprometidosNoCausados: z.string().optional(),
-  relacionGastosCausadosNoPagados: z.string().optional(),
-  estadoPresupuestarioPorPartidas: z.string().optional(),
-  estadoPresupuestarioDetalleCuentas: z.string().optional(),
-  estadosFinancieros: z.string().optional(),
-  balanceComprobacion: z.string().optional(),
-  estadoSituacionFinanciera: z.string().optional(),
-  estadoRendimientoFinanciero: z.string().optional(),
-  estadoMovimientosPatrimonio: z.string().optional(),
-  relacionCuentasPorCobrar: z.string().optional(),
-  relacionCuentasPorPagar: z.string().optional(),
-  relacionCuentasFondosTerceros: z.string().optional(),
-  situacionFondosAnticipo: z.string().optional(),
-  situacionCajaChica: z.string().optional(),
-  actaArqueoCajasChicas: z.string().optional(),
-  listadoRegistroAuxiliarProveedores: z.string().optional(),
-  reportesLibrosContables: z.string().optional(),
-  reportesCuentasBancarias: z.string().optional(),
-  reportesConciliacionesBancarias: z.string().optional(),
-  reportesRetenciones: z.string().optional(),
-  reporteProcesosContrataciones: z.string().optional(),
-  reporteFideicomisoPrestaciones: z.string().optional(),
-  reporteBonosVacacionales: z.string().optional(),
-  cuadroResumenCargos: z.string().optional(),
-  cuadroResumenValidadoRRHH: z.string().optional(),
-  reporteNominas: z.string().optional(),
-  inventarioBienes: z.string().optional(),
-  ejecucionPlanOperativo: z.string().optional(),
-  causasIncumplimientoMetas: z.string().optional(),
-  planOperativoAnual: z.string().optional(),
-  clasificacionArchivo: z.string().optional(),
-  ubicacionFisicaArchivo: z.string().optional(),
-  anexo6: z.string().optional(), // CORREGIDO: Es opcional hasta el último paso
-  anexos: z.string().optional(), // CORREGIDO: Es opcional hasta el último paso
-  relacionMontosFondosAsignados: z.string().optional(),
-  saldoEfectivoFondos: z.string().optional(),
-  relacionBienesAsignados: z.string().optional(),
-  relacionBienesAsignadosUnidadBienes: z.string().optional(),
-  estadosBancariosConciliados: z.string().optional(),
-  listaComprobantesGastos: z.string().optional(),
-  chequesEmitidosPendientesCobro: z.string().optional(),
-  listadoTransferenciaBancaria: z.string().optional(),
-  caucionFuncionario: z.string().optional(),
-  cuadroDemostrativoRecaudado: z.string().optional(),
-  relacionExpedientesAbiertos: z.string().optional(),
-  situacionTesoroNacional: z.string().optional(),
-  infoEjecucionPresupuestoNacional: z.string().optional(),
-  montoDeudaPublicaNacional: z.string().optional(),
-  situacionCuentasNacion: z.string().optional(),
-  situacionTesoroEstadal: z.string().optional(),
-  infoEjecucionPresupuestoEstadal: z.string().optional(),
-  situacionCuentasEstado: z.string().optional(),
-  situacionTesoroDistritalMunicipal: z.string().optional(),
-  infoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
-  situacionCuentasDistritalesMunicipales: z.string().optional(),
-  inventarioTerrenosEjidos: z.string().optional(),
-  relacionIngresosVentaTerrenos: z.string().optional(),
-  accionesAuditoria: z.string().optional(),
-  deficienciasActa: z.string().optional(),
-});
-//acta saliente schema
-export const actaEntranteSchema = z.object({
-  // --- Datos Generales ---
-  email: z
-    .string()
-    .min(1, 'Campo Requerido')
-    .email({ message: 'Debe ser un correo válido.' }),
-  rifOrgano: z.string().min(1, 'El RIF es requerido.'),
-  denominacionCargoEntrega: z
+  rifOrgano: z.string().regex(rifRegex, 'El RIF es requerido.'),
+  denominacionCargo: z
     .string()
     .min(1, 'La denominación del cargo es requerida.'),
   nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
@@ -315,57 +228,103 @@ export const actaEntranteSchema = z.object({
   motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
 
   // --- Servidores Públicos y Testigos ---
-  nombreServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-  profesionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-  designacionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
-  nombreAuditor: z.string().min(1, 'Este campo es requerido.'),
-  cedulaAuditor: z.string().min(1, 'Este campo es requerido.'),
-  profesionAuditor: z.string().min(1, 'Este campo es requerido.'),
-  nombreTestigo1: z.string().min(1, 'Este campo es requerido.'),
-  cedulaTestigo1: z.string().min(1, 'Este campo es requerido.'),
-  profesionTestigo1: z.string().min(1, 'Este campo es requerido.'),
-  nombreTestigo2: z.string().min(1, 'Este campo es requerido.'),
-  cedulaTestigo2: z.string().min(1, 'Este campo es requerido.'),
-  profesionTestigo2: z.string().min(1, 'Este campo es requerido.'),
-  nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
-  designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+  nombreServidorEntrega: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorEntrega: z
+    .string()
+    .regex(cedulaRegex, 'La cédula es requerida.'),
+  designacionServidorEntrega: z.string().min(1, 'Este campo es requerido.'),
+
+  nombreServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorRecibe: z
+    .string()
+    .regex(cedulaRegex, 'La cédula es requerida.'),
+  designacionServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
 
   // --- Anexos (SI/NO) ---
-  disponeEstadoSituacionPresupuestaria: z.string().optional(),
-  disponeRelacionGastosComprometidosNoCausados: z.string().optional(),
-  disponeRelacionGastosComprometidosCausadosNoPagados: z.string().optional(),
-  disponeEstadoPresupuestarioPorPartidas: z.string().optional(),
-  disponeEstadoPresupuestarioDetalleCuentas: z.string().optional(),
-  disponeEstadosFinancieros: z.string().optional(),
-  disponeBalanceComprobacion: z.string().optional(),
-  disponeEstadoSituacionFinanciera: z.string().optional(),
-  disponeEstadoRendimientoFinanciero: z.string().optional(),
-  disponeEstadoMovimientosPatrimonio: z.string().optional(),
-  disponeRelacionCuentasPorCobrar: z.string().optional(),
-  disponeRelacionCuentasPorPagar: z.string().optional(),
-  disponeRelacionCuentasFondosTerceros: z.string().optional(),
-  disponeSituacionFondosAnticipo: z.string().optional(),
-  disponeSituacionCajaChica: z.string().optional(),
-  disponeActaArqueoCajasChicas: z.string().optional(),
-  disponeListadoRegistroAuxiliarProveedores: z.string().optional(),
-  disponeReportesLibrosContables: z.string().optional(),
-  disponeReportesCuentasBancarias: z.string().optional(),
-  disponeReportesConciliacionesBancarias: z.string().optional(),
-  disponeReportesRetenciones: z.string().optional(),
-  disponeReporteProcesosContrataciones: z.string().optional(),
-  disponeReporteFideicomisoPrestaciones: z.string().optional(),
-  disponeReporteBonosVacacionales: z.string().optional(),
-  disponeCuadroResumenCargos: z.string().optional(),
-  disponeCuadroResumenValidadoRRHH: z.string().optional(),
-  disponeReporteNominas: z.string().optional(),
-  disponeInventarioBienes: z.string().optional(),
-  disponeEjecucionPlanOperativo: z.string().optional(),
-  incluyeCausasIncumplimientoMetas: z.string().optional(),
-  disponePlanOperativoAnual: z.string().optional(),
-  disponeClasificacionArchivo: z.string().optional(),
-  incluyeUbicacionFisicaArchivo: z.string().optional(),
+  disponeEstadoSituacionPresupuestaria: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionGastosComprometidosNoCausados: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionGastosComprometidosCausadosNoPagados: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoPresupuestarioPorPartidas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoPresupuestarioDetalleCuentas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadosFinancieros: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeBalanceComprobacion: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoSituacionFinanciera: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoRendimientoFinanciero: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoMovimientosPatrimonio: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionCuentasPorCobrar: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionCuentasPorPagar: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionCuentasFondosTerceros: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeSituacionFondosAnticipo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeSituacionCajaChica: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeActaArqueoCajasChicas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeListadoRegistroAuxiliarProveedores: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesLibrosContables: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesCuentasBancarias: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesConciliacionesBancarias: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesRetenciones: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeReporteProcesosContrataciones: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReporteFideicomisoPrestaciones: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReporteBonosVacacionales: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeCuadroResumenCargos: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeCuadroResumenValidadoRRHH: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReporteNominas: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeInventarioBienes: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeEjecucionPlanOperativo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  incluyeCausasIncumplimientoMetas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponePlanOperativoAnual: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeClasificacionArchivo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  incluyeUbicacionFisicaArchivo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  //Paso 10
   disponeRelacionMontosFondosAsignados: z.string().optional(),
   disponeSaldoEfectivoFondos: z.string().optional(),
   disponeRelacionBienesAsignados: z.string().optional(),
@@ -390,8 +349,259 @@ export const actaEntranteSchema = z.object({
   disponeInventarioTerrenosEjidos: z.string().optional(),
   disponeRelacionIngresosVentaTerrenos: z.string().optional(),
 
-  anexo6: z.string().min(1, 'Este campo es requerido.'),
-  anexos: z.string().min(1, 'Este campo es requerido.'),
+  interesProducto: z.string().min(1, 'Debe seleccionar una opción.'),
+
+  Anexo_VI: z.string().optional(),
+  Anexo_VII: z
+    .string()
+    .min(1, 'Debe seleccionar una opción para los anexos adicionales.'),
+
+  // --- Anexos dinámicos ---
   accionesAuditoria: z.string().optional(),
   deficienciasActa: z.string().optional(),
 });
+
+// ESQUEMA FINAL: Aplicamos la validación inteligente con superRefine
+export const actaSalienteSchema = actaSalienteSchemaBase.superRefine(
+  (data, ctx) => {
+    const selectedAnexo = data.Anexo_VII;
+
+    if (!selectedAnexo || selectedAnexo === 'NO APLICA') {
+      return; // Si no hay anexo seleccionado o es "NO APLICA", la validación para esta parte es exitosa.
+    }
+
+    const anexoContent =
+      dynamicStepContentSaliente[
+        selectedAnexo as keyof typeof dynamicStepContentSaliente
+      ];
+
+    if (!anexoContent) return; // Si por alguna razón la selección no coincide, no validamos.
+
+    if (anexoContent.type === 'questions') {
+      anexoContent.questions.forEach((q) => {
+        const fieldName = q.name as keyof typeof data;
+        if (!data[fieldName]) {
+          // Si la respuesta es vacía, null, o undefined
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [fieldName],
+            message: 'Debe seleccionar una opción.',
+          });
+        }
+      });
+    } else if (anexoContent.type === 'textarea') {
+      const fieldName = anexoContent.fieldName;
+      if (!data[fieldName] || (data[fieldName] as string).trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [fieldName],
+          message: 'Este campo es requerido según su selección.',
+        });
+      }
+    }
+  }
+);
+
+// ACTA ENTRANTE SCHEMA
+
+export const actaEntranteSchemaBase = z.object({
+  // --- Datos Generales ---
+  email: z
+    .string()
+    .min(1, 'Campo Requerido')
+    .email({ message: 'Debe ser un correo válido.' }),
+  rifOrgano: z.string().regex(rifRegex, 'El RIF es requerido.'),
+  denominacionCargo: z
+    .string()
+    .min(1, 'La denominación del cargo es requerida.'),
+  nombreOrgano: z.string().min(1, 'El nombre del órgano es requerido.'),
+  ciudadSuscripcion: z.string().min(1, 'La ciudad es requerida.'),
+  estadoSuscripcion: z.string().min(1, 'El estado es requerido.'),
+  horaSuscripcion: z.string().min(1, 'La hora es requerida.'),
+  fechaSuscripcion: z.string().min(1, 'La fecha es requerida.'),
+  direccionOrgano: z.string().min(1, 'La dirección es requerida.'),
+  motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
+
+  // --- Servidores Públicos y Testigos ---
+  nombreServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorEntrante: z
+    .string()
+    .regex(cedulaRegex, 'La cédula es requerida.'),
+  profesionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
+  designacionServidorEntrante: z.string().min(1, 'Este campo es requerido.'),
+  nombreAuditor: z.string().min(1, 'Este campo es requerido.'),
+  cedulaAuditor: z.string().regex(cedulaRegex, 'La cédula es requerida.'),
+  profesionAuditor: z.string().min(1, 'Este campo es requerido.'),
+  nombreTestigo1: z.string().min(1, 'Este campo es requerido.'),
+  cedulaTestigo1: z.string().regex(cedulaRegex, 'La cédula es requerida.'),
+  profesionTestigo1: z.string().min(1, 'Este campo es requerido.'),
+  nombreTestigo2: z.string().min(1, 'Este campo es requerido.'),
+  cedulaTestigo2: z.string().regex(cedulaRegex, 'La cédula es requerida.'),
+  profesionTestigo2: z.string().min(1, 'Este campo es requerido.'),
+  nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorSaliente: z
+    .string()
+    .regex(cedulaRegex, 'La cédula es requerida.'),
+  designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+
+  // --- Anexos (SI/NO) ---
+  disponeEstadoSituacionPresupuestaria: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionGastosComprometidosNoCausados: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionGastosComprometidosCausadosNoPagados: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoPresupuestarioPorPartidas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoPresupuestarioDetalleCuentas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadosFinancieros: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeBalanceComprobacion: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoSituacionFinanciera: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoRendimientoFinanciero: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeEstadoMovimientosPatrimonio: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionCuentasPorCobrar: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionCuentasPorPagar: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeRelacionCuentasFondosTerceros: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeSituacionFondosAnticipo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeSituacionCajaChica: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeActaArqueoCajasChicas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeListadoRegistroAuxiliarProveedores: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesLibrosContables: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesCuentasBancarias: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesConciliacionesBancarias: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReportesRetenciones: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeReporteProcesosContrataciones: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReporteFideicomisoPrestaciones: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReporteBonosVacacionales: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeCuadroResumenCargos: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeCuadroResumenValidadoRRHH: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponeReporteNominas: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeInventarioBienes: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeEjecucionPlanOperativo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  incluyeCausasIncumplimientoMetas: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  disponePlanOperativoAnual: z.string().min(1, 'Debe seleccionar una opción.'),
+  disponeClasificacionArchivo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  incluyeUbicacionFisicaArchivo: z
+    .string()
+    .min(1, 'Debe seleccionar una opción.'),
+  //Paso 10
+  disponeRelacionMontosFondosAsignados: z.string().optional(),
+  disponeSaldoEfectivoFondos: z.string().optional(),
+  disponeRelacionBienesAsignados: z.string().optional(),
+  disponeRelacionBienesAsignadosUnidadBienes: z.string().optional(),
+  disponeEstadosBancariosConciliados: z.string().optional(),
+  disponeListaComprobantesGastos: z.string().optional(),
+  disponeChequesEmitidosPendientesCobro: z.string().optional(),
+  disponeListadoTransferenciaBancaria: z.string().optional(),
+  disponeCaucionFuncionario: z.string().optional(),
+  disponeCuadroDemostrativoRecaudado: z.string().optional(),
+  disponeRelacionExpedientesAbiertos: z.string().optional(),
+  disponeSituacionTesoroNacional: z.string().optional(),
+  disponeInfoEjecucionPresupuestoNacional: z.string().optional(),
+  disponeMontoDeudaPublicaNacional: z.string().optional(),
+  disponeSituacionCuentasNacion: z.string().optional(),
+  disponeSituacionTesoroEstadal: z.string().optional(),
+  disponeInfoEjecucionPresupuestoEstadal: z.string().optional(),
+  disponeSituacionCuentasEstado: z.string().optional(),
+  disponeSituacionTesoroDistritalMunicipal: z.string().optional(),
+  disponeInfoEjecucionPresupuestoDistritalMunicipal: z.string().optional(),
+  disponeSituacionCuentasDistritalesMunicipales: z.string().optional(),
+  disponeInventarioTerrenosEjidos: z.string().optional(),
+  disponeRelacionIngresosVentaTerrenos: z.string().optional(),
+
+  interesProducto: z.string().min(1, 'Debe seleccionar una opción.'),
+
+  Anexo_VI: z.string().optional(),
+  Anexo_VII: z
+    .string()
+    .min(1, 'Debe seleccionar una opción para los anexos adicionales.'),
+
+  // --- Anexos dinámicos ---
+  accionesAuditoria: z.string().optional(),
+  deficienciasActa: z.string().optional(),
+});
+
+// ESQUEMA FINAL: Aplicamos la validación inteligente con superRefine
+export const actaEntranteSchema = actaEntranteSchemaBase.superRefine(
+  (data, ctx) => {
+    const selectedAnexo = data.Anexo_VII;
+
+    if (!selectedAnexo || selectedAnexo === 'NO APLICA') {
+      return; // Si no hay anexo seleccionado o es "NO APLICA", la validación para esta parte es exitosa.
+    }
+
+    const anexoContent =
+      dynamicStepContentEntrante[
+        selectedAnexo as keyof typeof dynamicStepContentEntrante
+      ];
+
+    if (!anexoContent) return; // Si por alguna razón la selección no coincide, no validamos.
+
+    if (anexoContent.type === 'questions') {
+      anexoContent.questions.forEach((q) => {
+        const fieldName = q.name as keyof typeof data;
+        if (!data[fieldName]) {
+          // Si la respuesta es vacía, null, o undefined
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: [fieldName],
+            message: 'Debe seleccionar una opción.',
+          });
+        }
+      });
+    } else if (anexoContent.type === 'textarea') {
+      const fieldName = anexoContent.fieldName;
+      if (!data[fieldName] || (data[fieldName] as string).trim() === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [fieldName],
+          message: 'Este campo es requerido según su selección.',
+        });
+      }
+    }
+  }
+);
