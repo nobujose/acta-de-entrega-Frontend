@@ -94,7 +94,7 @@ export default function AsistenteVirtualPage() {
   };
 
   return (
-    <div className='flex flex-col h-[calc(100vh-10rem)] max-w-4xl mx-auto bg-slate-50 border rounded-lg shadow-xl'>
+    <div className='flex flex-col h-full max-w-4xl mx-auto bg-slate-50 border rounded-lg shadow-xl'>
       <div className='flex items-center p-4 border-b bg-white rounded-t-lg'>
         {/* ▼▼▼ 1. IMAGEN EN LA CABECERA ▼▼▼ */}
         <Avatar className='h-10 w-10 mr-4'>

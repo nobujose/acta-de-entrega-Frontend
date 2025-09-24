@@ -4,7 +4,7 @@ import { HeaderProvider } from '@/context/HeaderContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { PopupManager } from '@/components/PopupManager';
 import { LogoutConfirmationDialog } from '@/components/LogoutConfirmationDialog';
-import { SessionManager } from '@/components/SessionManager'; // <-- Importa el nuevo componente
+import { SessionManager } from '@/components/SessionManager';
 
 export default function DashboardLayout({
   children,
@@ -15,11 +15,14 @@ export default function DashboardLayout({
     <ProtectedRoute>
       <HeaderProvider>
         <div
-          id='outer-container'
+          /*id='outer-container'*/
           className='flex h-screen overflow-hidden bg-body-dashboard text-gray-800'
         >
           <AppSidebar />
-          <div id='page-wrap' className='flex flex-1 flex-col overflow-hidden'>
+          <div
+            /*id='page-wrap'*/
+            className='flex flex-1 flex-col overflow-hidden'
+          >
             <Header />
             <main className='flex-1 overflow-y-auto p-4 md:p-6 lg:p-8'>
               {children}
@@ -28,7 +31,7 @@ export default function DashboardLayout({
         </div>
         <LogoutConfirmationDialog />
         <PopupManager />
-        <SessionManager /> {/* <-- Añade el gestor de sesión aquí */}
+        <SessionManager />
       </HeaderProvider>
     </ProtectedRoute>
   );
