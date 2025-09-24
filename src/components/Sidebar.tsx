@@ -314,7 +314,13 @@ export default function AppSidebar() {
   return (
     <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
       {/* El SheetTrigger vive en el Header, por lo que aquí no se necesita */}
-      <SheetContent side='left' className='flex flex-col p-0 w-64 bg-white'>
+      <SheetContent
+        side='left'
+        className={cn(
+          'flex flex-col p-0 w-64 bg-white',
+          'will-change-transform'
+        )}
+      >
         {/* --- CAMBIO 4: Solución al error de accesibilidad --- */}
         {/* Añadimos un título y descripción ocultos para los lectores de pantalla */}
         <SheetHeader className='sr-only'>
