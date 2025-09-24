@@ -30,25 +30,35 @@ export function GuardedButton({
 
   // 2. La lógica de click ahora decide si navegar o mostrar el diálogo.
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Primero, si hay una función onClick (como la que cierra el sidebar), la ejecutamos.
+    // Esto inicia el proceso de cierre INMEDIATAMENTE.
+    if (onClick) {
+      onClick(e);
+    }
+
     if (isDirty) {
-      e.preventDefault(); // Detenemos cualquier acción por defecto
+      e.preventDefault();
       setIntendedHref(href);
       setShowDialog(true);
     } else {
-      // Si el formulario no tiene cambios, navegamos directamente.
-      router.push(href);
-    }
-
-    // Si el botón tiene otra función onClick, la ejecutamos.
-    if (onClick) {
-      onClick(e);
+      // --- LA SOLUCIÓN ---
+      // En lugar de navegar al instante, lo hacemos en el siguiente "tick" del navegador.
+      // setTimeout con 0ms es una técnica para diferir la ejecución hasta que la pila
+      // de llamadas actual esté vacía. Esto le da tiempo a React para procesar el
+      // cambio de estado que cierra el sidebar antes de que comience la navegación.
+      setTimeout(() => {
+        router.push(href);
+      }, 100); // 100ms es un buen valor para permitir que la animación comience.
     }
   };
 
   const handleConfirm = () => {
-    setIsDirty(false); // Reseteamos el estado
+    setIsDirty(false);
     setShowDialog(false);
-    router.push(intendedHref);
+    // También aplicamos el retraso aquí para consistencia
+    setTimeout(() => {
+      router.push(intendedHref);
+    }, 100);
   };
 
   const handleCancel = () => {
