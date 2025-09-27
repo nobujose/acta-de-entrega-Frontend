@@ -20,6 +20,7 @@ const config: Config = {
         'text-answer': '#4F7396', // Color del texto de la respuesta
         'body-dashboard': '#E8EDF2', // Color de fondo para el dashboard layout
         'boton-anexos-gratis': '#D7D5D5', // Color al presionar el botón de anexos gratis
+        faqItem: '#ffedd5', // Color de fondo para los items de FAQ
       },
       boxShadow: {
         'blue-soft':

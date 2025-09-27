@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 import { useHeader } from '@/context/HeaderContext';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { FaArrowRight } from 'react-icons/fa';
 
 export default function RevisionDeActaPage() {
   const { setTitle } = useHeader();
@@ -49,7 +49,7 @@ export default function RevisionDeActaPage() {
               rel='noopener noreferrer'
             >
               Adquirir versión PRO
-              <ArrowRight className='ml-2 h-5 w-5' />
+              <FaArrowRight className='ml-2 h-5 w-5' />
             </a>
           </Button>
         </div>

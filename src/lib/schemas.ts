@@ -228,11 +228,11 @@ export const actaSalienteSchemaBase = z.object({
   motivoEntrega: z.string().min(1, 'Debe seleccionar un motivo.'),
 
   // --- Servidores Públicos y Testigos ---
-  nombreServidorEntrega: z.string().min(1, 'Este campo es requerido.'),
-  cedulaServidorEntrega: z
+  nombreServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
+  cedulaServidorSaliente: z
     .string()
     .regex(cedulaRegex, 'La cédula es requerida.'),
-  designacionServidorEntrega: z.string().min(1, 'Este campo es requerido.'),
+  designacionServidorSaliente: z.string().min(1, 'Este campo es requerido.'),
 
   nombreServidorRecibe: z.string().min(1, 'Este campo es requerido.'),
   cedulaServidorRecibe: z

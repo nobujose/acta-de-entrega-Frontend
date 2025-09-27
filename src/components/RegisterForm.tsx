@@ -19,15 +19,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-
 import { Input } from '@/components/ui/input';
-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react';
-import { registerUser } from '@/services/authService'; // -> 1. Importamos la nueva función
-// 1. Importamos únicamente nuestro nuevo componente de alerta
+import { FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { registerUser } from '@/services/authService';
 import { SuccessAlertDialog } from './SuccessAlertDialog';
 import { LegalPopup } from './LegalPopup';
 import { TermsContent } from './TermsContent';
@@ -169,7 +166,7 @@ export function RegisterForm() {
             onClick={() => setStep(1)}
             className='flex items-center text-gray-600 hover:text-gray-800 mb-4'
           >
-            <ArrowLeft className='mr-2 h-4 w-4' />
+            <FaArrowLeft className='mr-2 h-4 w-4' />
             Volver
           </button>
         )}
@@ -263,10 +260,10 @@ export function RegisterForm() {
                             onClick={() => setShowPassword(!showPassword)}
                             className='absolute inset-y-0 right-0 pr-3 flex items-center'
                           >
-                            <EyeOff
+                            <FaEyeSlash
                               className={`h-5 w-5 ${showPassword ? 'text-gray-400' : 'hidden'}`}
                             />
-                            <Eye
+                            <FaEye
                               className={`h-5 w-5 ${showPassword ? 'hidden' : 'text-gray-400'}`}
                             />
                           </button>
@@ -297,10 +294,10 @@ export function RegisterForm() {
                             }
                             className='absolute inset-y-0 right-0 pr-3 flex items-center'
                           >
-                            <EyeOff
+                            <FaEyeSlash
                               className={`h-5 w-5 ${showConfirmPassword ? 'text-gray-400' : 'hidden'}`}
                             />
-                            <Eye
+                            <FaEye
                               className={`h-5 w-5 ${showConfirmPassword ? 'hidden' : 'text-gray-400'}`}
                             />
                           </button>

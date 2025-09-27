@@ -88,9 +88,9 @@ export function ActaSalienteForm() {
       direccionOrgano: '',
       motivoEntrega: '',
 
-      nombreServidorEntrega: '',
-      cedulaServidorEntrega: '',
-      designacionServidorEntrega: '',
+      nombreServidorSaliente: '',
+      cedulaServidorSaliente: '',
+      designacionServidorSaliente: '',
 
       nombreServidorRecibe: '',
       cedulaServidorRecibe: '',
@@ -523,7 +523,7 @@ export function ActaSalienteForm() {
                 </h3>
                 <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
                   <FormFieldWithExtras
-                    name='nombreServidorEntrega'
+                    name='nombreServidorSaliente'
                     label='Nombre'
                     subtitle='Ej: Pedro José Rodríguez Hernández'
                     maxLength={50}
@@ -531,7 +531,7 @@ export function ActaSalienteForm() {
                   />
                   <FormField
                     control={form.control}
-                    name='cedulaServidorEntrega'
+                    name='cedulaServidorSaliente'
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Cédula</FormLabel>
@@ -552,7 +552,7 @@ export function ActaSalienteForm() {
                     )}
                   />
                   <FormFieldWithExtras
-                    name='designacionServidorEntrega'
+                    name='designacionServidorSaliente'
                     label='Datos de designación'
                     subtitle='Ej: Resolución N° 000/00 de fecha 00-00-0000 publicado en Gaceta N° 0000 de fecha 00-00-000'
                     maxLength={150}

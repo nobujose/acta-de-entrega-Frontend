@@ -15,7 +15,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import {
   forgotPassword,
   verifyOtp,
@@ -259,9 +259,9 @@ export function ForgotPasswordForm() {
                             className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400'
                           >
                             {showPassword ? (
-                              <EyeOff size={20} />
+                              <FaEyeSlash size={20} />
                             ) : (
-                              <Eye size={20} />
+                              <FaEye size={20} />
                             )}
                           </button>
                         </div>
@@ -292,9 +292,9 @@ export function ForgotPasswordForm() {
                             className='absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400'
                           >
                             {showConfirmPassword ? (
-                              <EyeOff size={20} />
+                              <FaEyeSlash size={20} />
                             ) : (
-                              <Eye size={20} />
+                              <FaEye size={20} />
                             )}
                           </button>
                         </div>
