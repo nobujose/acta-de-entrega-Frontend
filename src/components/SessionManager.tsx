@@ -1,4 +1,3 @@
-// src/components/SessionManager.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,7 +10,6 @@ export function SessionManager() {
   const { token, setAuth, logout } = useAuthStore();
   const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  // ▼▼▼ ESTE useEffect HA SIDO REESTRUCTURADO Y CORREGIDO ▼▼▼
   useEffect(() => {
     // Si no hay token, no hacemos nada.
     if (!token) {
