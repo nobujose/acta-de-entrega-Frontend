@@ -349,7 +349,6 @@ export function ActaSalienteForm() {
                       label='Nombre del órgano, entidad, oficina o dependencia de la Administración Pública'
                       subtitle='Ej: Instituto Nacional de Transporte Terrestre (INTT)'
                       maxLength={50}
-                      validationType='textOnly'
                     />
                   </div>
                 </div>
