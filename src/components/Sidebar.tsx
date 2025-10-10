@@ -58,7 +58,7 @@ const mainNavLinks = [
   { href: '/dashboard/faq', label: 'Preguntas frecuentes', icon: FiHelpCircle },
   {
     href: '/dashboard/asistenteia',
-    label: 'Asistente virtual',
+    label: 'Consultor IA',
     icon: LiaRobotSolid,
   },
 ];
